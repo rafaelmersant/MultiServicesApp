@@ -22,9 +22,11 @@ export function saveUser(user) {
     return http.put(userUrl(user.id), body);
   }
 
-  const params = { ...user };
-  delete params.id;
-  return http.post(`${apiEndpoint}/`, params);
+  return http.post(`${apiEndpoint}/`, user);
+}
+
+export function deleteUser(userId) {
+  return http.delete(userUrl(userId));
 }
 
 export function register(user) {

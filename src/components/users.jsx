@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
+import { toast } from "react-toastify";
+import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import { paginate } from "../utils/paginate";
-import { getUsers } from "../services/userService";
+import { getUsers, deleteUser } from "../services/userService";
 import UsersTable from "./usersTable";
-import _ from "lodash";
 
 class Users extends Component {
   state = {
@@ -22,20 +23,25 @@ class Users extends Component {
     this.setState({ users });
   }
 
-  // handleDelete = async movie => {
-  //   const originalMovies = this.state.movies;
-  //   const movies = this.state.movies.filter(m => m._id !== movie._id);
-  //   this.setState({ movies });
+  handleDelete = async user => {
+    const answer = window.confirm(
+      "Esta seguro de eliminar este usuario? \nNo podrá deshacer esta acción"
+    );
+    if (answer) {
+      const originalUsers = this.state.users;
+      const users = this.state.users.filter(m => m.id !== user.id);
+      this.setState({ users });
 
-  //   try {
-  //     await deleteMovie(movie._id);
-  //   } catch (ex) {
-  //     if (ex.response && ex.response.status === 404)
-  //       toast.error("This movie has already been deleted.");
+      try {
+        await deleteUser(user.id);
+      } catch (ex) {
+        if (ex.response && ex.response.status === 404)
+          toast.error("This user has already been deleted.");
 
-  //     this.setState({ movies: originalMovies });
-  //   }
-  // };
+        this.setState({ users: originalUsers });
+      }
+    }
+  };
 
   handlePageChange = page => {
     this.setState({ currentPage: page });
@@ -91,8 +97,11 @@ class Users extends Component {
               </NavLink>
             )} */}
 
-            <p>Mostrando {totalCount} usuarios</p>
-            <SearchBox value={searchQuery} onChange={this.handleSearch} />
+            <SearchBox
+              value={searchQuery}
+              onChange={this.handleSearch}
+              placeholder="Buscar..."
+            />
             <UsersTable
               users={users}
               user={user}
@@ -102,12 +111,17 @@ class Users extends Component {
               onSort={this.handleSort}
             />
 
-            <Pagination
-              itemsCount={totalCount}
-              pageSize={pageSize}
-              currentPage={currentPage}
-              onPageChange={this.handlePageChange}
-            />
+            <div className="row">
+              <Pagination
+                itemsCount={totalCount}
+                pageSize={pageSize}
+                currentPage={currentPage}
+                onPageChange={this.handlePageChange}
+              />
+              <p className="text-muted ml-3 mt-2">
+                <em>Mostrando {totalCount} usuarios</em>
+              </p>
+            </div>
           </div>
         </div>
       </div>

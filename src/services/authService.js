@@ -29,6 +29,15 @@ export function getCurrentUser() {
   }
 }
 
+export function getCurrentRole() {
+  try {
+    const jwt = localStorage.getItem(tokenKey);
+    return "Admin"; //jwtDecode(jwt);
+  } catch (ex) {
+    return null;
+  }
+}
+
 export function getJwt() {
   return localStorage.getItem(tokenKey);
 }
@@ -38,5 +47,6 @@ export default {
   loginWithJwt,
   logout,
   getCurrentUser,
+  getCurrentRole,
   getJwt
 };

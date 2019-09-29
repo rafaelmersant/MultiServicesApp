@@ -3,23 +3,26 @@ import { Link } from "react-router-dom";
 import Table from "./common/table";
 import auth from "../services/authService";
 
-class UsersTable extends Component {
+class CompaniesTable extends Component {
   columns = [
     {
       path: "name",
       label: "Name",
-      content: user => <Link to={`/user/${user.id}`}> {user.name} </Link>
+      content: company => (
+        <Link to={`/company/${company.id}`}> {company.name} </Link>
+      )
     },
     { path: "email", label: "Email" },
-    { path: "userRole", label: "Rol" },
+    { path: "phoneNumber", label: "Teléfono" },
+    { path: "rnc", label: "RNC" },
     { path: "creationDate", label: "Creado" }
   ];
 
   deleteColumn = {
     key: "delete",
-    content: user => (
+    content: company => (
       <button
-        onClick={() => this.props.onDelete(user)}
+        onClick={() => this.props.onDelete(company)}
         className="fa fa-trash"
         style={{ color: "red", fontSize: "16px" }}
       ></button>
@@ -35,12 +38,12 @@ class UsersTable extends Component {
   }
 
   render() {
-    const { users, sortColumn, onSort } = this.props;
+    const { companies, sortColumn, onSort } = this.props;
 
     return (
       <Table
         columns={this.columns}
-        data={users}
+        data={companies}
         sortColumn={sortColumn}
         onSort={onSort}
       />
@@ -48,4 +51,4 @@ class UsersTable extends Component {
   }
 }
 
-export default UsersTable;
+export default CompaniesTable;
