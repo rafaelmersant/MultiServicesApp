@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Route, Redirect, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Customers from "./components/customers";
+import CustomerForm from "./components/customerForm";
 import NotFound from "./components/notFound";
 import NavBar from "./components/navBar";
 import LoginForm from "./components/loginForm";
@@ -48,7 +49,7 @@ class App extends Component {
             <Route path="/invoice/:id" component={Invoice} />} />
             <Route path="/inventory" component={Inventory} />
             <Route path="/customers" component={Customers} />
-            <Route path="/customer/:id" component={Customers} />
+            <Route path="/customer/:id" component={CustomerForm} />
             <Route path="/products" component={Products} />
             <Route path="/product/:id" component={Product} />
             <Route path="/companies" component={Companies} />

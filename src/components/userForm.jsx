@@ -13,7 +13,7 @@ class UserForm extends Form {
       password: "",
       name: "",
       userRole: "",
-      company_id: 0,
+      company_id: "",
       userHash: "hash",
       createdByUser: getCurrentUser(),
       creationDate: new Date().toDateString("")
