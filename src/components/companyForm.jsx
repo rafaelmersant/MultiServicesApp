@@ -13,7 +13,7 @@ class CompanyForm extends Form {
       phoneNumber: "",
       rnc: "",
       address: "",
-      createdByUser: getCurrentUser(),
+      createdByUser: getCurrentUser().email,
       creationDate: new Date().toDateString("")
     },
     errors: {},

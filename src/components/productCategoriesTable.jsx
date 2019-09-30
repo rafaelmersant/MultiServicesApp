@@ -3,24 +3,18 @@ import { Link } from "react-router-dom";
 import Table from "./common/table";
 import auth from "../services/authService";
 
-class CustomersTable extends Component {
+class ProductCategoriesTable extends Component {
   columns = [
     {
-      path: "firstName",
-      label: "Nombre",
-      content: customer => (
-        <Link to={`/customer/${customer.id}`}> {customer.firstName} </Link>
+      path: "description",
+      label: "Descripción",
+      content: category => (
+        <Link to={`/productCategory/${category.id}`}>
+          {" "}
+          {category.description}{" "}
+        </Link>
       )
     },
-    {
-      path: "lastName",
-      label: "Apellido",
-      content: customer => (
-        <Link to={`/customer/${customer.id}`}> {customer.lastName} </Link>
-      )
-    },
-    { path: "email", label: "Email" },
-    { path: "phoneNumber", label: "Teléfono" },
     { path: "creationDate", label: "Creado" }
   ];
 
@@ -31,9 +25,9 @@ class CustomersTable extends Component {
 
   deleteColumn = {
     key: "delete",
-    content: customer => (
+    content: category => (
       <button
-        onClick={() => this.props.onDelete(customer)}
+        onClick={() => this.props.onDelete(category)}
         className="fa fa-trash"
         style={{ color: "red", fontSize: "16px" }}
       ></button>
@@ -42,20 +36,20 @@ class CustomersTable extends Component {
 
   constructor() {
     super();
-    const user = auth.getCurrentUser().email;
-    const role = auth.getCurrentUser().role;
+    const user = auth.getCurrentUser();
+    const role = auth.getCurrentUser();
 
     if (user && role === "Admin") this.columns.push(this.companyColumn);
     if (user && role === "Admin") this.columns.push(this.deleteColumn);
   }
 
   render() {
-    const { customers, sortColumn, onSort } = this.props;
+    const { categories, sortColumn, onSort } = this.props;
 
     return (
       <Table
         columns={this.columns}
-        data={customers}
+        data={categories}
         sortColumn={sortColumn}
         onSort={onSort}
       />
@@ -63,4 +57,4 @@ class CustomersTable extends Component {
   }
 }
 
-export default CustomersTable;
+export default ProductCategoriesTable;

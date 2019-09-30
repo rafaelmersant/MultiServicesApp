@@ -106,7 +106,6 @@ class Users extends Component {
               users={users}
               user={user}
               sortColumn={sortColumn}
-              onLike={this.handleLike}
               onDelete={this.handleDelete}
               onSort={this.handleSort}
             />

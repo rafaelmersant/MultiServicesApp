@@ -28,8 +28,8 @@ class UsersTable extends Component {
 
   constructor() {
     super();
-    const user = auth.getCurrentUser();
-    const role = auth.getCurrentRole();
+    const user = auth.getCurrentUser().email;
+    const role = auth.getCurrentUser().role;
 
     if (user && role === "Admin") this.columns.push(this.deleteColumn);
   }

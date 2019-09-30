@@ -15,7 +15,7 @@ class UserForm extends Form {
       address: "",
       phoneNumber: "",
       company_id: "",
-      createdByUser: getCurrentUser(),
+      createdByUser: getCurrentUser().email,
       creationDate: new Date().toDateString("")
     },
     companies: [],

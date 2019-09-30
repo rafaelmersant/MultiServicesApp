@@ -41,6 +41,12 @@ const NavBar = ({ user }) => {
           </li>
 
           <li className="nav-item">
+            <NavLink className="nav-link" to="/productsCategories">
+              Categorias
+            </NavLink>
+          </li>
+
+          <li className="nav-item">
             <NavLink className="nav-link" to="/customers">
               Clientes
             </NavLink>
@@ -83,7 +89,7 @@ const NavBar = ({ user }) => {
             <React.Fragment>
               <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li className="nav-item">
-                  <NavLink className="nav-link mr-sm-2" to="/profile">
+                  <NavLink className="nav-link mr-sm-2 active" to="/profile">
                     {user.name}
                   </NavLink>
                 </li>

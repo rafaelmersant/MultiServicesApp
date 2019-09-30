@@ -3,47 +3,52 @@ import { Redirect } from "react-router-dom";
 import Joi from "joi-browser";
 import Form from "./common/form";
 import auth from "../services/authService";
+import { toast } from "react-toastify";
 
 class LoginForm extends Form {
   state = {
-    data: { username: "", password: "" },
+    data: { email: "", password: "" },
     errors: {}
   };
 
   schema = {
-    username: Joi.string()
+    email: Joi.string()
       .required()
-      .label("Username"),
+      .label("Email"),
     password: Joi.string()
       .required()
-      .label("Password")
+      .label("Contraseña")
   };
 
   doSubmit = async () => {
     try {
-      const { data } = this.state;
-      await auth.login(data.username, data.password);
+      const { data: credentials } = this.state;
+      console.log(credentials);
+      await auth.login(credentials);
 
       const { state } = this.props.location;
       window.location = state ? state.from.pathname : "/";
     } catch (ex) {
+      if (ex.response && ex.response.status === 404)
+        toast.error("Email/Contraseña incorrecto.");
+
       if (ex.response && ex.response.status === 400) {
         const errors = { ...this.state.errors };
-        errors.username = ex.response.data;
+        errors.email = ex.response.data;
         this.setState({ errors });
       }
     }
   };
 
   render() {
-    if (auth.getCurrentUser()) return <Redirect to="/" />;
+    //if (auth.getCurrentUser()) return <Redirect to="/" />;
 
     return (
       <div className="col-3 ml-4">
         <h1>Login</h1>
         <form onSubmit={this.handleSubmit}>
-          {this.renderInput("username", "Username")}
-          {this.renderInput("password", "Password", "password")}
+          {this.renderInput("email", "Email")}
+          {this.renderInput("password", "Contraseña", "password")}
 
           {this.renderButton("Login")}
         </form>

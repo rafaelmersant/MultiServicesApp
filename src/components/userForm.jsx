@@ -15,7 +15,7 @@ class UserForm extends Form {
       userRole: "",
       company_id: "",
       userHash: "hash",
-      createdByUser: getCurrentUser(),
+      createdByUser: getCurrentUser().email,
       creationDate: new Date().toDateString("")
     },
     companies: [],

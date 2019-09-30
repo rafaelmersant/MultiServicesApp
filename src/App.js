@@ -17,6 +17,8 @@ import Companies from "./components/companies";
 import Company from "./components/companyForm";
 import Users from "./components/users";
 import UserForm from "./components/userForm";
+import ProductsCategories from "./components/productCategories";
+import ProductCategoryForm from "./components/productCategoryForm";
 import ProtectedRoute from "./components/common/protectedRoute";
 import auth from "./services/authService";
 import "react-toastify/dist/ReactToastify.css";
@@ -52,6 +54,11 @@ class App extends Component {
             <Route path="/customer/:id" component={CustomerForm} />
             <Route path="/products" component={Products} />
             <Route path="/product/:id" component={Product} />
+            <Route path="/productsCategories/" component={ProductsCategories} />
+            <Route
+              path="/productCategory/:id"
+              component={ProductCategoryForm}
+            />
             <Route path="/companies" component={Companies} />
             <Route path="/company/:id" component={Company} />
             <Route path="/users" component={Users} />

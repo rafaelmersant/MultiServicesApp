@@ -7,9 +7,13 @@ const tokenKey = "token";
 
 http.setJwt(getJwt());
 
-export async function login(email, password) {
-  const { data: jwt } = await http.post(apiEndpoint, { email, password });
-  localStorage.setItem(tokenKey, jwt);
+export async function login(credentials) {
+  const { data: jwt } = await http.post(`${apiEndpoint}/login/`, credentials);
+
+  localStorage.setItem("ms_email", jwt.email);
+  localStorage.setItem("ms_name", jwt.name);
+  localStorage.setItem("ms_role", jwt.role);
+  //localStorage.setItem(tokenKey, jwt);
 }
 
 export function loginWithJwt(jwt) {
@@ -17,22 +21,21 @@ export function loginWithJwt(jwt) {
 }
 
 export function logout() {
-  localStorage.removeItem(tokenKey);
+  //localStorage.removeItem(tokenKey);
+  localStorage.removeItem("ms_email");
+  localStorage.removeItem("ms_name");
+  localStorage.removeItem("ms_role");
 }
 
 export function getCurrentUser() {
   try {
-    const jwt = localStorage.getItem(tokenKey);
-    return "rafaelmersant@noemail.com"; //jwtDecode(jwt);
-  } catch (ex) {
-    return null;
-  }
-}
+    return {
+      name: localStorage.getItem("ms_name"),
+      email: localStorage.getItem("ms_email"),
+      role: localStorage.getItem("ms_role")
+    };
 
-export function getCurrentRole() {
-  try {
-    const jwt = localStorage.getItem(tokenKey);
-    return "Admin"; //jwtDecode(jwt);
+    //jwtDecode(jwt);
   } catch (ex) {
     return null;
   }
@@ -47,6 +50,5 @@ export default {
   loginWithJwt,
   logout,
   getCurrentUser,
-  getCurrentRole,
   getJwt
 };

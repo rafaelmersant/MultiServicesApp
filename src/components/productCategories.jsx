@@ -5,40 +5,45 @@ import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import { paginate } from "../utils/paginate";
-import { getCustomers, deleteCustomer } from "../services/customerService";
-import CustomersTable from "./customersTable";
+import ProductCategoriesTable from "./productCategoriesTable";
+import {
+  getProductsCategories,
+  deleteCategory
+} from "../services/productCategoryService";
 
-class Customers extends Component {
+class ProductsCategories extends Component {
   state = {
-    customers: [],
+    categories: [],
     currentPage: 1,
     pageSize: 4,
     searchQuery: "",
-    sortColumn: { path: "firstName", order: "asc" }
+    sortColumn: { path: "name", order: "asc" }
   };
 
   async componentDidMount() {
-    const { data: customers } = await getCustomers();
+    const { data: categories } = await getProductsCategories();
 
-    this.setState({ customers });
+    this.setState({ categories });
   }
 
-  handleDelete = async customer => {
+  handleDelete = async category => {
     const answer = window.confirm(
-      "Esta seguro de eliminar este cliente? \nNo podrá deshacer esta acción"
+      "Esta seguro de eliminar esta categoria? \nNo podrá deshacer esta acción"
     );
     if (answer) {
-      const originalCustomers = this.state.customers;
-      const customers = this.state.customers.filter(m => m.id !== customer.id);
-      this.setState({ customers });
+      const originalCategories = this.state.categories;
+      const categories = this.state.categories.filter(
+        m => m.id !== category.id
+      );
+      this.setState({ categories });
 
       try {
-        await deleteCustomer(customer.id);
+        await deleteCategory(category.id);
       } catch (ex) {
         if (ex.response && ex.response.status === 404)
-          toast.error("Este cliente ya fue eliminado");
+          toast.error("Esta categoria ya fue eliminada");
 
-        this.setState({ customers: originalCustomers });
+        this.setState({ categories: originalCategories });
       }
     }
   };
@@ -61,29 +66,27 @@ class Customers extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      customers: allCustomers
+      categories: allCategories
     } = this.state;
 
-    let filtered = allCustomers;
+    let filtered = allCategories;
     if (searchQuery)
-      filtered = allCustomers.filter(m =>
-        `${m.firstName.toLowerCase()} ${m.lastName.toLowerCase()}`.startsWith(
-          searchQuery.toLocaleLowerCase()
-        )
+      filtered = allCategories.filter(m =>
+        m.description.toLowerCase().startsWith(searchQuery.toLocaleLowerCase())
       );
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-    const customers = paginate(sorted, currentPage, pageSize);
+    const categories = paginate(sorted, currentPage, pageSize);
 
-    return { totalCount: filtered.length, customers };
+    return { totalCount: filtered.length, categories };
   };
 
   render() {
     const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
     const { user } = this.props;
 
-    const { totalCount, customers } = this.getPagedData();
+    const { totalCount, categories } = this.getPagedData();
 
     return (
       <div className="container">
@@ -91,9 +94,9 @@ class Customers extends Component {
           <div className="col margin-top-msg">
             <NavLink
               className="btn btn-primary mb-3 pull-right"
-              to="/customer/new"
+              to="/productCategory/new"
             >
-              Nuevo Cliente
+              Nueva Categoria
             </NavLink>
 
             {/* {user && (
@@ -107,8 +110,8 @@ class Customers extends Component {
               onChange={this.handleSearch}
               placeholder="Buscar..."
             />
-            <CustomersTable
-              customers={customers}
+            <ProductCategoriesTable
+              categories={categories}
               user={user}
               sortColumn={sortColumn}
               onDelete={this.handleDelete}
@@ -123,7 +126,7 @@ class Customers extends Component {
                 onPageChange={this.handlePageChange}
               />
               <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} clientes</em>
+                <em>Mostrando {totalCount} categorias</em>
               </p>
             </div>
           </div>
@@ -133,4 +136,4 @@ class Customers extends Component {
   }
 }
 
-export default Customers;
+export default ProductsCategories;

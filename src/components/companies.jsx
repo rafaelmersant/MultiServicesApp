@@ -109,7 +109,6 @@ class Companies extends Component {
               companies={companies}
               user={user}
               sortColumn={sortColumn}
-              onLike={this.handleLike}
               onDelete={this.handleDelete}
               onSort={this.handleSort}
             />
