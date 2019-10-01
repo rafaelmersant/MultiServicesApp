@@ -7,7 +7,9 @@ function customerUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getCustomers() {
+export function getCustomers(companyId) {
+  if (companyId) return http.get(`${apiEndpoint}/?company_id=${companyId}`);
+
   return http.get(`${apiEndpoint}/`);
 }
 

@@ -12,9 +12,9 @@ import Invoice from "./components/invoiceForm";
 import Invoices from "./components/invoices";
 import Inventory from "./components/inventory";
 import Products from "./components/products";
-import Product from "./components/product";
+import ProductForm from "./components/productForm";
 import Companies from "./components/companies";
-import Company from "./components/companyForm";
+import CompanyForm from "./components/companyForm";
 import Users from "./components/users";
 import UserForm from "./components/userForm";
 import ProductsCategories from "./components/productCategories";
@@ -30,6 +30,7 @@ class App extends Component {
   componentDidMount() {
     try {
       const user = auth.getCurrentUser();
+
       this.setState({ user });
     } catch (ex) {
       if (window.location.pathname !== "/login")
@@ -47,22 +48,25 @@ class App extends Component {
             <Route path="/register" component={RegisterForm} />
             <Route path="/login" component={LoginForm} />
             <Route path="/logout" component={Logout} />
-            <Route path="/invoices" component={Invoices} />} />
-            <Route path="/invoice/:id" component={Invoice} />} />
-            <Route path="/inventory" component={Inventory} />
-            <Route path="/customers" component={Customers} />
-            <Route path="/customer/:id" component={CustomerForm} />
-            <Route path="/products" component={Products} />
-            <Route path="/product/:id" component={Product} />
-            <Route path="/productsCategories/" component={ProductsCategories} />
-            <Route
+            <ProtectedRoute path="/invoices" component={Invoices} />} />
+            <ProtectedRoute path="/invoice/:id" component={Invoice} />} />
+            <ProtectedRoute path="/inventory" component={Inventory} />
+            <ProtectedRoute path="/customers" component={Customers} />
+            <ProtectedRoute path="/customer/:id" component={CustomerForm} />
+            <ProtectedRoute path="/products" component={Products} />
+            <ProtectedRoute path="/product/:id" component={ProductForm} />
+            <ProtectedRoute
+              path="/productsCategories/"
+              component={ProductsCategories}
+            />
+            <ProtectedRoute
               path="/productCategory/:id"
               component={ProductCategoryForm}
             />
-            <Route path="/companies" component={Companies} />
-            <Route path="/company/:id" component={Company} />
-            <Route path="/users" component={Users} />
-            <Route path="/user/:id" component={UserForm} />
+            <ProtectedRoute path="/companies" component={Companies} />
+            <ProtectedRoute path="/company/:id" component={CompanyForm} />
+            <ProtectedRoute path="/users" component={Users} />
+            <ProtectedRoute path="/user/:id" component={UserForm} />
             <Redirect exact from="/" to="/invoices" />
             <Route path="/not-found" component={NotFound} />
             <Redirect to="/not-found" />

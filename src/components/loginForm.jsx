@@ -23,7 +23,6 @@ class LoginForm extends Form {
   doSubmit = async () => {
     try {
       const { data: credentials } = this.state;
-      console.log(credentials);
       await auth.login(credentials);
 
       const { state } = this.props.location;
@@ -41,17 +40,19 @@ class LoginForm extends Form {
   };
 
   render() {
-    //if (auth.getCurrentUser()) return <Redirect to="/" />;
+    if (auth.getCurrentUser()) return <Redirect to="/" />;
 
     return (
-      <div className="col-3 ml-4">
-        <h1>Login</h1>
-        <form onSubmit={this.handleSubmit}>
-          {this.renderInput("email", "Email")}
-          {this.renderInput("password", "Contraseña", "password")}
+      <div className="container col-4 shadow-lg p-3 mb-5 bg-white rounded">
+        <h2 className="bg-secondary text-light pl-2 pr-2">Login</h2>
+        <div className="col-12 pb-3 bg-light">
+          <form onSubmit={this.handleSubmit}>
+            {this.renderInput("email", "Email")}
+            {this.renderInput("password", "Contraseña", "password")}
 
-          {this.renderButton("Login")}
-        </form>
+            {this.renderButton("Login")}
+          </form>
+        </div>
       </div>
     );
   }

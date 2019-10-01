@@ -15,7 +15,7 @@ class UserForm extends Form {
       userRole: "",
       company_id: "",
       userHash: "hash",
-      createdByUser: getCurrentUser().email,
+      createdUser: getCurrentUser().email,
       creationDate: new Date().toDateString("")
     },
     companies: [],
@@ -43,7 +43,7 @@ class UserForm extends Form {
       .label("Rol"),
     company_id: Joi.number().label("Compañîa"),
     userHash: Joi.string().optional(),
-    createdByUser: Joi.string(),
+    createdUser: Joi.string(),
     creationDate: Joi.string()
   };
 
@@ -83,7 +83,9 @@ class UserForm extends Form {
       userRole: user[0].userRole,
       company_id: user[0].company.id,
       userHash: user[0].userHash ? user[0].userHash : "hash",
-      createdByUser: user[0].createdByUser,
+      createdUser: user[0].createdByUser
+        ? user[0].createdByUser
+        : getCurrentUser().email,
       creationDate: user[0].creationDate
     };
   }
@@ -96,16 +98,18 @@ class UserForm extends Form {
 
   render() {
     return (
-      <div className="col-3 ml-4">
-        <h1>{this.state.action}</h1>
-        <form onSubmit={this.handleSubmit}>
-          {this.renderInput("email", "Email")}
-          {this.renderInput("password", "Password", "password")}
-          {this.renderInput("name", "Nombre")}
-          {this.renderInput("userRole", "Rol")}
-          {this.renderSelect("company_id", "Compañía", this.state.companies)}
-          {this.renderButton("Guardar")}
-        </form>
+      <div className="container pull-left col-5 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
+        <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+        <div className="col-12 pb-3 bg-light">
+          <form onSubmit={this.handleSubmit}>
+            {this.renderInput("email", "Email")}
+            {this.renderInput("password", "Contraseña", "password")}
+            {this.renderInput("name", "Nombre")}
+            {this.renderInput("userRole", "Rol")}
+            {this.renderSelect("company_id", "Compañía", this.state.companies)}
+            {this.renderButton("Guardar")}
+          </form>
+        </div>
       </div>
     );
   }

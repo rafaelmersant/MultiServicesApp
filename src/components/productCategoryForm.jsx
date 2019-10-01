@@ -14,7 +14,7 @@ class ProductCategoryForm extends Form {
       id: 0,
       description: "",
       company_id: "",
-      createdByUser: getCurrentUser().email,
+      createdUser: getCurrentUser().email,
       creationDate: new Date().toDateString("")
     },
     companies: [],
@@ -29,7 +29,7 @@ class ProductCategoryForm extends Form {
       .min(3)
       .label("Categoria"),
     company_id: Joi.number().label("Compañîa"),
-    createdByUser: Joi.string(),
+    createdUser: Joi.string(),
     creationDate: Joi.string()
   };
 
@@ -65,7 +65,7 @@ class ProductCategoryForm extends Form {
       id: category[0].id,
       description: category[0].description,
       company_id: category[0].company.id,
-      createdByUser: category[0].createdByUser,
+      createdUser: category[0].createdByUser,
       creationDate: category[0].creationDate
     };
   }
@@ -78,13 +78,15 @@ class ProductCategoryForm extends Form {
 
   render() {
     return (
-      <div className="col-3 ml-4">
-        <h1>{this.state.action}</h1>
-        <form onSubmit={this.handleSubmit}>
-          {this.renderInput("description", "Descripción")}
-          {this.renderSelect("company_id", "Compañía", this.state.companies)}
-          {this.renderButton("Guardar")}
-        </form>
+      <div className="container pull-left col-4 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
+        <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+        <div className="col-12 pb-3 bg-light">
+          <form onSubmit={this.handleSubmit}>
+            {this.renderInput("description", "Descripción")}
+            {this.renderSelect("company_id", "Compañía", this.state.companies)}
+            {this.renderButton("Guardar")}
+          </form>
+        </div>
       </div>
     );
   }

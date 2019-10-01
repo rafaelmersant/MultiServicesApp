@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
+import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
 import { getUsers, deleteUser } from "../services/userService";
 import UsersTable from "./usersTable";
@@ -36,7 +36,7 @@ class Users extends Component {
         await deleteUser(user.id);
       } catch (ex) {
         if (ex.response && ex.response.status === 404)
-          toast.error("This user has already been deleted.");
+          toast.error("Este usuario ya fue eliminado");
 
         this.setState({ users: originalUsers });
       }
@@ -87,9 +87,7 @@ class Users extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <NavLink className="btn btn-primary mb-3 pull-right" to="/user/new">
-              Nuevo Usuario
-            </NavLink>
+            <NewButton label="Nuevo Usuario" to="/user/new" />
 
             {/* {user && (
               <NavLink className="btn btn-primary mb-3" to="/users/new">

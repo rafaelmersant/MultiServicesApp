@@ -8,7 +8,7 @@ const Select = ({ name, label, options, error, ...rest }) => {
         <option value="" />
         {options.map(option => (
           <option key={option.id} value={option.id}>
-            {option.name}
+            {option.name ? option.name : option.description}
           </option>
         ))}
       </select>

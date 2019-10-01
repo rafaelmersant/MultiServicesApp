@@ -1,15 +1,16 @@
 import React, { Component } from "react";
-import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import { paginate } from "../utils/paginate";
-import ProductCategoriesTable from "./productCategoriesTable";
+import NewButton from "./common/newButton";
 import {
   getProductsCategories,
   deleteCategory
 } from "../services/productCategoryService";
+import { getCurrentUser } from "../services/authService";
+import ProductCategoriesTable from "./productCategoriesTable";
 
 class ProductsCategories extends Component {
   state = {
@@ -21,7 +22,8 @@ class ProductsCategories extends Component {
   };
 
   async componentDidMount() {
-    const { data: categories } = await getProductsCategories();
+    const companyId = getCurrentUser().companyId;
+    const { data: categories } = await getProductsCategories(companyId);
 
     this.setState({ categories });
   }
@@ -92,12 +94,7 @@ class ProductsCategories extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <NavLink
-              className="btn btn-primary mb-3 pull-right"
-              to="/productCategory/new"
-            >
-              Nueva Categoria
-            </NavLink>
+            <NewButton label="Nueva Categoria" to="/productCategory/new" />
 
             {/* {user && (
               <NavLink className="btn btn-primary mb-3" to="/users/new">

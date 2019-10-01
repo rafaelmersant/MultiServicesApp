@@ -15,7 +15,7 @@ class UserForm extends Form {
       address: "",
       phoneNumber: "",
       company_id: "",
-      createdByUser: getCurrentUser().email,
+      createdUser: getCurrentUser().email,
       creationDate: new Date().toDateString("")
     },
     companies: [],
@@ -39,7 +39,7 @@ class UserForm extends Form {
     company_id: Joi.number()
       .required()
       .label("Compañîa"),
-    createdByUser: Joi.string(),
+    createdUser: Joi.string(),
     creationDate: Joi.string()
   };
 
@@ -79,9 +79,9 @@ class UserForm extends Form {
       address: customer[0].address ? customer[0].address : "",
       phoneNumber: customer[0].phoneNumber ? customer[0].phoneNumber : "",
       company_id: customer[0].company.id,
-      createdByUser: customer[0].createdByUser
+      createdUser: customer[0].createdByUser
         ? customer[0].createdByUser
-        : getCurrentUser(),
+        : getCurrentUser().email,
       creationDate: customer[0].creationDate
     };
   }
@@ -94,17 +94,31 @@ class UserForm extends Form {
 
   render() {
     return (
-      <div className="col-3 ml-4">
-        <h1>{this.state.action}</h1>
-        <form onSubmit={this.handleSubmit}>
-          {this.renderInput("firstName", "First Name")}
-          {this.renderInput("lastName", "Last Name")}
-          {this.renderInput("email", "Email")}
-          {this.renderInput("address", "Dirección")}
-          {this.renderInput("phoneNumber", "Teléfono")}
-          {this.renderSelect("company_id", "Compañía", this.state.companies)}
-          {this.renderButton("Guardar")}
-        </form>
+      <div className="container pull-left col-6 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
+        <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+        <div className="col-12 pb-3 bg-light">
+          <form onSubmit={this.handleSubmit}>
+            <div className="row">
+              <div className="col">
+                {this.renderInput("firstName", "First Name")}
+              </div>
+              <div className="col">
+                {this.renderInput("lastName", "Last Name")}
+              </div>
+            </div>
+            <div className="row">
+              <div className="col">{this.renderInput("email", "Email")}</div>
+              <div className="col">
+                {this.renderInput("phoneNumber", "Teléfono")}
+              </div>
+            </div>
+
+            {this.renderInput("address", "Dirección")}
+            {this.renderSelect("company_id", "Compañía", this.state.companies)}
+
+            {this.renderButton("Guardar")}
+          </form>
+        </div>
       </div>
     );
   }

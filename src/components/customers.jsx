@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
+import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
 import { getCustomers, deleteCustomer } from "../services/customerService";
+import { getCurrentUser } from "../services/authService";
 import CustomersTable from "./customersTable";
 
 class Customers extends Component {
@@ -18,7 +19,8 @@ class Customers extends Component {
   };
 
   async componentDidMount() {
-    const { data: customers } = await getCustomers();
+    const companyId = getCurrentUser().companyId;
+    const { data: customers } = await getCustomers(companyId);
 
     this.setState({ customers });
   }
@@ -89,12 +91,7 @@ class Customers extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <NavLink
-              className="btn btn-primary mb-3 pull-right"
-              to="/customer/new"
-            >
-              Nuevo Cliente
-            </NavLink>
+            <NewButton label="Nuevo Cliente" to="/customer/new" />
 
             {/* {user && (
               <NavLink className="btn btn-primary mb-3" to="/users/new">

@@ -1,11 +1,12 @@
 import React, { Component } from "react";
-import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import _ from "lodash";
+import { paginate } from "../utils/paginate";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
-import { paginate } from "../utils/paginate";
+import NewButton from "./common/newButton";
 import CompaniesTable from "./CompaniesTable";
+
 import { getCompanies, deleteCompany } from "../services/companyService";
 
 class Companies extends Component {
@@ -87,12 +88,7 @@ class Companies extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <NavLink
-              className="btn btn-primary mb-3 pull-right"
-              to="/company/new"
-            >
-              Nueva Compañía
-            </NavLink>
+            <NewButton label="Nueva Compañía" to="/company/new" />
 
             {/* {user && (
               <NavLink className="btn btn-primary mb-3" to="/users/new">

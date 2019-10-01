@@ -7,7 +7,9 @@ function prodCategoryUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getProductsCategories() {
+export function getProductsCategories(companyId) {
+  if (companyId) return http.get(`${apiEndpoint}/?company=${companyId}`);
+
   return http.get(`${apiEndpoint}/`);
 }
 
