@@ -11,6 +11,10 @@ export function getProducts() {
   return http.get(`${apiEndpoint}/`);
 }
 
+export function getProductsByDescription(description) {
+  return http.get(`${apiEndpoint}/?search=${description}`);
+}
+
 export function getProduct(productId) {
   return http.get(`${apiEndpoint}/?id=${productId}`);
 }

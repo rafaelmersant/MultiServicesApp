@@ -20,7 +20,7 @@ class ProductForm extends Form {
       category_id: "",
       company_id: "",
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toDateString("")
+      creationDate: new Date().toISOString()
     },
     companies: [],
     categories: [],

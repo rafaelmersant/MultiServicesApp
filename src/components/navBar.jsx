@@ -5,7 +5,7 @@ const NavBar = ({ user }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <NavLink className="navbar-brand" to="/">
-        <span className="text-primary">Ferreteria Especial</span>
+        <span className="text-info">Ferreteria Mon</span>
       </NavLink>
 
       <button
@@ -29,7 +29,7 @@ const NavBar = ({ user }) => {
           </li>
 
           <li className="nav-item">
-            <NavLink className="nav-link" to="/inventory">
+            <NavLink className="nav-link" to="/inventories">
               Inventario
             </NavLink>
           </li>

@@ -15,7 +15,7 @@ class ProductCategoryForm extends Form {
       description: "",
       company_id: "",
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toDateString("")
+      creationDate: new Date().toISOString()
     },
     companies: [],
     errors: {},
@@ -71,6 +71,7 @@ class ProductCategoryForm extends Form {
   }
 
   doSubmit = async () => {
+    console.log(this.state.data);
     await saveProductCategory(this.state.data);
 
     this.props.history.push("/productsCategories");

@@ -32,11 +32,13 @@ class CustomersTable extends Component {
   deleteColumn = {
     key: "delete",
     content: customer => (
-      <button
-        onClick={() => this.props.onDelete(customer)}
-        className="fa fa-trash"
-        style={{ color: "red", fontSize: "16px" }}
-      ></button>
+      <div className="text-center">
+        <button
+          onClick={() => this.props.onDelete(customer)}
+          className="fa fa-trash"
+          style={{ color: "red", fontSize: "16px" }}
+        ></button>
+      </div>
     )
   };
 

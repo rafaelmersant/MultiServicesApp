@@ -14,7 +14,7 @@ class CompanyForm extends Form {
       rnc: "",
       address: "",
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toDateString("")
+      creationDate: new Date().toISOString()
     },
     errors: {},
     action: "Nueva Compañía"

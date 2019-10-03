@@ -21,11 +21,13 @@ class CompaniesTable extends Component {
   deleteColumn = {
     key: "delete",
     content: company => (
-      <button
-        onClick={() => this.props.onDelete(company)}
-        className="fa fa-trash"
-        style={{ color: "red", fontSize: "16px" }}
-      ></button>
+      <div className="text-center">
+        <button
+          onClick={() => this.props.onDelete(company)}
+          className="fa fa-trash"
+          style={{ color: "red", fontSize: "16px" }}
+        ></button>
+      </div>
     )
   };
 

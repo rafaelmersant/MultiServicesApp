@@ -16,7 +16,7 @@ class UserForm extends Form {
       phoneNumber: "",
       company_id: "",
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toDateString("")
+      creationDate: new Date().toISOString()
     },
     companies: [],
     errors: {},
@@ -87,6 +87,7 @@ class UserForm extends Form {
   }
 
   doSubmit = async () => {
+    console.log(this.state.data);
     await saveCustomer(this.state.data);
 
     this.props.history.push("/customers");
@@ -100,10 +101,10 @@ class UserForm extends Form {
           <form onSubmit={this.handleSubmit}>
             <div className="row">
               <div className="col">
-                {this.renderInput("firstName", "First Name")}
+                {this.renderInput("firstName", "Nombre")}
               </div>
               <div className="col">
-                {this.renderInput("lastName", "Last Name")}
+                {this.renderInput("lastName", "Apellidos")}
               </div>
             </div>
             <div className="row">

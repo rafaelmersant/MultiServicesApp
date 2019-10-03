@@ -24,12 +24,14 @@ class ProductsTable extends Component {
 
   deleteColumn = {
     key: "delete",
-    content: user => (
-      <button
-        onClick={() => this.props.onDelete(user)}
-        className="fa fa-trash"
-        style={{ color: "red", fontSize: "16px" }}
-      ></button>
+    content: product => (
+      <div className="text-center">
+        <button
+          onClick={() => this.props.onDelete(product)}
+          className="fa fa-trash"
+          style={{ color: "red", fontSize: "16px" }}
+        ></button>
+      </div>
     )
   };
 
