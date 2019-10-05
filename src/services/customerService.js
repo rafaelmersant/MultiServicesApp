@@ -13,6 +13,15 @@ export function getCustomers(companyId) {
   return http.get(`${apiEndpoint}/`);
 }
 
+export function getCustomersByName(companyId, searchText) {
+  if (searchText)
+    return http.get(
+      `${apiEndpoint}/?company_id=${companyId}&search=${searchText}`
+    );
+
+  return http.get(`${apiEndpoint}/`);
+}
+
 export function getCustomer(customerId) {
   return http.get(`${apiEndpoint}/?id=${customerId}`);
 }

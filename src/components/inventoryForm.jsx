@@ -1,11 +1,18 @@
 import React from "react";
 import Joi from "joi-browser";
+import toast from "react-toastify";
 import Form from "./common/form";
 import SearchProduct from "./common/searchProduct";
+import Input from "./common/input";
+import Select from "./common/select";
 import { getCompanies } from "../services/companyService";
 import { getProducts } from "../services/productService";
 import { getCurrentUser } from "../services/authService";
-import { saveProductTracking } from "../services/inventoryService";
+import {
+  saveProductTracking,
+  updateProductStock,
+  getProductsStocks
+} from "../services/inventoryService";
 
 class InventoryForm extends Form {
   state = {
@@ -14,7 +21,6 @@ class InventoryForm extends Form {
       product_id: "",
       typeTracking: "E",
       quantity: "",
-      available: 0,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
@@ -24,7 +30,8 @@ class InventoryForm extends Form {
     typeTrackings: [{ id: "E", name: "Entrada" }, { id: "S", name: "Salida" }],
     errors: {},
     action: "Nuevo Registro",
-    hideSearch: false
+    hideSearch: false,
+    availableStock: 0
   };
 
   schema = {
@@ -38,8 +45,7 @@ class InventoryForm extends Form {
       .label("Cantidad"),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
-    creationDate: Joi.string(),
-    available: Joi.optional()
+    creationDate: Joi.string()
   };
 
   async populateCompanies() {
@@ -48,19 +54,34 @@ class InventoryForm extends Form {
   }
 
   async populateProducts() {
-    const { data: products } = await getProducts();
+    const companyId = getCurrentUser().companyId;
+    const { data: products } = await getProducts(companyId);
     this.setState({ products });
   }
 
-  handleSelect = product => {
+  handleSelect = async product => {
     const data = { ...this.state.data };
     data.product_id = product.id;
 
     this.setState({ data, hideSearch: true });
   };
 
-  handleFocus = () => {
-    this.setState({ hideSearch: false });
+  handleFocus = value => {
+    setTimeout(() => {
+      this.setState({ hideSearch: value });
+    }, 200);
+  };
+
+  handleChangeProduct = async ({ currentTarget: input }) => {
+    const productId = input.value;
+    const { data: stock } = await getProductsStocks(productId);
+
+    if (stock.length)
+      this.setState({ availableStock: stock[0].quantityAvailable });
+
+    const updated = { ...this.state.data };
+    updated.product_id = productId;
+    this.setState({ data: updated });
   };
 
   async componentDidMount() {
@@ -69,9 +90,28 @@ class InventoryForm extends Form {
   }
 
   doSubmit = async () => {
-    await saveProductTracking(this.state.data);
+    try {
+      await saveProductTracking(this.state.data);
 
-    this.props.history.push("/inventories");
+      const { data: inventory } = this.state;
+      await updateProductStock(inventory);
+
+      this.props.history.push("/inventories");
+    } catch (ex) {
+      if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
+        toast.error("Hubo un error en la información enviada.");
+
+      if (ex.response && ex.response.status >= 500) {
+        const errors = { ...this.state.errors };
+        errors.email = ex.response.data;
+        this.setState({ errors });
+
+        toast.error(
+          "Parece que hubo un error en el servidor. Favor contacte al administrador."
+        );
+        console.log(this.state.errors);
+      }
+    }
   };
 
   render() {
@@ -81,12 +121,22 @@ class InventoryForm extends Form {
         <div className="col-12 pb-3 bg-light">
           <SearchProduct
             onSelect={this.handleSelect}
-            onFocus={this.handleFocus}
+            onFocus={() => this.handleFocus(false)}
+            onBlur={() => this.handleFocus(true)}
             hide={this.state.hideSearch}
+            companyId={getCurrentUser().companyId}
           />
 
           <form onSubmit={this.handleSubmit}>
-            {this.renderSelect("product_id", "Producto", this.state.products)}
+            <Select
+              name="product_id"
+              value={this.state.data.product_id}
+              label="Producto"
+              options={this.state.products}
+              onChange={this.handleChangeProduct}
+              error={this.state.errors["product_id"]}
+            />
+
             {this.renderSelect(
               "typeTracking",
               "Tipo",
@@ -95,20 +145,23 @@ class InventoryForm extends Form {
             {this.renderInput("quantity", "Cantidad")}
 
             <div className="row">
+              {false && (
+                <div className="col">
+                  {this.renderSelect(
+                    "company_id",
+                    "Compañía",
+                    this.state.companies
+                  )}
+                </div>
+              )}
               <div className="col">
-                {this.renderSelect(
-                  "company_id",
-                  "Compañía",
-                  this.state.companies
-                )}
-              </div>
-              <div className="col">
-                {this.renderInput(
-                  "available",
-                  "Disponible",
-                  "text",
-                  "disabled"
-                )}
+                <Input
+                  disabled="disabled"
+                  type="text"
+                  name="available"
+                  value={this.state.availableStock}
+                  label="Disponible"
+                />
               </div>
             </div>
 

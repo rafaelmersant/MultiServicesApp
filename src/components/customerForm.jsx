@@ -14,7 +14,7 @@ class UserForm extends Form {
       email: "",
       address: "",
       phoneNumber: "",
-      company_id: "",
+      company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
     },
@@ -88,8 +88,8 @@ class UserForm extends Form {
 
   doSubmit = async () => {
     console.log(this.state.data);
-    await saveCustomer(this.state.data);
 
+    await saveCustomer(this.state.data);
     this.props.history.push("/customers");
   };
 

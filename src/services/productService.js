@@ -7,12 +7,12 @@ function productUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getProducts() {
-  return http.get(`${apiEndpoint}/`);
+export function getProducts(companyId) {
+  return http.get(`${apiEndpoint}/?company=${companyId}`);
 }
 
-export function getProductsByDescription(description) {
-  return http.get(`${apiEndpoint}/?search=${description}`);
+export function getProductsByDescription(companyId, description) {
+  return http.get(`${apiEndpoint}/?company=${companyId}&search=${description}`);
 }
 
 export function getProduct(productId) {

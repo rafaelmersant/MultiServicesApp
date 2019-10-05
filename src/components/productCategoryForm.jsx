@@ -13,7 +13,7 @@ class ProductCategoryForm extends Form {
     data: {
       id: 0,
       description: "",
-      company_id: "",
+      company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
     },

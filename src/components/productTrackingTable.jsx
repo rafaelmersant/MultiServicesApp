@@ -23,7 +23,18 @@ class ProductTrackingTable extends Component {
         </span>
       )
     },
-    { path: "quantity", label: "Cantidad" }
+    { path: "quantity", label: "Cantidad" },
+    {
+      path: "concept",
+      label: "Desde",
+      content: item => (
+        <span>
+          {item.concept
+            .replace("INVE", "Inventario")
+            .replace("INVO", "Facturación")}
+        </span>
+      )
+    }
   ];
 
   // companyColumn = { path: "company.name", label: "Compañía" };

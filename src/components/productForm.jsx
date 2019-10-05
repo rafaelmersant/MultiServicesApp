@@ -18,7 +18,7 @@ class ProductForm extends Form {
       measure: "",
       model: "",
       category_id: "",
-      company_id: "",
+      company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
     },
@@ -53,7 +53,9 @@ class ProductForm extends Form {
   }
 
   async populateCategories() {
-    const { data: categories } = await getProductsCategories();
+    const { data: categories } = await getProductsCategories(
+      getCurrentUser().companyId
+    );
     this.setState({ categories });
   }
 
@@ -141,7 +143,8 @@ class ProductForm extends Form {
               "Categoria",
               this.state.categories
             )}
-            {this.renderSelect("company_id", "Compañía", this.state.companies)}
+            {false &&
+              this.renderSelect("company_id", "Compañía", this.state.companies)}
             {this.renderButton("Guardar")}
           </form>
         </div>

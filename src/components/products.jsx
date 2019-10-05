@@ -6,6 +6,7 @@ import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
 import { getProducts, deleteProduct } from "../services/productService";
+import { getCurrentUser } from "../services/authService";
 import ProductsTable from "./productsTable";
 
 class Products extends Component {
@@ -18,7 +19,7 @@ class Products extends Component {
   };
 
   async componentDidMount() {
-    const { data: products } = await getProducts();
+    const { data: products } = await getProducts(getCurrentUser().companyId);
 
     this.setState({ products });
   }

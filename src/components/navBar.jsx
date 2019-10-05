@@ -5,7 +5,11 @@ const NavBar = ({ user }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <NavLink className="navbar-brand" to="/">
-        <span className="text-info">Ferreteria Mon</span>
+        <span className="text-info">
+          {localStorage.getItem("ms_companyName")
+            ? localStorage.getItem("ms_companyName")
+            : "Sistema"}
+        </span>
       </NavLink>
 
       <button
@@ -58,11 +62,13 @@ const NavBar = ({ user }) => {
             </NavLink>
           </li>
 
-          <li className="nav-item">
-            <NavLink className="nav-link" to="/users">
-              Usuarios
-            </NavLink>
-          </li>
+          {user && user.role === "Admin" && (
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/users">
+                Usuarios
+              </NavLink>
+            </li>
+          )}
         </ul>
 
         <div className="navbar-text">

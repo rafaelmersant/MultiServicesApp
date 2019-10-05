@@ -23,26 +23,6 @@ class Inventories extends Component {
     this.setState({ prodTrackings });
   }
 
-  // handleDelete = async customer => {
-  //   const answer = window.confirm(
-  //     "Esta seguro de eliminar esta linea? \nNo podrá deshacer esta acción"
-  //   );
-  //   if (answer) {
-  //     const originalCustomers = this.state.customers;
-  //     const customers = this.state.customers.filter(m => m.id !== customer.id);
-  //     this.setState({ customers });
-
-  //     try {
-  //       await deleteCustomer(customer.id);
-  //     } catch (ex) {
-  //       if (ex.response && ex.response.status === 404)
-  //         toast.error("Este cliente ya fue eliminado");
-
-  //       this.setState({ customers: originalCustomers });
-  //     }
-  //   }
-  // };
-
   handlePageChange = page => {
     this.setState({ currentPage: page });
   };
@@ -91,17 +71,26 @@ class Inventories extends Component {
           <div className="col margin-top-msg">
             <NewButton label="Nuevo Registro" to="/inventory/new" />
 
-            {/* {user && (
-              <NavLink className="btn btn-primary mb-3" to="/users/new">
-                Nuevo Usuario
-              </NavLink>
-            )} */}
+            <div className="row">
+              <div className="col">
+                <SearchBox
+                  value={searchQuery}
+                  onChange={this.handleSearch}
+                  placeholder="Buscar producto..."
+                />
+              </div>
+              <div className="col mt-4">
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="invoiceTracking"
+                />
+                <label className="form-check-label" htmlFor="invoiceTracking">
+                  Mostrar Movimientos de Facturas
+                </label>
+              </div>
+            </div>
 
-            <SearchBox
-              value={searchQuery}
-              onChange={this.handleSearch}
-              placeholder="Buscar..."
-            />
             <ProductTrackingTable
               prodTrackings={prodTrackings}
               user={user}

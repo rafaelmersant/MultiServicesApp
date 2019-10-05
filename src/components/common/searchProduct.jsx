@@ -9,14 +9,17 @@ class SearchProduct extends Component {
   };
 
   handleChange = async ({ currentTarget: input }) => {
-    let { data: products } = await getProductsByDescription(input.value);
+    let { data: products } = await getProductsByDescription(
+      this.props.companyId,
+      input.value
+    );
     if (input.value === "") products = [];
 
     this.setState({ products });
   };
 
   render() {
-    const { onSelect, onFocus, hide } = this.props;
+    const { onSelect, onFocus, onBlur, hide } = this.props;
     const { products } = this.state;
 
     return (
@@ -29,6 +32,7 @@ class SearchProduct extends Component {
           autoComplete="Off"
           onChange={this.handleChange}
           onFocus={onFocus}
+          onBlur={onBlur}
         />
 
         {products && !hide && (

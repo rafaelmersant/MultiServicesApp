@@ -1,0 +1,49 @@
+import http from "./httpService";
+import { apiUrl } from "../config.json";
+
+const apiEndpointHeader = `${apiUrl}/invoicesHeaders`;
+const apiEndpointDetail = `${apiUrl}/invoicesDetails`;
+
+function invoiceHeaderUrl(id) {
+  return `${apiEndpointHeader}/${id}`;
+}
+
+function invoiceDetailUrl(id) {
+  return `${apiEndpointDetail}/${id}`;
+}
+
+export function getInvoicesHeader(companyId) {
+  return http.get(`${apiEndpointHeader}/?company=${companyId}`);
+}
+
+export function getInvoicesDetail(invoiceHeaderId) {
+  return http.get(`${apiEndpointHeader}/?invoice=${invoiceHeaderId}`);
+}
+
+export function saveInvoiceHeader(invoiceHeader) {
+  if (invoiceHeader.id) {
+    const body = { ...invoiceHeader };
+    delete body.id;
+    return http.put(invoiceHeaderUrl(invoiceHeader.id), body);
+  }
+
+  return http.post(`${apiEndpointHeader}/`, invoiceHeader);
+}
+
+export function saveInvoiceDetail(invoiceDetail, invoiceHeaderId) {
+  if (invoiceDetail.id) {
+    const body = { ...invoiceDetail };
+    delete body.id;
+    return http.put(invoiceDetailUrl(invoiceDetail.id), body);
+  }
+
+  return http.post(`${apiEndpointDetail}/`, invoiceDetail);
+}
+
+export function deleteInvoiceHeader(invoiceHeaderId) {
+  return http.delete(invoiceHeaderUrl(invoiceHeaderId));
+}
+
+export function deleteInvoiceDetail(invoiceHeaderId) {
+  return http.delete(invoiceDetailUrl(invoiceHeaderId));
+}

@@ -13,12 +13,18 @@ class UserForm extends Form {
       password: "",
       name: "",
       userRole: "",
-      company_id: "",
+      company_id: getCurrentUser().companyId,
       userHash: "hash",
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
     },
     companies: [],
+    roles: [
+      { id: "Admin", name: "Admin" },
+      { id: "Level1", name: "Level1" },
+      { id: "Level2", name: "Level2" },
+      { id: "Reportes", name: "Reportes" }
+    ],
     errors: {},
     action: "Nuevo Usuario"
   };
@@ -105,7 +111,7 @@ class UserForm extends Form {
             {this.renderInput("email", "Email")}
             {this.renderInput("password", "Contraseña", "password")}
             {this.renderInput("name", "Nombre")}
-            {this.renderInput("userRole", "Rol")}
+            {this.renderSelect("userRole", "Rol", this.state.roles)}
             {this.renderSelect("company_id", "Compañía", this.state.companies)}
             {this.renderButton("Guardar")}
           </form>

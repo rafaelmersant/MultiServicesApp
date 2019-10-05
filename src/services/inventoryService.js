@@ -1,4 +1,5 @@
 import http from "./httpService";
+import { getCurrentUser } from "./authService";
 import { apiUrl } from "../config.json";
 
 const apiEndpointProdTracking = `${apiUrl}/productsTrackings`;
@@ -24,10 +25,6 @@ export function getProductsTrackingsRange(productId, startDate, endDate) {
 
   return http.get(`${apiEndpointProdTracking}/?product=${productId}`);
 }
-
-// export function getProductsStocks() {
-//   return http.get(`${apiEndpointProdStock}/`);
-// }
 
 export function getProductsStocks(productId) {
   if (productId)
@@ -62,4 +59,40 @@ export function deleteTracking(trackingId) {
 
 export function deleteStock(stockId) {
   return http.delete(productsStockUrl(stockId));
+}
+
+export async function updateProductStock(inventory) {
+  const { data: productStock } = await getProductsStocks(inventory.product_id);
+
+  const stock = {
+    id: "",
+    product_id: inventory.product_id,
+    quantityAvailable: inventory.quantity ? inventory.quantity : 0,
+    quantityHold: 0,
+    company_id: getCurrentUser().companyId,
+    lastUpdated: new Date().toISOString(),
+    modifiedUser: getCurrentUser().email
+  };
+
+  if (productStock.length) {
+    const quantity =
+      inventory.typeTracking === "E"
+        ? parseFloat(inventory.quantity)
+        : parseFloat(inventory.quantity) * -1;
+
+    const quantityAvailable = parseFloat(productStock[0].quantityAvailable);
+    const newQuantity = Math.round((quantityAvailable + quantity) * 100) / 100;
+
+    stock.id = productStock[0].id;
+    stock.quantityAvailable = newQuantity;
+
+    console.log("Tracking possible issue");
+    console.log("productStock", productStock);
+    console.log("quantity", quantity);
+    console.log("quantityAvailable", quantityAvailable);
+    console.log("newQuantity", newQuantity);
+    console.log("stockToSave", stock);
+  }
+
+  await saveProductStock(stock);
 }

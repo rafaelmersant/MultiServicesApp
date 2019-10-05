@@ -8,7 +8,7 @@ import NavBar from "./components/navBar";
 import LoginForm from "./components/loginForm";
 import RegisterForm from "./components/registerForm";
 import Logout from "./components/logout";
-import Invoice from "./components/invoiceForm";
+import InvoiceForm from "./components/invoiceForm";
 import Invoices from "./components/invoices";
 import Inventories from "./components/inventories";
 import InventoryForm from "./components/inventoryForm";
@@ -26,7 +26,9 @@ import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 
 class App extends Component {
-  state = {};
+  state = {
+    user: {}
+  };
 
   componentDidMount() {
     try {
@@ -50,7 +52,7 @@ class App extends Component {
             <Route path="/login" component={LoginForm} />
             <Route path="/logout" component={Logout} />
             <ProtectedRoute path="/invoices" component={Invoices} />} />
-            <ProtectedRoute path="/invoice/:id" component={Invoice} />} />
+            <ProtectedRoute path="/invoice/:id" component={InvoiceForm} />} />
             <ProtectedRoute path="/inventories" component={Inventories} />
             <ProtectedRoute path="/inventory/:id" component={InventoryForm} />
             <ProtectedRoute path="/customers" component={Customers} />

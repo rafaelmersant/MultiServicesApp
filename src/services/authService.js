@@ -1,46 +1,49 @@
-import jwtDecode from "jwt-decode";
+//import jwtDecode from "jwt-decode";
 import http from "./httpService";
 import { apiUrl } from "../config.json";
 
 const apiEndpoint = `${apiUrl}/auth`;
-const tokenKey = "token";
+const token = {
+  userId: "ms_userId",
+  email: "ms_email",
+  name: "ms_name",
+  role: "ms_role",
+  companyId: "ms_companyId",
+  companyName: "ms_companyName"
+};
 
-http.setJwt(getJwt());
+//http.setJwt(getJwt());
 
 export async function login(credentials) {
   const { data: jwt } = await http.post(`${apiEndpoint}/login/`, credentials);
 
-  localStorage.setItem("ms_userId", jwt.id);
-  localStorage.setItem("ms_email", jwt.email);
-  localStorage.setItem("ms_name", jwt.name);
-  localStorage.setItem("ms_role", jwt.role);
-  localStorage.setItem("ms_companyId", jwt.companyId);
-  //localStorage.setItem(tokenKey, jwt);
-}
-
-export function loginWithJwt(jwt) {
-  localStorage.setItem(tokenKey, jwt);
+  localStorage.setItem(token.userId, jwt.id);
+  localStorage.setItem(token.email, jwt.email);
+  localStorage.setItem(token.name, jwt.name);
+  localStorage.setItem(token.role, jwt.role);
+  localStorage.setItem(token.companyId, jwt.companyId);
 }
 
 export function logout() {
-  //localStorage.removeItem(tokenKey);
-  localStorage.removeItem("ms_userId");
-  localStorage.removeItem("ms_email");
-  localStorage.removeItem("ms_name");
-  localStorage.removeItem("ms_role");
-  localStorage.removeItem("ms_companyId");
+  localStorage.removeItem(token.userId);
+  localStorage.removeItem(token.email);
+  localStorage.removeItem(token.name);
+  localStorage.removeItem(token.role);
+  localStorage.removeItem(token.companyId);
+  localStorage.removeItem(token.companyName);
 }
 
 export function getCurrentUser() {
   try {
-    if (!localStorage.getItem("ms_email")) return null;
+    if (!localStorage.getItem(token.email)) return null;
 
     return {
-      id: parseInt(localStorage.getItem("ms_userId")),
-      name: localStorage.getItem("ms_name"),
-      email: localStorage.getItem("ms_email"),
-      role: localStorage.getItem("ms_role"),
-      companyId: localStorage.getItem("ms_companyId")
+      id: parseInt(localStorage.getItem(token.userId)),
+      name: localStorage.getItem(token.name),
+      email: localStorage.getItem(token.email),
+      role: localStorage.getItem(token.role),
+      companyId: localStorage.getItem(token.companyId),
+      companyName: localStorage.getItem(token.companyName)
     };
 
     //jwtDecode(jwt);
@@ -49,14 +52,16 @@ export function getCurrentUser() {
   }
 }
 
-export function getJwt() {
-  return localStorage.getItem(tokenKey);
-}
+// export function getJwt() {
+//   return localStorage.getItem(tokenKey);
+// }
+
+// export function loginWithJwt(jwt) {
+//   localStorage.setItem(tokenKey, jwt);
+// }
 
 export default {
   login,
-  loginWithJwt,
   logout,
-  getCurrentUser,
-  getJwt
+  getCurrentUser
 };

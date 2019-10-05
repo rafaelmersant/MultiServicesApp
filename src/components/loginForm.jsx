@@ -4,6 +4,7 @@ import Joi from "joi-browser";
 import Form from "./common/form";
 import auth from "../services/authService";
 import { toast } from "react-toastify";
+import { getCompany } from "../services/companyService";
 
 class LoginForm extends Form {
   state = {
@@ -24,6 +25,11 @@ class LoginForm extends Form {
     try {
       const { data: credentials } = this.state;
       await auth.login(credentials);
+
+      const companyId = await auth.getCurrentUser().companyId;
+      const { data: company } = await getCompany(companyId);
+
+      localStorage.setItem("ms_companyName", company[0].name);
 
       const { state } = this.props.location;
       window.location = state ? state.from.pathname : "/";
