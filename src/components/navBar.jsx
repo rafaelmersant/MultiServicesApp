@@ -56,11 +56,13 @@ const NavBar = ({ user }) => {
             </NavLink>
           </li>
 
-          <li className="nav-item">
-            <NavLink className="nav-link" to="/companies">
-              Compañias
-            </NavLink>
-          </li>
+          {user && user.role === "Admin" && (
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/companies">
+                Compañias
+              </NavLink>
+            </li>
+          )}
 
           {user && user.role === "Admin" && (
             <li className="nav-item">
@@ -78,11 +80,6 @@ const NavBar = ({ user }) => {
                 <li className="nav-item">
                   <NavLink className="nav-link" to="/login">
                     Login
-                  </NavLink>
-                </li>
-                <li className="nav-item">
-                  <NavLink className="nav-link" to="/register">
-                    Register
                   </NavLink>
                 </li>
               </ul>

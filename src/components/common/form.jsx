@@ -74,7 +74,7 @@ class Form extends Component {
     );
   }
 
-  renderInput(name, label, type = "text", disabled = "") {
+  renderInput(name, label, type = "text", disabled = "", placeholder = "") {
     const { data, errors } = this.state;
 
     return (
@@ -86,6 +86,7 @@ class Form extends Component {
         label={label}
         onChange={this.handleChange}
         error={errors[name]}
+        placeholder={placeholder}
       />
     );
   }

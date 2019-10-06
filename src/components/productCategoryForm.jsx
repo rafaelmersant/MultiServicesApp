@@ -78,13 +78,17 @@ class ProductCategoryForm extends Form {
   };
 
   render() {
+    const { user } = this.props;
+
     return (
       <div className="container pull-left col-4 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
         <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
             {this.renderInput("description", "Descripción")}
-            {this.renderSelect("company_id", "Compañía", this.state.companies)}
+            {user &&
+              user.role === "Admin" &&
+              this.renderSelect("company_id", "Compañía", this.state.companies)}
             {this.renderButton("Guardar")}
           </form>
         </div>

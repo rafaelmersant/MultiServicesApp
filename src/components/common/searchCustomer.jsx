@@ -21,23 +21,25 @@ class SearchCustomer extends Component {
     this.setState({ customers });
   };
 
-  componentDidUpdate() {
-    // console.log("component updated");
-    // console.log("this.textValue", this.textValue);
-    console.log("searchCustomerInput", this.state.searchCustomerInput);
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.hide && this.props === nextProps) return false;
+    else return true;
+  }
 
-    if (this.props.hide) console.log(this.props.value);
-    //this.setState({ searchCustomerInput: this.props.value });
+  componentDidUpdate() {
+    if (this.props.hide)
+      this.setState({ searchCustomerInput: this.props.value });
   }
 
   render() {
-    const { onSelect, onFocus, onBlur, hide, value } = this.props;
+    const { onSelect, onFocus, onBlur, hide } = this.props;
     const { customers } = this.state;
 
     return (
       <div>
         <Input
           type="text"
+          label="Cliente"
           id="searchCustomerId"
           name="query"
           className="form-control my-3"

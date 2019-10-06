@@ -5,10 +5,13 @@ import { getProductsByDescription } from "../../services/productService";
 class SearchProduct extends Component {
   state = {
     products: [],
-    erros: {}
+    erros: {},
+    searchProductInput: ""
   };
 
   handleChange = async ({ currentTarget: input }) => {
+    this.setState({ searchProductInput: input.value });
+
     let { data: products } = await getProductsByDescription(
       this.props.companyId,
       input.value
@@ -17,6 +20,16 @@ class SearchProduct extends Component {
 
     this.setState({ products });
   };
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.hide && this.props === nextProps) return false;
+    else return true;
+  }
+
+  componentDidUpdate() {
+    if (this.props.hide)
+      this.setState({ searchProductInput: this.props.value });
+  }
 
   render() {
     const { onSelect, onFocus, onBlur, hide } = this.props;
@@ -33,6 +46,7 @@ class SearchProduct extends Component {
           onChange={this.handleChange}
           onFocus={onFocus}
           onBlur={onBlur}
+          value={this.state.searchProductInput}
         />
 
         {products && !hide && (

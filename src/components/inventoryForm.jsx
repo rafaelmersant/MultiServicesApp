@@ -29,7 +29,7 @@ class InventoryForm extends Form {
     companies: [],
     typeTrackings: [{ id: "E", name: "Entrada" }, { id: "S", name: "Salida" }],
     errors: {},
-    action: "Nuevo Registro",
+    action: "Nuevo Registro de Inventario",
     hideSearch: false,
     availableStock: 0
   };

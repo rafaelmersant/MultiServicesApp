@@ -6,7 +6,6 @@ import CustomerForm from "./components/customerForm";
 import NotFound from "./components/notFound";
 import NavBar from "./components/navBar";
 import LoginForm from "./components/loginForm";
-import RegisterForm from "./components/registerForm";
 import Logout from "./components/logout";
 import InvoiceForm from "./components/invoiceForm";
 import Invoices from "./components/invoices";
@@ -48,7 +47,6 @@ class App extends Component {
         <NavBar user={this.state.user} />
         <main>
           <Switch>
-            <Route path="/register" component={RegisterForm} />
             <Route path="/login" component={LoginForm} />
             <Route path="/logout" component={Logout} />
             <ProtectedRoute path="/invoices" component={Invoices} />} />
