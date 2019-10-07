@@ -81,7 +81,7 @@ class ProductCategoryForm extends Form {
     const { user } = this.props;
 
     return (
-      <div className="container pull-left col-4 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
+      <div className="container pull-left col-lg-6 col-md-7 col-sm-9 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
         <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
