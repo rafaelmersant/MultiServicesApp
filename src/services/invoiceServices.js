@@ -3,6 +3,7 @@ import { apiUrl } from "../config.json";
 
 const apiEndpointHeader = `${apiUrl}/invoicesHeaders`;
 const apiEndpointDetail = `${apiUrl}/invoicesDetails`;
+const apiEndpointSequence = `${apiUrl}/sequenceInvoice`;
 
 function invoiceHeaderUrl(id) {
   return `${apiEndpointHeader}/${id}`;
@@ -10,6 +11,10 @@ function invoiceHeaderUrl(id) {
 
 function invoiceDetailUrl(id) {
   return `${apiEndpointDetail}/${id}`;
+}
+
+export function getNextInvoiceSequence(companyId) {
+  return http.get(`${apiEndpointSequence}/${companyId}`);
 }
 
 export function getInvoicesHeader(companyId) {

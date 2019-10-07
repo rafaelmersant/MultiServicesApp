@@ -7,11 +7,17 @@ import SearchProduct from "./common/searchProduct";
 import SearchCustomer from "./common/searchCustomer";
 import { getCurrentUser } from "../services/authService";
 import { getProducts } from "../services/productService";
-import { saveInvoiceHeader } from "../services/invoiceServices";
+import {
+  saveInvoiceHeader,
+  getNextInvoiceSequence,
+  saveInvoiceDetail
+} from "../services/invoiceServices";
 import InvoiceDetailTable from "./invoiceDetailTable";
 import _ from "lodash";
 
 class InvoiceForm extends Form {
+  _isMounted = false;
+
   state = {
     data: {
       id: 0,
@@ -21,6 +27,9 @@ class InvoiceForm extends Form {
       paymentMethod: "CASH",
       paid: true,
       reference: "",
+      subtotal: 0,
+      itbis: 0,
+      discount: 0,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
@@ -30,6 +39,7 @@ class InvoiceForm extends Form {
     companies: [],
     line: {
       id: 0,
+      invoice_id: 0,
       product_id: 0,
       product: "",
       quantity: 1,
@@ -44,6 +54,7 @@ class InvoiceForm extends Form {
       { id: "CREDIT", name: "Tarjeta de Credito" }
     ],
     errors: {},
+    currentProduct: {},
     action: "Nueva Factura",
     hideSearchProduct: false,
     hideSearchCustomer: false,
@@ -61,6 +72,9 @@ class InvoiceForm extends Form {
     paymentMethod: Joi.optional(),
     paid: Joi.optional(),
     reference: Joi.optional(),
+    subtotal: Joi.optional(),
+    itbis: Joi.optional(),
+    discount: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
     creationDate: Joi.string()
@@ -87,22 +101,10 @@ class InvoiceForm extends Form {
     this.setState({ line });
   }
 
-  handleSelectProduct = async product => {
-    const handler = e => {
-      e.preventDefault();
-    };
-    handler(window.event);
+  updateLine = product => {
+    const line = { ...this.state.line };
+    const { data } = { ...this.state };
 
-    const product_found = _.find(this.state.details, function(item) {
-      return item.id === product.id;
-    });
-
-    if (product_found !== undefined) {
-      toast.error("Este producto ya fue agregado.");
-      return false;
-    }
-
-    let line = { ...this.state.line };
     let discount = isNaN(parseFloat(line.discount))
       ? 0
       : parseFloat(line.discount);
@@ -123,9 +125,41 @@ class InvoiceForm extends Form {
     line.discount = discount;
     line.total = total + itbis - discount;
 
+    data.itbis += itbis;
+    data.subtotal += total;
+    data.discount += discount;
+
+    this.setState({ line, data });
+  };
+
+  refreshNextInvoiceSequence() {
+    const companyId = getCurrentUser().companyId;
+    const { data } = { ...this.state };
+
+    data.sequence = getNextInvoiceSequence(companyId);
+    this.setState({ data });
+  }
+
+  handleSelectProduct = async product => {
+    const handler = e => {
+      e.preventDefault();
+    };
+    handler(window.event);
+
+    const product_found = _.find(this.state.details, function(item) {
+      return item.id === product.id;
+    });
+
+    if (product_found !== undefined) {
+      toast.error("Este producto ya fue agregado.");
+      return false;
+    }
+
+    this.updateLine(product);
+
     this.setState({
-      line,
       hideSearchProduct: true,
+      currentProduct: product,
       searchProductText: product.description
     });
   };
@@ -159,11 +193,20 @@ class InvoiceForm extends Form {
   };
 
   handleAddDetail = () => {
-    let details = [...this.state.details];
-    if (this.state.line.id) details.push(this.state.line);
+    const handler = e => {
+      e.preventDefault();
+    };
+    handler(window.event);
 
-    this.setState({ details, searchProductText: "" });
-    this.resetLineValues();
+    this.updateLine({ ...this.state.currentProduct });
+
+    setTimeout(() => {
+      let details = [...this.state.details];
+      if (this.state.line.id) details.push(this.state.line);
+
+      this.setState({ details, searchProductText: "" });
+      this.resetLineValues();
+    }, 100);
   };
 
   handleDeleteDetail = detail => {
@@ -188,6 +231,9 @@ class InvoiceForm extends Form {
     const line = { ...this.state.line };
     line[input.name] = input.value;
     this.setState({ line });
+
+    if (this.state.currentProduct.length)
+      this.updateLine(this.state.currentProduct);
   };
 
   handleChangeDiscount = ({ currentTarget: input }) => {
@@ -197,12 +243,38 @@ class InvoiceForm extends Form {
   };
 
   async componentDidMount() {
+    this._isMounted = true;
+
     await this.populateProducts();
+
+    const companyId = getCurrentUser().companyId;
+    const { data: sequence } = await getNextInvoiceSequence(companyId);
+
+    const { data } = { ...this.state };
+    data.sequence = sequence.sequence;
+    this.setState({ data });
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   doSubmit = async () => {
     try {
-      await saveInvoiceHeader(this.state.data);
+      const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
+
+      this.state.details.forEach(async item => {
+        const detail = {
+          id: 0,
+          invoice_id: invoiceHeader.id,
+          product_id: item.product_id,
+          price: item.price,
+          itbis: item.itbis,
+          discount: item.discount,
+          creationDate: new Date().toISOString()
+        };
+        await saveInvoiceDetail(detail);
+      });
 
       this.props.history.push("/invoices");
     } catch (ex) {

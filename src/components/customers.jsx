@@ -15,7 +15,7 @@ class Customers extends Component {
     currentPage: 1,
     pageSize: 4,
     searchQuery: "",
-    sortColumn: { path: "firstName", order: "asc" }
+    sortColumn: { path: "creationDate", order: "desc" }
   };
 
   async componentDidMount() {

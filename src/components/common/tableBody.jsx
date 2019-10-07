@@ -14,7 +14,8 @@ class TableBody extends Component {
       column.path.toLowerCase().includes("cost") ||
       column.path.toLowerCase().includes("quantity") ||
       column.path.toLowerCase().includes("itbis") ||
-      column.path.toLowerCase().includes("discount")
+      column.path.toLowerCase().includes("discount") ||
+      column.path.toLowerCase().includes("total")
     )
       return formatNumber(_.get(item, column.path));
 

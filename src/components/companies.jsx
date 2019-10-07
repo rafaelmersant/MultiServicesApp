@@ -6,7 +6,6 @@ import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import CompaniesTable from "./CompaniesTable";
-
 import { getCompanies, deleteCompany } from "../services/companyService";
 
 class Companies extends Component {
@@ -15,7 +14,7 @@ class Companies extends Component {
     currentPage: 1,
     pageSize: 4,
     searchQuery: "",
-    sortColumn: { path: "name", order: "asc" }
+    sortColumn: { path: "creationDate", order: "desc" }
   };
 
   async componentDidMount() {
@@ -89,12 +88,6 @@ class Companies extends Component {
         <div className="row">
           <div className="col margin-top-msg">
             <NewButton label="Nueva Compañía" to="/company/new" />
-
-            {/* {user && (
-              <NavLink className="btn btn-primary mb-3" to="/users/new">
-                Nuevo Usuario
-              </NavLink>
-            )} */}
 
             <SearchBox
               value={searchQuery}

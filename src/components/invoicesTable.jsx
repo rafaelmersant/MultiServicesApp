@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Table from "./common/table";
 import auth from "../services/authService";
+import { formatNumber } from "../utils/custom";
 
 class InvoicesTable extends Component {
   columns = [
@@ -22,11 +23,32 @@ class InvoicesTable extends Component {
         </span>
       )
     },
-    { path: "ncf", label: "NCF" },
+    {
+      path: "subtotal",
+      label: "Subtotal",
+      content: item => <span>{formatNumber(item.subtotal)}</span>
+    },
+    {
+      path: "discount",
+      label: "Descuento",
+      content: item => <span>{formatNumber(item.discount)}</span>
+    },
+    {
+      path: "itbis",
+      label: "ITBIS",
+      content: item => <span>{formatNumber(item.itbis)}</span>
+    },
+    {
+      path: "total",
+      label: "Total",
+      content: item => (
+        <span>{formatNumber(item.subtotal + item.itbis - item.discount)}</span>
+      )
+    },
     { path: "paymentMethod", label: "Metodo de Pago" },
     {
       path: "paid",
-      label: "Metodo Pago",
+      label: "Estatus",
       content: invoice => (
         <span>
           {invoice.paid
