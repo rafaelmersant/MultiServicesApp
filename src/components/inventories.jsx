@@ -14,12 +14,20 @@ class Inventories extends Component {
     currentPage: 1,
     pageSize: 10,
     searchQuery: "",
+    invoiceRecords: false,
     sortColumn: { path: "creationDate", order: "desc" }
   };
 
   async componentDidMount() {
+    this.getInventoryRecords(this.state.invoiceRecords);
+  }
+
+  async getInventoryRecords(invoiceRecords) {
     const companyId = getCurrentUser().companyId;
-    const { data: prodTrackings } = await getProductsTrackings(companyId);
+    const { data: prodTrackings } = await getProductsTrackings(
+      companyId,
+      invoiceRecords
+    );
     this.setState({ prodTrackings });
   }
 
@@ -33,6 +41,14 @@ class Inventories extends Component {
 
   handleSort = sortColumn => {
     this.setState({ sortColumn });
+  };
+
+  handleOnChangeInvoiceRecords = event => {
+    this.setState({ invoiceRecords: !this.state.invoiceRecords });
+
+    setTimeout(() => {
+      this.getInventoryRecords(this.state.invoiceRecords);
+    }, 100);
   };
 
   getPagedData = () => {
@@ -84,6 +100,8 @@ class Inventories extends Component {
                   type="checkbox"
                   className="form-check-input"
                   id="invoiceTracking"
+                  value={this.state.invoiceRecords}
+                  onChange={this.handleOnChangeInvoiceRecords}
                 />
                 <label className="form-check-label" htmlFor="invoiceTracking">
                   Mostrar Movimientos de Facturas

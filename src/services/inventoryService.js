@@ -13,8 +13,18 @@ function productsStockUrl(id) {
   return `${apiEndpointProdStock}/${id}`;
 }
 
-export function getProductsTrackings(companyId) {
-  return http.get(`${apiEndpointProdTracking}/?company=${companyId}`);
+export function getProductsTrackings(companyId, invoicesRecords) {
+  if (invoicesRecords) {
+    console.log(`${apiEndpointProdTracking}/?company=${companyId}`);
+    return http.get(`${apiEndpointProdTracking}/?company=${companyId}`);
+  } else {
+    console.log(
+      `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE`
+    );
+    return http.get(
+      `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE`
+    );
+  }
 }
 
 export function getProductsTrackingsRange(productId, startDate, endDate) {
