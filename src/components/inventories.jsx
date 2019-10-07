@@ -47,7 +47,7 @@ class Inventories extends Component {
     let filtered = allProdTrackings;
     if (searchQuery)
       filtered = allProdTrackings.filter(m =>
-        `${m.product.name.toLowerCase()}`.startsWith(
+        `${m.product.description.toLowerCase()}`.startsWith(
           searchQuery.toLocaleLowerCase()
         )
       );

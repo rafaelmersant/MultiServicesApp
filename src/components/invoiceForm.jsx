@@ -12,6 +12,10 @@ import {
   getNextInvoiceSequence,
   saveInvoiceDetail
 } from "../services/invoiceServices";
+import {
+  saveProductTracking,
+  updateProductStock
+} from "../services/inventoryService";
 import InvoiceDetailTable from "./invoiceDetailTable";
 import _ from "lodash";
 
@@ -131,6 +135,22 @@ class InvoiceForm extends Form {
 
     this.setState({ line, data });
   };
+
+  async updateInventory(entry) {
+    const inventory = {
+      id: 0,
+      product_id: entry.product_id,
+      typeTracking: "S",
+      concept: "INVO",
+      quantity: entry.quantity,
+      company_id: getCurrentUser().companyId,
+      createdUser: getCurrentUser().email,
+      creationDate: new Date().toISOString()
+    };
+
+    await saveProductTracking(inventory);
+    await updateProductStock(inventory);
+  }
 
   refreshNextInvoiceSequence() {
     const companyId = getCurrentUser().companyId;
@@ -268,12 +288,14 @@ class InvoiceForm extends Form {
           id: 0,
           invoice_id: invoiceHeader.id,
           product_id: item.product_id,
+          quantity: item.quantity,
           price: item.price,
           itbis: item.itbis,
           discount: item.discount,
           creationDate: new Date().toISOString()
         };
         await saveInvoiceDetail(detail);
+        await this.updateInventory(detail);
       });
 
       this.props.history.push("/invoices");

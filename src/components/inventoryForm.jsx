@@ -63,9 +63,17 @@ class InventoryForm extends Form {
     this.setState({ products });
   }
 
+  async updateProductStock(productId) {
+    const { data: stock } = await getProductsStocks(productId);
+    if (stock.length)
+      this.setState({ availableStock: stock[0].quantityAvailable });
+  }
+
   handleSelect = async product => {
     const data = { ...this.state.data };
     data.product_id = product.id;
+
+    this.updateProductStock(product.id);
 
     this.setState({ data, hideSearch: true });
   };
@@ -78,10 +86,8 @@ class InventoryForm extends Form {
 
   handleChangeProduct = async ({ currentTarget: input }) => {
     const productId = input.value;
-    const { data: stock } = await getProductsStocks(productId);
 
-    if (stock.length)
-      this.setState({ availableStock: stock[0].quantityAvailable });
+    this.updateProductStock(productId);
 
     const updated = { ...this.state.data };
     updated.product_id = productId;
