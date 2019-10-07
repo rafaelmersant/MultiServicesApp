@@ -24,10 +24,10 @@ class CustomersTable extends Component {
     { path: "creationDate", label: "Creado" }
   ];
 
-  companyColumn = {
-    path: "company.name",
-    label: "Compañía"
-  };
+  // companyColumn = {
+  //   path: "company.name",
+  //   label: "Compañía"
+  // };
 
   deleteColumn = {
     key: "delete",
@@ -47,7 +47,7 @@ class CustomersTable extends Component {
     const user = auth.getCurrentUser().email;
     const role = auth.getCurrentUser().role;
 
-    if (user && role === "Admin") this.columns.push(this.companyColumn);
+    //if (user && role === "Admin") this.columns.push(this.companyColumn);
     if (user && role === "Admin") this.columns.push(this.deleteColumn);
   }
 

@@ -15,7 +15,7 @@ class Products extends Component {
     currentPage: 1,
     pageSize: 4,
     searchQuery: "",
-    sortColumn: { path: "name", order: "asc" }
+    sortColumn: { path: "creationDate", order: "desc" }
   };
 
   async componentDidMount() {

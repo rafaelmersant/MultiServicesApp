@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { formatNumber } from "../../utils/custom";
 import _ from "lodash";
 
 class TableBody extends Component {
@@ -7,6 +8,15 @@ class TableBody extends Component {
 
     if (column.path.toLowerCase().includes("date"))
       return this.formatDate(_.get(item, column.path));
+
+    if (
+      column.path.toLowerCase().includes("price") ||
+      column.path.toLowerCase().includes("cost") ||
+      column.path.toLowerCase().includes("quantity") ||
+      column.path.toLowerCase().includes("itbis") ||
+      column.path.toLowerCase().includes("discount")
+    )
+      return formatNumber(_.get(item, column.path));
 
     return _.get(item, column.path);
   };

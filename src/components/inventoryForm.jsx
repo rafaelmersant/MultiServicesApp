@@ -5,6 +5,7 @@ import Form from "./common/form";
 import SearchProduct from "./common/searchProduct";
 import Input from "./common/input";
 import Select from "./common/select";
+import { formatNumber } from "../utils/custom";
 import { getCompanies } from "../services/companyService";
 import { getProducts } from "../services/productService";
 import { getCurrentUser } from "../services/authService";
@@ -15,6 +16,8 @@ import {
 } from "../services/inventoryService";
 
 class InventoryForm extends Form {
+  _isMounted = false;
+
   state = {
     data: {
       id: 0,
@@ -31,7 +34,8 @@ class InventoryForm extends Form {
     errors: {},
     action: "Nuevo Registro de Inventario",
     hideSearch: false,
-    availableStock: 0
+    availableStock: 0,
+    searchProductInput: ""
   };
 
   schema = {
@@ -81,12 +85,18 @@ class InventoryForm extends Form {
 
     const updated = { ...this.state.data };
     updated.product_id = productId;
-    this.setState({ data: updated });
+    this.setState({ data: updated, searchCustomerInput: "" });
   };
 
   async componentDidMount() {
+    this._isMounted = true;
+
     await this.populateCompanies();
     await this.populateProducts();
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   doSubmit = async () => {
@@ -125,6 +135,7 @@ class InventoryForm extends Form {
             onBlur={() => this.handleFocus(true)}
             hide={this.state.hideSearch}
             companyId={getCurrentUser().companyId}
+            value={this.state.searchProductInput}
           />
 
           <form onSubmit={this.handleSubmit}>
@@ -159,7 +170,7 @@ class InventoryForm extends Form {
                   disabled="disabled"
                   type="text"
                   name="available"
-                  value={this.state.availableStock}
+                  value={formatNumber(this.state.availableStock)}
                   label="Disponible"
                 />
               </div>
