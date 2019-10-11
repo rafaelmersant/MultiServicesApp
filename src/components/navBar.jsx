@@ -34,40 +34,48 @@ const NavBar = ({ user }) => {
 
           <li className="nav-item">
             <NavLink className="nav-link" to="/inventories">
-              Inventario
+              | Inventario
             </NavLink>
           </li>
 
           <li className="nav-item">
             <NavLink className="nav-link" to="/products">
-              Productos
+              | Productos
             </NavLink>
           </li>
 
           <li className="nav-item">
             <NavLink className="nav-link" to="/productsCategories">
-              Categorias
+              | Categorias
             </NavLink>
           </li>
 
           <li className="nav-item">
             <NavLink className="nav-link" to="/customers">
-              Clientes
+              | Clientes
             </NavLink>
           </li>
 
-          {user && user.role === "Admin" && (
+          {user && (user.role === "Admin" || user.role === "Owner") && (
             <li className="nav-item">
-              <NavLink className="nav-link" to="/companies">
-                Compañias
+              <NavLink className="nav-link" to="/ncf">
+                | NCF
               </NavLink>
             </li>
           )}
 
-          {user && user.role === "Admin" && (
+          {user && user.role === "Owner" && (
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/companies">
+                | Compañias
+              </NavLink>
+            </li>
+          )}
+
+          {user && user.role === "Owner" && (
             <li className="nav-item">
               <NavLink className="nav-link" to="/users">
-                Usuarios
+                | Usuarios
               </NavLink>
             </li>
           )}
@@ -79,7 +87,7 @@ const NavBar = ({ user }) => {
               <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li className="nav-item">
                   <NavLink className="nav-link" to="/login">
-                    Login
+                    Iniciar sesión
                   </NavLink>
                 </li>
               </ul>
@@ -98,7 +106,7 @@ const NavBar = ({ user }) => {
                 </li>
                 <li className="nav-item">
                   <NavLink className="nav-link my-2 my-sm-0" to="/logout">
-                    Logout
+                    Cerrar sesión
                   </NavLink>
                 </li>
               </ul>

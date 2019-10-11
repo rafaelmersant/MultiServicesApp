@@ -49,7 +49,7 @@ class LoginForm extends Form {
     if (auth.getCurrentUser()) return <Redirect to="/" />;
 
     return (
-      <div className="container col-lg-6 col-md-6 col-sm-11 shadow-lg p-3 mb-5 bg-white rounded">
+      <div className="container col-lg-5 col-md-6 col-sm-11 shadow-lg p-3 mb-5 bg-white rounded">
         <h2 className="bg-secondary text-light pl-2 pr-2">Login</h2>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>

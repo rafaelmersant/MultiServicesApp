@@ -16,7 +16,7 @@ class ProductsCategories extends Component {
   state = {
     categories: [],
     currentPage: 1,
-    pageSize: 4,
+    pageSize: 10,
     searchQuery: "",
     sortColumn: { path: "name", order: "asc" }
   };

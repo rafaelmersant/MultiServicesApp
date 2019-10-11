@@ -13,7 +13,7 @@ class Products extends Component {
   state = {
     products: [],
     currentPage: 1,
-    pageSize: 4,
+    pageSize: 10,
     searchQuery: "",
     sortColumn: { path: "creationDate", order: "desc" }
   };

@@ -6,6 +6,9 @@ class TableBody extends Component {
   renderCell = (item, column) => {
     if (column.content) return column.content(item);
 
+    if (column.path.toLowerCase().includes("duedate"))
+      return this.formatDateWithoutTime(_.get(item, column.path));
+
     if (column.path.toLowerCase().includes("date"))
       return this.formatDate(_.get(item, column.path));
 
@@ -36,6 +39,10 @@ class TableBody extends Component {
     const dateFormatted = new Date(stringDate).toLocaleDateString();
 
     return `${dateFormatted} ${timeFormatted}`;
+  };
+
+  formatDateWithoutTime = stringDate => {
+    return new Date(stringDate).toLocaleDateString();
   };
 
   render() {

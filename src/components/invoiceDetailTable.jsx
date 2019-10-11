@@ -43,8 +43,9 @@ class InvoiceDetailTable extends Component {
     const user = auth.getCurrentUser().email;
     const role = auth.getCurrentUser().role;
 
-    if (user && role === "Admin") this.columns.push(this.deleteColumn);
-    if (user && role === "Admin") this.columns.push(this.editColumn);
+    if (user && (role === "Admin" || role === "Owner"))
+      this.columns.push(this.deleteColumn);
+    //if (user && role === "Admin") this.columns.push(this.editColumn);
   }
 
   render() {

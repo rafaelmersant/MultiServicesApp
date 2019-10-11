@@ -15,6 +15,10 @@ export function getUser(userId) {
   return http.get(`${apiEndpoint}/?id=${userId}`);
 }
 
+export function getEmailExists(companyId, email) {
+  return http.get(`${apiEndpoint}/?company=${companyId}&email=${email}`);
+}
+
 export function saveUser(user) {
   if (user.id) {
     const body = { ...user };

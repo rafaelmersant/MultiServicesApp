@@ -5,16 +5,20 @@ import Form from "./common/form";
 import Input from "./common/input";
 import SearchProduct from "./common/searchProduct";
 import SearchCustomer from "./common/searchCustomer";
+import { formatNumber } from "../utils/custom";
 import { getCurrentUser } from "../services/authService";
 import { getProducts } from "../services/productService";
 import {
   saveInvoiceHeader,
   getNextInvoiceSequence,
-  saveInvoiceDetail
+  saveInvoiceDetail,
+  getInvoiceHeader,
+  getInvoiceDetail
 } from "../services/invoiceServices";
 import {
   saveProductTracking,
-  updateProductStock
+  updateProductStock,
+  getProductsStocks
 } from "../services/inventoryService";
 import InvoiceDetailTable from "./invoiceDetailTable";
 import _ from "lodash";
@@ -47,7 +51,7 @@ class InvoiceForm extends Form {
       product_id: 0,
       product: "",
       quantity: 1,
-      price: "",
+      price: 0,
       cost: 0,
       itbis: 0,
       discount: "",
@@ -96,10 +100,10 @@ class InvoiceForm extends Form {
     line.product_id = 0;
     line.product = "";
     line.quantity = 1;
-    line.price = "";
+    line.price = 0;
     line.cost = 0;
     line.itbis = 0;
-    line.discount = "";
+    line.discount = 0;
     line.total = 0;
 
     this.setState({ line });
@@ -107,16 +111,14 @@ class InvoiceForm extends Form {
 
   updateLine = product => {
     const line = { ...this.state.line };
-    const { data } = { ...this.state };
 
-    let discount = isNaN(parseFloat(line.discount))
+    const discount = isNaN(parseFloat(line.discount))
       ? 0
-      : parseFloat(line.discount);
-    discount = Math.round(discount * 100) / 100;
+      : Math.round(parseFloat(line.discount) * 100) / 100;
 
     const quantity = Math.round(parseFloat(line.quantity) * 100) / 100;
     const price = Math.round(parseFloat(product.price) * 100) / 100;
-    const itbis = Math.round(parseFloat(product.itbis) * quantity * 100) / 100;
+    const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
     const total = Math.round(price * quantity * 100) / 100;
 
     line.id = product.id;
@@ -126,14 +128,10 @@ class InvoiceForm extends Form {
     line.price = price;
     line.cost = Math.round(product.cost * 100) / 100;
     line.itbis = Math.round(itbis * quantity * 100) / 100;
-    line.discount = discount;
-    line.total = total + itbis - discount;
+    line.discount = Math.round(discount * 100) / 100;
+    line.total = Math.round((total + itbis - discount) * 100) / 100;
 
-    data.itbis += itbis;
-    data.subtotal += total;
-    data.discount += discount;
-
-    this.setState({ line, data });
+    this.setState({ line });
   };
 
   async updateInventory(entry) {
@@ -160,6 +158,90 @@ class InvoiceForm extends Form {
     this.setState({ data });
   }
 
+  async populateInvoice() {
+    try {
+      const sequence = this.props.match.params.id;
+      if (sequence === "new") return;
+
+      const { data: invoiceHeader } = await getInvoiceHeader(
+        getCurrentUser().companyId,
+        sequence
+      );
+
+      const { data: invoiceDetail } = await getInvoiceDetail(
+        invoiceHeader[0].id
+      );
+
+      this.setState({
+        data: this.mapToViewInvoiceHeader(invoiceHeader),
+        details: this.mapToViewInvoiceDetail(invoiceDetail),
+        action: "Detalle de Factura"
+      });
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404)
+        return this.props.history.replace("/not-found");
+    }
+  }
+
+  mapToViewInvoiceHeader(invoiceHeader) {
+    return {
+      id: invoiceHeader[0].id,
+      sequence: invoiceHeader[0].sequence,
+      customer_id: invoiceHeader[0].customer_id,
+      ncf: invoiceHeader[0].ncf,
+      paymentMethod: invoiceHeader[0].paymentMethod,
+      paid: invoiceHeader[0].paid,
+      reference: invoiceHeader[0].reference,
+      subtotal: invoiceHeader[0].subtotal,
+      itbis: invoiceHeader[0].itbis,
+      discount: invoiceHeader[0].discount,
+      company_id: invoiceHeader[0].company.id,
+      createdUser: invoiceHeader[0].createdByUser
+        ? invoiceHeader[0].createdByUser
+        : getCurrentUser().email,
+      creationDate: invoiceHeader[0].creationDate
+    };
+  }
+
+  mapToViewInvoiceDetail(invoiceDetail) {
+    let details = [];
+
+    invoiceDetail.forEach(item => {
+      console.log(item.quantity);
+      details.push({
+        id: item.id,
+        invoice_id: item.invoice.id,
+        product_id: item.product.id,
+        product: item.product.description,
+        quantity: 0, //item.quantity,
+        price: item.price,
+        cost: 0, //item.cost,
+        itbis: 0, //item.itbis,
+        discount: 0, //item.discount,
+        total: 0 //item.price * item.quantity + item.itbis - item.discount
+      });
+    });
+
+    return details;
+    // return {
+    //   id: invoiceDetail[0].id,
+    //   sequence: invoiceDetail[0].sequence,
+    //   customer_id: invoiceDetail[0].customer_id,
+    //   ncf: invoiceDetail[0].ncf,
+    //   paymentMethod: invoiceDetail[0].paymentMethod,
+    //   paid: invoiceDetail[0].paid,
+    //   reference: invoiceDetail[0].reference,
+    //   subtotal: invoiceDetail[0].subtotal,
+    //   itbis: invoiceDetail[0].itbis,
+    //   discount: invoiceDetail[0].discount,
+    //   company_id: invoiceDetail[0].company.id,
+    //   createdUser: invoiceDetail[0].createdByUser
+    //     ? invoiceDetail[0].createdByUser
+    //     : getCurrentUser().email,
+    //   creationDate: invoiceDetail[0].creationDate
+    // };
+  }
+
   handleSelectProduct = async product => {
     const handler = e => {
       e.preventDefault();
@@ -182,6 +264,11 @@ class InvoiceForm extends Form {
       currentProduct: product,
       searchProductText: product.description
     });
+
+    const { data: stock } = await getProductsStocks(product.id);
+    const available = stock.length ? stock[0].quantityAvailable : 0;
+    if (available > 0) toast.success(`Cantidad disponible: ${available}`);
+    else toast.error(`No tiene disponible en inventario`);
   };
 
   handleFocusProduct = value => {
@@ -218,19 +305,36 @@ class InvoiceForm extends Form {
     };
     handler(window.event);
 
-    this.updateLine({ ...this.state.currentProduct });
+    this.updateLine(this.state.currentProduct);
+
+    const data = { ...this.state.data };
+    const { line } = this.state;
+    data.itbis += parseFloat(line.itbis);
+    data.subtotal += parseFloat(line.total);
+    data.discount += parseFloat(line.discount);
+    console.log("data.discount", data.discount);
 
     setTimeout(() => {
       let details = [...this.state.details];
       if (this.state.line.id) details.push(this.state.line);
 
-      this.setState({ details, searchProductText: "" });
+      this.setState({
+        data,
+        details,
+        currentProduct: {},
+        searchProductText: ""
+      });
+
       this.resetLineValues();
     }, 100);
   };
 
   handleDeleteDetail = detail => {
-    console.log(detail);
+    let details = { ...this.state.details };
+    _.remove(details, { id: detail.id });
+
+    console.log(details);
+    //this.setState({ details });
   };
 
   handleEditDetail = detail => {
@@ -260,12 +364,16 @@ class InvoiceForm extends Form {
     const line = { ...this.state.line };
     line[input.name] = input.value;
     this.setState({ line });
+
+    if (this.state.currentProduct.length)
+      this.updateLine(this.state.currentProduct);
   };
 
   async componentDidMount() {
     this._isMounted = true;
 
     await this.populateProducts();
+    await this.populateInvoice();
 
     const companyId = getCurrentUser().companyId;
     const { data: sequence } = await getNextInvoiceSequence(companyId);
@@ -281,6 +389,7 @@ class InvoiceForm extends Form {
 
   doSubmit = async () => {
     try {
+      console.log(this.state.data);
       const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
 
       this.state.details.forEach(async item => {
@@ -386,12 +495,11 @@ class InvoiceForm extends Form {
                   type="text"
                   name="quantity"
                   value={this.state.line.quantity}
-                  label=""
+                  label="Cant."
                   onChange={this.handleChangeQuantity}
-                  placeholder="Cantidad"
                 />
               </div>
-              <div className="col-6 mr-0 ml-0 pr-0 pl-0">
+              <div className="col-5 mr-0 ml-0 pr-0 pl-0">
                 <SearchProduct
                   onSelect={this.handleSelectProduct}
                   onFocus={() => this.handleFocusProduct(false)}
@@ -399,31 +507,48 @@ class InvoiceForm extends Form {
                   hide={this.state.hideSearchProduct}
                   companyId={getCurrentUser().companyId}
                   value={this.state.searchProductText}
+                  label="Producto"
                 />
               </div>
+
               <div className="col-2 mr-0 ml-0 pr-0 pl-0">
                 <Input
                   type="text"
                   name="price"
-                  value={this.state.line.price}
-                  label=""
+                  value={formatNumber(this.state.line.price)}
+                  label="Precio"
                   onChange={this.handleChange}
-                  placeholder="Precio"
                   disabled="disabled"
                 />
               </div>
               <div className="col-2 mr-0 ml-0 pr-0 pl-0">
                 <Input
                   type="text"
-                  name="discount"
-                  value={this.state.line.discount}
-                  label=""
-                  onChange={this.handleChangeDiscount}
-                  placeholder="Descuento"
+                  name="itbis"
+                  value={formatNumber(this.state.line.itbis)}
+                  label="ITBIS"
+                  onChange={this.handleChange}
+                  disabled="disabled"
                 />
               </div>
-              <div className="col-1 mt-4 mr-0 ml-0 pr-0 pl-0">
-                <button className="btn btn-info" onClick={this.handleAddDetail}>
+              <div className="col-1 mr-0 ml-0 pr-0 pl-0">
+                <Input
+                  type="text"
+                  name="discount"
+                  value={this.state.line.discount}
+                  label="Desc."
+                  onChange={this.handleChangeDiscount}
+                />
+              </div>
+              <div
+                className="col-1 pt-0 pb-0 mr-0 ml-0 pr-0 pl-0"
+                style={{ marginTop: "1.98em" }}
+              >
+                <button
+                  className="btn btn-info"
+                  onClick={this.handleAddDetail}
+                  disabled={!this.state.line.product_id}
+                >
                   Agregar
                 </button>
               </div>

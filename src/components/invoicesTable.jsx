@@ -10,7 +10,7 @@ class InvoicesTable extends Component {
       path: "sequence",
       label: "No. Factura",
       content: invoice => (
-        <Link to={`/invoice/${invoice.id}`}>{invoice.sequence}</Link>
+        <Link to={`/invoice/${invoice.sequence}`}>{invoice.sequence}</Link>
       )
     },
     { path: "creationDate", label: "Fecha (m/d/a)" },
@@ -42,10 +42,15 @@ class InvoicesTable extends Component {
       path: "total",
       label: "Total",
       content: item => (
-        <span>{formatNumber(item.subtotal + item.itbis - item.discount)}</span>
+        <span>
+          {formatNumber(
+            parseFloat(item.subtotal) +
+              parseFloat(item.itbis) -
+              parseFloat(item.discount)
+          )}
+        </span>
       )
     },
-    { path: "paymentMethod", label: "Metodo de Pago" },
     {
       path: "paid",
       label: "Estatus",
@@ -63,11 +68,13 @@ class InvoicesTable extends Component {
   deleteColumn = {
     key: "delete",
     content: user => (
-      <button
-        onClick={() => this.props.onDelete(user)}
-        className="fa fa-trash"
-        style={{ color: "red", fontSize: "16px" }}
-      ></button>
+      <div className="text-center">
+        <button
+          onClick={() => this.props.onDelete(user)}
+          className="fa fa-trash"
+          style={{ color: "red", fontSize: "16px" }}
+        ></button>
+      </div>
     )
   };
 
@@ -76,7 +83,8 @@ class InvoicesTable extends Component {
     const user = auth.getCurrentUser().email;
     const role = auth.getCurrentUser().role;
 
-    if (user && role === "Admin") this.columns.push(this.deleteColumn);
+    if (user && (role === "Admin" || role === "Owner"))
+      this.columns.push(this.deleteColumn);
   }
 
   render() {

@@ -18,29 +18,26 @@ class ProductCategoriesTable extends Component {
     { path: "creationDate", label: "Creado" }
   ];
 
-  companyColumn = {
-    path: "company.name",
-    label: "Compañía"
-  };
-
   deleteColumn = {
     key: "delete",
     content: category => (
-      <button
-        onClick={() => this.props.onDelete(category)}
-        className="fa fa-trash"
-        style={{ color: "red", fontSize: "16px" }}
-      ></button>
+      <div className="text-center">
+        <button
+          onClick={() => this.props.onDelete(category)}
+          className="fa fa-trash"
+          style={{ color: "red", fontSize: "16px" }}
+        ></button>
+      </div>
     )
   };
 
   constructor() {
     super();
-    const user = auth.getCurrentUser();
-    const role = auth.getCurrentUser();
+    const user = auth.getCurrentUser().email;
+    const role = auth.getCurrentUser().role;
 
-    if (user && role === "Admin") this.columns.push(this.companyColumn);
-    if (user && role === "Admin") this.columns.push(this.deleteColumn);
+    if (user && (role === "Admin" || role === "Owner"))
+      this.columns.push(this.deleteColumn);
   }
 
   render() {

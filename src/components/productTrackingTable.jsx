@@ -37,28 +37,6 @@ class ProductTrackingTable extends Component {
     }
   ];
 
-  // companyColumn = { path: "company.name", label: "Compañía" };
-
-  // deleteColumn = {
-  //   key: "delete",
-  //   content: user => (
-  //     <button
-  //       onClick={() => this.props.onDelete(user)}
-  //       className="fa fa-trash"
-  //       style={{ color: "red", fontSize: "16px" }}
-  //     ></button>
-  //   )
-  // };
-
-  // constructor() {
-  //   super();
-  //   const user = auth.getCurrentUser().email;
-  //   const role = auth.getCurrentUser().role;
-
-  //   if (user && role === "Admin") this.columns.push(this.companyColumn);
-  //   if (user && role === "Admin") this.columns.push(this.deleteColumn);
-  // }
-
   render() {
     const { prodTrackings, sortColumn, onSort } = this.props;
 

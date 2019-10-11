@@ -12,7 +12,7 @@ class Users extends Component {
   state = {
     users: [],
     currentPage: 1,
-    pageSize: 4,
+    pageSize: 10,
     searchQuery: "",
     sortColumn: { path: "name", order: "asc" }
   };

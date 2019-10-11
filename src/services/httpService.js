@@ -15,14 +15,15 @@ axios.interceptors.response.use(null, error => {
     const { data } = error.response;
 
     var errors = "";
-    for (var propName in data) {
-      if (data.hasOwnProperty(propName)) {
-        const propValue = data[propName];
-        errors += `${propName} : ${propValue[0]}\n`;
+    if (data !== "null") {
+      for (var propName in data) {
+        if (data.hasOwnProperty(propName)) {
+          const propValue = data[propName];
+          errors += `${propName} : ${propValue[0]}\n`;
+        }
       }
+      toast.error(errors);
     }
-
-    toast.error(errors);
   }
 
   return Promise.reject(error);

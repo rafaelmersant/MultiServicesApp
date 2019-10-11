@@ -2,8 +2,9 @@ import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
 import { getCompanies } from "../services/companyService";
-import { getUser, saveUser } from "../services/userService";
+import { getUser, saveUser, getEmailExists } from "../services/userService";
 import { getCurrentUser } from "../services/authService";
+import { toast } from "react-toastify";
 
 class UserForm extends Form {
   state = {
@@ -97,6 +98,16 @@ class UserForm extends Form {
   }
 
   doSubmit = async () => {
+    const { data: email } = await getEmailExists(
+      this.state.data.company_id,
+      this.state.data.email
+    );
+
+    if (email.length) {
+      toast.error("Este email ya existe en el sistema.");
+      return false;
+    }
+
     await saveUser(this.state.data);
 
     this.props.history.push("/users");

@@ -19,6 +19,8 @@ import Users from "./components/users";
 import UserForm from "./components/userForm";
 import ProductsCategories from "./components/productCategories";
 import ProductCategoryForm from "./components/productCategoryForm";
+import NCF from "./components/ncf";
+import NCFForm from "./components/ncfForm";
 import ProtectedRoute from "./components/common/protectedRoute";
 import auth from "./services/authService";
 import "react-toastify/dist/ReactToastify.css";
@@ -65,6 +67,8 @@ class App extends Component {
               path="/productCategory/:id"
               component={ProductCategoryForm}
             />
+            <ProtectedRoute path="/ncf/:id" component={NCFForm} />
+            <ProtectedRoute path="/ncf" component={NCF} />
             <ProtectedRoute path="/companies" component={Companies} />
             <ProtectedRoute path="/company/:id" component={CompanyForm} />
             <ProtectedRoute path="/users" component={Users} />

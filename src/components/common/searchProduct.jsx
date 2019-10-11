@@ -32,7 +32,7 @@ class SearchProduct extends Component {
   }
 
   render() {
-    const { onSelect, onFocus, onBlur, hide } = this.props;
+    const { onSelect, onFocus, onBlur, hide, label = "" } = this.props;
     const { products } = this.state;
 
     return (
@@ -47,6 +47,7 @@ class SearchProduct extends Component {
           onFocus={onFocus}
           onBlur={onBlur}
           value={this.state.searchProductInput}
+          label={label}
         />
 
         {products && !hide && (

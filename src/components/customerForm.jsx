@@ -87,8 +87,6 @@ class UserForm extends Form {
   }
 
   doSubmit = async () => {
-    console.log(this.state.data);
-
     await saveCustomer(this.state.data);
     this.props.history.push("/customers");
   };
