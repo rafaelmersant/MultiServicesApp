@@ -28,7 +28,6 @@ export function getInvoiceHeader(companyId, sequence) {
 }
 
 export function getInvoiceDetail(invoiceHeaderId) {
-  console.log(`${apiEndpointDetail}/?invoice=${invoiceHeaderId}`);
   return http.get(`${apiEndpointDetail}/?invoice=${invoiceHeaderId}`);
 }
 

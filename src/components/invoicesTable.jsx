@@ -24,11 +24,6 @@ class InvoicesTable extends Component {
       )
     },
     {
-      path: "subtotal",
-      label: "Subtotal",
-      content: item => <span>{formatNumber(item.subtotal)}</span>
-    },
-    {
       path: "discount",
       label: "Descuento",
       content: item => <span>{formatNumber(item.discount)}</span>
@@ -39,17 +34,9 @@ class InvoicesTable extends Component {
       content: item => <span>{formatNumber(item.itbis)}</span>
     },
     {
-      path: "total",
+      path: "subtotal",
       label: "Total",
-      content: item => (
-        <span>
-          {formatNumber(
-            parseFloat(item.subtotal) +
-              parseFloat(item.itbis) -
-              parseFloat(item.discount)
-          )}
-        </span>
-      )
+      content: item => <span>{formatNumber(item.subtotal)}</span>
     },
     {
       path: "paid",

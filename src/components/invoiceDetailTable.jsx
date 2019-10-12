@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import TableBody from "./common/tableBody";
 import auth from "../services/authService";
+import { formatNumber } from "../utils/custom";
 
 class InvoiceDetailTable extends Component {
   columns = [
@@ -49,7 +50,7 @@ class InvoiceDetailTable extends Component {
   }
 
   render() {
-    const { details } = this.props;
+    const { details, invoiceHeader } = this.props;
 
     return (
       <React.Fragment>
@@ -63,6 +64,20 @@ class InvoiceDetailTable extends Component {
           </thead>
 
           <TableBody columns={this.columns} data={details} />
+
+          {details.length > 1 && (
+            <tfoot>
+              <tr className="table-active">
+                <th>Total</th>
+                <th></th>
+                <th></th>
+                <th>{formatNumber(invoiceHeader.itbis)}</th>
+                <th>{formatNumber(invoiceHeader.discount)}</th>
+                <th>{formatNumber(invoiceHeader.subtotal)}</th>
+                <th></th>
+              </tr>
+            </tfoot>
+          )}
         </table>
       </React.Fragment>
     );

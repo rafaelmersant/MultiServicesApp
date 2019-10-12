@@ -54,7 +54,7 @@ class InvoiceForm extends Form {
       price: 0,
       cost: 0,
       itbis: 0,
-      discount: "",
+      discount: 0,
       total: 0
     },
     paymentMethods: [
@@ -120,6 +120,7 @@ class InvoiceForm extends Form {
     const price = Math.round(parseFloat(product.price) * 100) / 100;
     const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
     const total = Math.round(price * quantity * 100) / 100;
+    const subtotal = Math.round((total + itbis - discount) * 100) / 100;
 
     line.id = product.id;
     line.quantity = quantity;
@@ -129,9 +130,26 @@ class InvoiceForm extends Form {
     line.cost = Math.round(product.cost * 100) / 100;
     line.itbis = Math.round(itbis * quantity * 100) / 100;
     line.discount = Math.round(discount * 100) / 100;
-    line.total = Math.round((total + itbis - discount) * 100) / 100;
+    line.total = subtotal;
 
     this.setState({ line });
+  };
+
+  updateTotals = () => {
+    const data = { ...this.state.data };
+    data.itbis = 0;
+    data.discount = 0;
+    data.subtotal = 0;
+
+    this.state.details.forEach(item => {
+      data.itbis += parseFloat(item.itbis);
+      data.discount += parseFloat(item.discount);
+      data.subtotal += parseFloat(item.total);
+    });
+
+    this.setState({ data });
+
+    console.log("data", data);
   };
 
   async updateInventory(entry) {
@@ -175,8 +193,13 @@ class InvoiceForm extends Form {
       this.setState({
         data: this.mapToViewInvoiceHeader(invoiceHeader),
         details: this.mapToViewInvoiceDetail(invoiceDetail),
+        searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
+        hideSearchCustomer: true,
         action: "Detalle de Factura"
       });
+
+      console.log("state", this.state);
+      this.forceUpdate();
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         return this.props.history.replace("/not-found");
@@ -184,14 +207,15 @@ class InvoiceForm extends Form {
   }
 
   mapToViewInvoiceHeader(invoiceHeader) {
+    console.log("invoiceHeader", invoiceHeader);
     return {
       id: invoiceHeader[0].id,
-      sequence: invoiceHeader[0].sequence,
-      customer_id: invoiceHeader[0].customer_id,
+      sequence: parseFloat(invoiceHeader[0].sequence),
+      customer_id: invoiceHeader[0].customer.id,
       ncf: invoiceHeader[0].ncf,
       paymentMethod: invoiceHeader[0].paymentMethod,
       paid: invoiceHeader[0].paid,
-      reference: invoiceHeader[0].reference,
+      reference: invoiceHeader[0].reference ? invoiceHeader[0].reference : "",
       subtotal: invoiceHeader[0].subtotal,
       itbis: invoiceHeader[0].itbis,
       discount: invoiceHeader[0].discount,
@@ -207,39 +231,25 @@ class InvoiceForm extends Form {
     let details = [];
 
     invoiceDetail.forEach(item => {
-      console.log(item.quantity);
+      console.log("item", item);
       details.push({
         id: item.id,
         invoice_id: item.invoice.id,
         product_id: item.product.id,
         product: item.product.description,
-        quantity: 0, //item.quantity,
+        quantity: item.quantity,
         price: item.price,
-        cost: 0, //item.cost,
-        itbis: 0, //item.itbis,
-        discount: 0, //item.discount,
-        total: 0 //item.price * item.quantity + item.itbis - item.discount
+        cost: item.cost,
+        itbis: item.itbis,
+        discount: item.discount,
+        total:
+          parseFloat(item.price) * parseFloat(item.quantity) +
+          parseFloat(item.itbis) -
+          parseFloat(item.discount)
       });
     });
 
     return details;
-    // return {
-    //   id: invoiceDetail[0].id,
-    //   sequence: invoiceDetail[0].sequence,
-    //   customer_id: invoiceDetail[0].customer_id,
-    //   ncf: invoiceDetail[0].ncf,
-    //   paymentMethod: invoiceDetail[0].paymentMethod,
-    //   paid: invoiceDetail[0].paid,
-    //   reference: invoiceDetail[0].reference,
-    //   subtotal: invoiceDetail[0].subtotal,
-    //   itbis: invoiceDetail[0].itbis,
-    //   discount: invoiceDetail[0].discount,
-    //   company_id: invoiceDetail[0].company.id,
-    //   createdUser: invoiceDetail[0].createdByUser
-    //     ? invoiceDetail[0].createdByUser
-    //     : getCurrentUser().email,
-    //   creationDate: invoiceDetail[0].creationDate
-    // };
   }
 
   handleSelectProduct = async product => {
@@ -307,34 +317,32 @@ class InvoiceForm extends Form {
 
     this.updateLine(this.state.currentProduct);
 
-    const data = { ...this.state.data };
-    const { line } = this.state;
-    data.itbis += parseFloat(line.itbis);
-    data.subtotal += parseFloat(line.total);
-    data.discount += parseFloat(line.discount);
-    console.log("data.discount", data.discount);
-
     setTimeout(() => {
       let details = [...this.state.details];
       if (this.state.line.id) details.push(this.state.line);
 
+      console.log("details", details);
+
       this.setState({
-        data,
         details,
         currentProduct: {},
         searchProductText: ""
       });
 
+      this.updateTotals();
       this.resetLineValues();
-    }, 100);
+    }, 150);
   };
 
   handleDeleteDetail = detail => {
-    let details = { ...this.state.details };
-    _.remove(details, { id: detail.id });
+    const details = this.state.details.filter(
+      d => d.product_id !== detail.product_id
+    );
+    this.setState({ details });
 
-    console.log(details);
-    //this.setState({ details });
+    setTimeout(() => {
+      this.updateTotals();
+    });
   };
 
   handleEditDetail = detail => {
@@ -362,11 +370,19 @@ class InvoiceForm extends Form {
 
   handleChangeDiscount = ({ currentTarget: input }) => {
     const line = { ...this.state.line };
-    line[input.name] = input.value;
+    line[input.name] = parseFloat(input.value);
     this.setState({ line });
 
     if (this.state.currentProduct.length)
       this.updateLine(this.state.currentProduct);
+  };
+
+  handleBlurDiscount = () => {
+    if (this.state.line.discount === "") {
+      const line = { ...this.state.line };
+      line.discount = 0;
+      this.setState({ line });
+    }
   };
 
   async componentDidMount() {
@@ -375,12 +391,14 @@ class InvoiceForm extends Form {
     await this.populateProducts();
     await this.populateInvoice();
 
-    const companyId = getCurrentUser().companyId;
-    const { data: sequence } = await getNextInvoiceSequence(companyId);
+    if (!this.state.data.id) {
+      const companyId = getCurrentUser().companyId;
+      const { data: sequence } = await getNextInvoiceSequence(companyId);
 
-    const { data } = { ...this.state };
-    data.sequence = sequence.sequence;
-    this.setState({ data });
+      const { data } = { ...this.state };
+      data.sequence = sequence.sequence;
+      this.setState({ data });
+    }
   }
 
   componentWillUnmount() {
@@ -389,7 +407,7 @@ class InvoiceForm extends Form {
 
   doSubmit = async () => {
     try {
-      console.log(this.state.data);
+      console.log("doSubmite - state", this.state);
       const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
 
       this.state.details.forEach(async item => {
@@ -538,6 +556,7 @@ class InvoiceForm extends Form {
                   value={this.state.line.discount}
                   label="Desc."
                   onChange={this.handleChangeDiscount}
+                  onBlur={this.handleBlurDiscount}
                 />
               </div>
               <div
@@ -555,13 +574,14 @@ class InvoiceForm extends Form {
             </div>
 
             <InvoiceDetailTable
+              invoiceHeader={this.state.data}
               details={this.state.details}
               user={user}
               onDelete={this.handleDeleteDetail}
               onEdit={this.handleEditDetail}
             />
 
-            {this.renderButton("Guardar")}
+            {!this.state.data.id && this.renderButton("Guardar")}
           </form>
         </div>
       </div>
