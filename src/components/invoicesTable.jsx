@@ -10,7 +10,9 @@ class InvoicesTable extends Component {
       path: "sequence",
       label: "No. Factura",
       content: invoice => (
-        <Link to={`/invoice/${invoice.sequence}`}>{invoice.sequence}</Link>
+        <div className="text-center">
+          <Link to={`/invoice/${invoice.sequence}`}>{invoice.sequence}</Link>
+        </div>
       )
     },
     { path: "creationDate", label: "Fecha (m/d/a)" },

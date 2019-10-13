@@ -122,7 +122,6 @@ class InvoiceForm extends Form {
     const total = Math.round(price * quantity * 100) / 100;
     const subtotal = Math.round((total + itbis - discount) * 100) / 100;
 
-    line.id = product.id;
     line.quantity = quantity;
     line.product_id = product.id;
     line.product = product.description;
@@ -149,7 +148,7 @@ class InvoiceForm extends Form {
 
     this.setState({ data });
 
-    console.log("data", data);
+    console.log("UpdateTotals - data", data);
   };
 
   async updateInventory(entry) {
@@ -207,7 +206,7 @@ class InvoiceForm extends Form {
   }
 
   mapToViewInvoiceHeader(invoiceHeader) {
-    console.log("invoiceHeader", invoiceHeader);
+    console.log("mapToViewInvoiceHeader - invoiceHeader", invoiceHeader);
     return {
       id: invoiceHeader[0].id,
       sequence: parseFloat(invoiceHeader[0].sequence),
@@ -229,9 +228,8 @@ class InvoiceForm extends Form {
 
   mapToViewInvoiceDetail(invoiceDetail) {
     let details = [];
-
+    console.log("mapToViewInvoiceDetail - invoiceDetail", invoiceDetail);
     invoiceDetail.forEach(item => {
-      console.log("item", item);
       details.push({
         id: item.id,
         invoice_id: item.invoice.id,
@@ -259,7 +257,7 @@ class InvoiceForm extends Form {
     handler(window.event);
 
     const product_found = _.find(this.state.details, function(item) {
-      return item.id === product.id;
+      return item.product_id === product.id;
     });
 
     if (product_found !== undefined) {
@@ -315,13 +313,12 @@ class InvoiceForm extends Form {
     };
     handler(window.event);
 
-    this.updateLine(this.state.currentProduct);
-
     setTimeout(() => {
+      this.updateLine(this.state.currentProduct);
       let details = [...this.state.details];
-      if (this.state.line.id) details.push(this.state.line);
+      if (this.state.line.product_id) details.push(this.state.line);
 
-      console.log("details", details);
+      console.log("Add details", details);
 
       this.setState({
         details,
@@ -346,7 +343,20 @@ class InvoiceForm extends Form {
   };
 
   handleEditDetail = detail => {
-    console.log(detail);
+    const line = { ...detail };
+
+    const currentProduct = this.state.products.filter(
+      prod => prod.id === detail.product_id
+    );
+
+    this.setState({
+      line,
+      currentProduct: currentProduct[0],
+      hideSearchProduct: true,
+      searchProductText: line.product
+    });
+
+    this.handleDeleteDetail(detail);
   };
 
   handleChangePaid = () => {
@@ -370,7 +380,7 @@ class InvoiceForm extends Form {
 
   handleChangeDiscount = ({ currentTarget: input }) => {
     const line = { ...this.state.line };
-    line[input.name] = parseFloat(input.value);
+    line[input.name] = input.value;
     this.setState({ line });
 
     if (this.state.currentProduct.length)
@@ -412,7 +422,7 @@ class InvoiceForm extends Form {
 
       this.state.details.forEach(async item => {
         const detail = {
-          id: 0,
+          id: item.id,
           invoice_id: invoiceHeader.id,
           product_id: item.product_id,
           quantity: item.quantity,
@@ -500,6 +510,7 @@ class InvoiceForm extends Form {
                   id="chkPaid"
                   checked={this.state.data.paid}
                   onChange={this.handleChangePaid}
+                  disabled={this.state.data.id}
                 />
                 <label className="form-check-label" htmlFor="chkPaid">
                   Pagada
@@ -581,7 +592,8 @@ class InvoiceForm extends Form {
               onEdit={this.handleEditDetail}
             />
 
-            {!this.state.data.id && this.renderButton("Guardar")}
+            {(!this.state.data.paid || !this.state.data.id) &&
+              this.renderButton("Guardar")}
           </form>
         </div>
       </div>

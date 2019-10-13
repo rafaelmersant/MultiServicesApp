@@ -15,12 +15,8 @@ function productsStockUrl(id) {
 
 export function getProductsTrackings(companyId, invoicesRecords) {
   if (invoicesRecords) {
-    console.log(`${apiEndpointProdTracking}/?company=${companyId}`);
     return http.get(`${apiEndpointProdTracking}/?company=${companyId}`);
   } else {
-    console.log(
-      `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE`
-    );
     return http.get(
       `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE`
     );
@@ -43,13 +39,15 @@ export function getProductsStocks(productId) {
   return http.get(`${apiEndpointProdStock}/`);
 }
 
-export function saveProductTracking(tracking) {
-  if (tracking.id) {
-    const body = { ...tracking };
-    delete body.id;
-    return http.put(productsTrackingUrl(tracking.id), body);
-  }
+export function saveProductTracking(entry) {
+  const tracking = { ...entry };
+  if (tracking.typeTracking === "S") tracking.quantity = tracking.quantity * -1;
 
+  if (entry.id) {
+    const body = { ...entry };
+    delete body.id;
+    return http.put(productsTrackingUrl(entry.id), body);
+  }
   return http.post(`${apiEndpointProdTracking}/`, tracking);
 }
 
@@ -96,12 +94,14 @@ export async function updateProductStock(inventory) {
     stock.id = productStock[0].id;
     stock.quantityAvailable = newQuantity;
 
+    console.log("Updating Stock START...");
     console.log("Tracking possible issue");
     console.log("productStock", productStock);
     console.log("quantity", quantity);
     console.log("quantityAvailable", quantityAvailable);
     console.log("newQuantity", newQuantity);
     console.log("stockToSave", stock);
+    console.log("Updating Stock END...");
   }
 
   await saveProductStock(stock);
