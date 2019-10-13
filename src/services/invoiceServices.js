@@ -59,6 +59,6 @@ export function deleteInvoiceHeader(invoiceHeaderId) {
   return http.delete(invoiceHeaderUrl(invoiceHeaderId));
 }
 
-export function deleteInvoiceDetail(invoiceHeaderId) {
-  return http.delete(invoiceDetailUrl(invoiceHeaderId));
+export function deleteInvoiceDetail(id) {
+  return http.delete(invoiceDetailUrl(id));
 }

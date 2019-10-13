@@ -13,7 +13,8 @@ import {
   getNextInvoiceSequence,
   saveInvoiceDetail,
   getInvoiceHeader,
-  getInvoiceDetail
+  getInvoiceDetail,
+  deleteInvoiceDetail
 } from "../services/invoiceServices";
 import {
   saveProductTracking,
@@ -44,6 +45,7 @@ class InvoiceForm extends Form {
     },
     products: [],
     details: [],
+    detailsToDelete: [],
     companies: [],
     line: {
       id: 0,
@@ -332,10 +334,14 @@ class InvoiceForm extends Form {
   };
 
   handleDeleteDetail = detail => {
+    const detailsToDelete = [...this.state.detailsToDelete];
+    detailsToDelete.push(detail);
+
     const details = this.state.details.filter(
       d => d.product_id !== detail.product_id
     );
-    this.setState({ details });
+
+    this.setState({ details, detailsToDelete });
 
     setTimeout(() => {
       this.updateTotals();
@@ -433,6 +439,10 @@ class InvoiceForm extends Form {
         };
         await saveInvoiceDetail(detail);
         await this.updateInventory(detail);
+      });
+
+      this.state.detailsToDelete.forEach(async item => {
+        await deleteInvoiceDetail(item.id);
       });
 
       this.props.history.push("/invoices");
