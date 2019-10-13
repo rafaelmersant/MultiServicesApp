@@ -1,11 +1,17 @@
 import React, { Component } from "react";
 import _ from "lodash";
+import { toast } from "react-toastify";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
 import { getCurrentUser } from "../services/authService";
-import { getInvoicesHeader } from "../services/invoiceServices";
+import {
+  getInvoicesHeader,
+  deleteInvoiceHeader,
+  getInvoiceDetail,
+  deleteInvoiceDetail
+} from "../services/invoiceServices";
 import InvoicesTable from "./invoicesTable";
 
 class Invoices extends Component {
@@ -18,6 +24,10 @@ class Invoices extends Component {
   };
 
   async componentDidMount() {
+    this.populateInvoices();
+  }
+
+  async populateInvoices() {
     const companyId = getCurrentUser().companyId;
     const { data: invoices } = await getInvoicesHeader(companyId);
     this.setState({ invoices });
@@ -33,6 +43,42 @@ class Invoices extends Component {
 
   handleSort = sortColumn => {
     this.setState({ sortColumn });
+  };
+
+  handleDelete = async invoice => {
+    if (invoice.paid) {
+      toast.error("No puede eliminar una factura pagada.");
+      return false;
+    }
+
+    const answer = window.confirm(
+      `Seguro que desea eliminar la factura #${invoice.sequence}`
+    );
+
+    if (answer) {
+      try {
+        const invoices = this.state.invoices.filter(
+          item => item.id !== invoice.id
+        );
+        this.setState({ invoices });
+
+        const details = await getInvoiceDetail(invoice.id);
+        var deleted = await deleteInvoiceHeader(invoice.id);
+
+        details.forEach(async item => {
+          await deleteInvoiceDetail(item.id);
+        });
+      } catch (ex) {
+        if (ex.response && ex.response.status === 404)
+          toast.error("Este factura ya fue eliminada");
+      }
+
+      console.log("deleted", deleted);
+      if (deleted && deleted.status === 200)
+        toast.success(
+          `La factura #${invoice.sequence} fue eliminada con exito!`
+        );
+    }
   };
 
   getPagedData = () => {

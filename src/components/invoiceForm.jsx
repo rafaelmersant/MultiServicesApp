@@ -122,14 +122,15 @@ class InvoiceForm extends Form {
     const price = Math.round(parseFloat(product.price) * 100) / 100;
     const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
     const total = Math.round(price * quantity * 100) / 100;
-    const subtotal = Math.round((total + itbis - discount) * 100) / 100;
+    const subtotal =
+      Math.round((total + itbis * quantity - discount) * 100) / 100;
 
     line.quantity = quantity;
     line.product_id = product.id;
     line.product = product.description;
     line.price = price;
     line.cost = Math.round(product.cost * 100) / 100;
-    line.itbis = Math.round(itbis * quantity * 100) / 100;
+    line.itbis = Math.round(itbis * 100) / 100;
     line.discount = Math.round(discount * 100) / 100;
     line.total = subtotal;
 

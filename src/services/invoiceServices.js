@@ -31,10 +31,6 @@ export function getInvoiceDetail(invoiceHeaderId) {
   return http.get(`${apiEndpointDetail}/?invoice=${invoiceHeaderId}`);
 }
 
-export function getInvoicesDetail(invoiceHeaderId) {
-  return http.get(`${apiEndpointHeader}/?invoice=${invoiceHeaderId}`);
-}
-
 export function saveInvoiceHeader(invoiceHeader) {
   if (invoiceHeader.id) {
     const body = { ...invoiceHeader };
@@ -55,8 +51,8 @@ export function saveInvoiceDetail(invoiceDetail, invoiceHeaderId) {
   return http.post(`${apiEndpointDetail}/`, invoiceDetail);
 }
 
-export function deleteInvoiceHeader(invoiceHeaderId) {
-  return http.delete(invoiceHeaderUrl(invoiceHeaderId));
+export function deleteInvoiceHeader(id) {
+  return http.delete(invoiceHeaderUrl(id));
 }
 
 export function deleteInvoiceDetail(id) {
