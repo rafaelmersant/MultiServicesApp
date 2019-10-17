@@ -7,6 +7,7 @@ import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
 import { getProducts, deleteProduct } from "../services/productService";
 import { getCurrentUser } from "../services/authService";
+import { getProductInInvoice } from "../services/invoiceServices";
 import ProductsTable from "./productsTable";
 
 class Products extends Component {
@@ -25,6 +26,15 @@ class Products extends Component {
   }
 
   handleDelete = async product => {
+    const { data: found } = await getProductInInvoice(
+      getCurrentUser().companyId,
+      product.id
+    );
+    if (found.length) {
+      toast.error("No puede eliminar un producto que se ha facturado.");
+      return false;
+    }
+
     const answer = window.confirm(
       "Esta seguro de eliminar este producto? \nNo podrá deshacer esta acción"
     );

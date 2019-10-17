@@ -19,6 +19,12 @@ export function getProduct(productId) {
   return http.get(`${apiEndpoint}/?id=${productId}`);
 }
 
+export function getCategoryInProduct(companyId, categoryId) {
+  return http.get(
+    `${apiEndpoint}/?company=${companyId}&category_id=${categoryId}`
+  );
+}
+
 export function saveProduct(product) {
   if (product.id) {
     const body = { ...product };

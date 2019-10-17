@@ -8,6 +8,7 @@ import SearchCustomer from "./common/searchCustomer";
 import { formatNumber } from "../utils/custom";
 import { getCurrentUser } from "../services/authService";
 import { getProducts } from "../services/productService";
+import { getNextNCF, saveEntry } from "../services/ncfService";
 import {
   saveInvoiceHeader,
   getNextInvoiceSequence,
@@ -170,11 +171,12 @@ class InvoiceForm extends Form {
     await updateProductStock(inventory);
   }
 
-  refreshNextInvoiceSequence() {
+  async refreshNextInvoiceSequence() {
     const companyId = getCurrentUser().companyId;
-    const { data } = { ...this.state };
+    const { data: sequence } = await getNextInvoiceSequence(companyId);
 
-    data.sequence = getNextInvoiceSequence(companyId);
+    const { data } = { ...this.state };
+    data.sequence = sequence.sequence;
     this.setState({ data });
   }
 
@@ -197,6 +199,7 @@ class InvoiceForm extends Form {
         details: this.mapToViewInvoiceDetail(invoiceDetail),
         searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
         hideSearchCustomer: true,
+        ncf: invoiceHeader[0].ncf.length,
         action: "Detalle de Factura"
       });
 
@@ -372,8 +375,20 @@ class InvoiceForm extends Form {
     this.setState({ data });
   };
 
-  handleChangeNCF = () => {
+  handleChangeNCF = async () => {
     this.setState({ ncf: !this.state.ncf });
+
+    const { data: entry } = await getNextNCF(getCurrentUser().companyId);
+    const hasNCF =
+      entry.length && entry[0].current + 1 <= entry[0].end
+        ? entry[0].current + 1
+        : 0;
+
+    if (hasNCF === 0) {
+      toast.error("No tiene secuencia disponible para NCF.");
+      this.setState({ ncf: false });
+      return false;
+    }
   };
 
   handleChangeQuantity = ({ currentTarget: input }) => {
@@ -402,6 +417,27 @@ class InvoiceForm extends Form {
     }
   };
 
+  async getNextNCF() {
+    const { data: entry } = await getNextNCF(getCurrentUser().companyId);
+
+    const nextNCF =
+      entry.length && entry[0].current + 1 <= entry[0].end
+        ? entry[0].current + 1
+        : 0;
+
+    const data = { ...this.state.data };
+    const sec = `00000000${nextNCF}`.substr(`00000000${nextNCF}`.length - 7, 7);
+    data.ncf = `${entry[0].typeDoc}${sec}`;
+    this.setState({ data });
+
+    const _entry = { ...entry[0] };
+    _entry.current += 1;
+    _entry.company_id = getCurrentUser().companyId;
+
+    console.log(data.ncf);
+    await saveEntry(_entry);
+  }
+
   async componentDidMount() {
     this._isMounted = true;
 
@@ -409,12 +445,7 @@ class InvoiceForm extends Form {
     await this.populateInvoice();
 
     if (!this.state.data.id) {
-      const companyId = getCurrentUser().companyId;
-      const { data: sequence } = await getNextInvoiceSequence(companyId);
-
-      const { data } = { ...this.state };
-      data.sequence = sequence.sequence;
-      this.setState({ data });
+      this.refreshNextInvoiceSequence();
     }
   }
 
@@ -425,28 +456,37 @@ class InvoiceForm extends Form {
   doSubmit = async () => {
     try {
       console.log("doSubmite - state", this.state);
-      const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
+      if (this.state.ncf) this.getNextNCF();
 
-      this.state.details.forEach(async item => {
-        const detail = {
-          id: item.id,
-          invoice_id: invoiceHeader.id,
-          product_id: item.product_id,
-          quantity: item.quantity,
-          price: item.price,
-          itbis: item.itbis,
-          discount: item.discount,
-          creationDate: new Date().toISOString()
-        };
-        await saveInvoiceDetail(detail);
-        await this.updateInventory(detail);
-      });
+      setTimeout(async () => {
+        this.refreshNextInvoiceSequence();
+        const { data: invoiceHeader } = await saveInvoiceHeader(
+          this.state.data
+        );
 
-      this.state.detailsToDelete.forEach(async item => {
-        await deleteInvoiceDetail(item.id);
-      });
+        this.state.details.forEach(async item => {
+          const detail = {
+            id: item.id,
+            invoice_id: invoiceHeader.id,
+            product_id: item.product_id,
+            quantity: item.quantity,
+            price: item.price,
+            itbis: item.itbis,
+            discount: item.discount,
+            creationDate: new Date().toISOString()
+          };
+          await saveInvoiceDetail(detail);
+          await this.updateInventory(detail);
+        });
 
-      this.props.history.push("/invoices");
+        this.state.detailsToDelete.forEach(async item => {
+          await deleteInvoiceDetail(item.id);
+        });
+      }, 100);
+
+      setTimeout(() => {
+        this.props.history.push("/invoices");
+      }, 300);
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");
@@ -473,7 +513,7 @@ class InvoiceForm extends Form {
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
             <div className="row">
-              <div className="col-11">
+              <div className="col-9">
                 <SearchCustomer
                   onSelect={this.handleSelectCustomer}
                   onFocus={() => this.handleFocusCustomer(false)}
@@ -483,18 +523,36 @@ class InvoiceForm extends Form {
                   companyId={getCurrentUser().companyId}
                 />
               </div>
-              <div className="col-1 mt-4">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="chkNCF"
-                  checked={this.state.ncf}
-                  onChange={this.handleChangeNCF}
-                />
-                <label className="form-check-label" htmlFor="chkNCF">
-                  NCF
-                </label>
-              </div>
+
+              {!this.state.data.ncf && (
+                <div className="col-1 mt-4">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="chkNCF"
+                    checked={this.state.ncf}
+                    onChange={this.handleChangeNCF}
+                    disabled={this.state.data.id}
+                  />
+                  <label className="form-check-label" htmlFor="chkNCF">
+                    NCF
+                  </label>
+                </div>
+              )}
+
+              {this.state.ncf.toString().replace("0", "") &&
+                this.state.data.id.toString().replace("0", "") && (
+                  <div className="col-2">
+                    <Input
+                      type="text"
+                      name="ncf"
+                      value={this.state.data.ncf}
+                      label="NCF"
+                      onChange={this.handleChange}
+                      disabled="disabled"
+                    />
+                  </div>
+                )}
             </div>
 
             <div className="row">

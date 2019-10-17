@@ -3,7 +3,7 @@ import Joi from "joi-browser";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
 import Form from "./common/form";
-import { getEntryById, saveEntry } from "../services/ncfService";
+import { getEntryById, saveEntry, getEntries } from "../services/ncfService";
 import { getCurrentUser } from "../services/authService";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -63,12 +63,17 @@ class NCFForm extends Form {
   }
 
   handleChangeDueDate = date => {
-    const entry = { ...this.state.data };
-    let _date = new Date(date);
-    _date.setDate(_date.getDate() + 1);
-    entry.dueDate = new Date(_date).toISOString().slice(0, 10);
+    this.setState({ dueDate: date });
+  };
 
-    this.setState({ data: entry, dueDate: date });
+  deactivateOldEntries = async () => {
+    const { data: entries } = await getEntries(getCurrentUser().companyId);
+    entries.forEach(async item => {
+      const entry = { ...item };
+      entry.active = false;
+      entry.company_id = entry.company.id;
+      await saveEntry(entry);
+    });
   };
 
   async componentDidMount() {
@@ -98,9 +103,16 @@ class NCFForm extends Form {
       return false;
     }
 
-    await saveEntry(this.state.data);
+    this.deactivateOldEntries();
 
-    this.props.history.push("/ncf");
+    const data = { ...this.state.data };
+    data.dueDate = this.state.dueDate.toISOString();
+    this.setState({ data });
+
+    setTimeout(async () => {
+      await saveEntry(this.state.data);
+      this.props.history.push("/ncf");
+    }, 200);
   };
 
   render() {
@@ -125,8 +137,7 @@ class NCFForm extends Form {
                 <DatePicker
                   selected={this.state.dueDate}
                   onChange={date => this.handleChangeDueDate(date)}
-                  dateFormat="MM/dd/yyyy"
-                  locale="en"
+                  dateFormat="yyyy/MM/dd"
                 />
               </div>
             </div>

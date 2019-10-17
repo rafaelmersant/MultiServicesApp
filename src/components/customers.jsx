@@ -6,6 +6,7 @@ import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
 import { getCustomers, deleteCustomer } from "../services/customerService";
+import { getCustomerInInvoice } from "../services/invoiceServices";
 import { getCurrentUser } from "../services/authService";
 import CustomersTable from "./customersTable";
 
@@ -26,6 +27,15 @@ class Customers extends Component {
   }
 
   handleDelete = async customer => {
+    const { data: found } = await getCustomerInInvoice(
+      getCurrentUser().companyId,
+      customer.id
+    );
+    if (found.length) {
+      toast.error("No puede eliminar un cliente que tiene factura creada.");
+      return false;
+    }
+
     const answer = window.confirm(
       "Esta seguro de eliminar este cliente? \nNo podrá deshacer esta acción"
     );

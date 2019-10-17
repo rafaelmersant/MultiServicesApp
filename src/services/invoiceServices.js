@@ -31,6 +31,18 @@ export function getInvoiceDetail(invoiceHeaderId) {
   return http.get(`${apiEndpointDetail}/?invoice=${invoiceHeaderId}`);
 }
 
+export function getProductInInvoice(companyId, productId) {
+  return http.get(
+    `${apiEndpointDetail}/?company=${companyId}&product=${productId}`
+  );
+}
+
+export function getCustomerInInvoice(companyId, customerId) {
+  return http.get(
+    `${apiEndpointHeader}/?company=${companyId}&customer_id=${customerId}`
+  );
+}
+
 export function saveInvoiceHeader(invoiceHeader) {
   if (invoiceHeader.id) {
     const body = { ...invoiceHeader };

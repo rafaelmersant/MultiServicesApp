@@ -1,10 +1,13 @@
 import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
+import Input from "./common/input";
+import { formatNumber } from "../utils/custom";
 import { getCompanies } from "../services/companyService";
 import { getProductsCategories } from "../services/productCategoryService";
 import { getProduct, saveProduct } from "../services/productService";
 import { getCurrentUser } from "../services/authService";
+import { getProductsStocks } from "../services/inventoryService";
 
 class ProductForm extends Form {
   state = {
@@ -25,6 +28,7 @@ class ProductForm extends Form {
     companies: [],
     categories: [],
     errors: {},
+    availableStock: 0,
     action: "Nuevo Producto"
   };
 
@@ -64,6 +68,7 @@ class ProductForm extends Form {
       const productId = this.props.match.params.id;
       if (productId === "new") return;
 
+      this.getProductStock(productId);
       const { data: product } = await getProduct(productId);
 
       this.setState({
@@ -74,6 +79,12 @@ class ProductForm extends Form {
       if (ex.response && ex.response.status === 404)
         return this.props.history.replace("/not-found");
     }
+  }
+
+  async getProductStock(productId) {
+    const { data: stock } = await getProductsStocks(productId);
+    if (stock.length)
+      this.setState({ availableStock: stock[0].quantityAvailable });
   }
 
   async componentDidMount() {
@@ -138,11 +149,25 @@ class ProductForm extends Form {
               <div className="col">{this.renderInput("model", "Modelo")}</div>
             </div>
 
-            {this.renderSelect(
-              "category_id",
-              "Categoria",
-              this.state.categories
-            )}
+            <div className="row">
+              <div className="col">
+                {this.renderSelect(
+                  "category_id",
+                  "Categoria",
+                  this.state.categories
+                )}
+              </div>
+              <div className="col">
+                <Input
+                  disabled="disabled"
+                  type="text"
+                  name="available"
+                  value={formatNumber(this.state.availableStock)}
+                  label="Disponible en inventario"
+                />
+              </div>
+            </div>
+
             {false &&
               this.renderSelect("company_id", "Compañía", this.state.companies)}
             {this.renderButton("Guardar")}

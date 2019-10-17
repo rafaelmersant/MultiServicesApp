@@ -9,6 +9,7 @@ import {
   getProductsCategories,
   deleteCategory
 } from "../services/productCategoryService";
+import { getCategoryInProduct } from "../services/productService";
 import { getCurrentUser } from "../services/authService";
 import ProductCategoriesTable from "./productCategoriesTable";
 
@@ -29,6 +30,17 @@ class ProductsCategories extends Component {
   }
 
   handleDelete = async category => {
+    const { data: found } = await getCategoryInProduct(
+      getCurrentUser().companyId,
+      category.id
+    );
+    if (found.length) {
+      toast.error(
+        "No puede eliminar una categoria que se esta usando en productos."
+      );
+      return false;
+    }
+
     const answer = window.confirm(
       "Esta seguro de eliminar esta categoria? \nNo podrá deshacer esta acción"
     );

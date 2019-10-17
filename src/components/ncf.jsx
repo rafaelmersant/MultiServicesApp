@@ -28,6 +28,13 @@ class NCF extends Component {
   }
 
   handleDelete = async entry => {
+    if (entry.current > 0) {
+      toast.error(
+        "No puede eliminar esta entrada porque su secuencia ha sido usada en factura(s)."
+      );
+      return false;
+    }
+
     const answer = window.confirm(
       "Esta seguro de eliminar este registro? \nNo podrá deshacer esta acción"
     );
