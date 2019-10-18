@@ -369,10 +369,14 @@ class InvoiceForm extends Form {
     this.handleDeleteDetail(detail);
   };
 
-  handleChangePaid = () => {
+  handleChangePaid = async () => {
     const { data } = { ...this.state };
     data.paid = !data.paid;
     this.setState({ data });
+
+    if (this.state.data.paid && this.state.data.id) {
+      await saveInvoiceHeader(this.state.data);
+    }
   };
 
   handleChangeNCF = async () => {
@@ -579,7 +583,7 @@ class InvoiceForm extends Form {
                   id="chkPaid"
                   checked={this.state.data.paid}
                   onChange={this.handleChangePaid}
-                  disabled={this.state.data.id}
+                  disabled={this.state.data.id && this.state.data.paid}
                 />
                 <label className="form-check-label" htmlFor="chkPaid">
                   Pagada

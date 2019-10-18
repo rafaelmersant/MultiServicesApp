@@ -64,6 +64,29 @@ const NavBar = ({ user }) => {
             </li>
           )}
 
+          <li className="nav-item dropdown">
+            <a
+              className="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              | Reportes
+            </a>
+            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+              <NavLink className="dropdown-item" to="/reports/invoice">
+                Facturas
+              </NavLink>
+
+              <NavLink className="dropdown-item" to="/reports/inventory">
+                Inventario
+              </NavLink>
+            </div>
+          </li>
+
           {user && user.role === "Owner" && (
             <li className="nav-item">
               <NavLink className="nav-link" to="/companies">
