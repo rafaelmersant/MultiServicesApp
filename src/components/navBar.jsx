@@ -65,17 +65,15 @@ const NavBar = ({ user }) => {
           )}
 
           <li className="nav-item dropdown">
-            <a
-              className="nav-link dropdown-toggle"
-              href="#"
+            <label
+              className="clickable nav-link dropdown-toggle"
               id="navbarDropdown"
-              role="button"
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
             >
               | Reportes
-            </a>
+            </label>
             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
               <NavLink className="dropdown-item" to="/reports/invoice">
                 Facturas

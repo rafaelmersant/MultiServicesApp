@@ -8,7 +8,10 @@ function prodCategoryUrl(id) {
 }
 
 export function getProductsCategories(companyId) {
-  if (companyId) return http.get(`${apiEndpoint}/?company=${companyId}`);
+  if (companyId)
+    return http.get(
+      `${apiEndpoint}/?company=${companyId}&ordering=description`
+    );
 
   return http.get(`${apiEndpoint}/`);
 }

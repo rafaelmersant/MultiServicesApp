@@ -72,17 +72,26 @@ class ProductCategoryForm extends Form {
 
   doSubmit = async () => {
     console.log(this.state.data);
-    await saveProductCategory(this.state.data);
+    const { data: category } = await saveProductCategory(this.state.data);
 
-    this.props.history.push("/productsCategories");
+    if (!this.props.popUp) this.props.history.push("/productsCategories");
+
+    this.props.closeMe(category);
   };
 
   render() {
-    const { user } = this.props;
+    const { user, popUp } = this.props;
+    const _standardSize =
+      "container pull-left col-lg-6 col-md-7 col-sm-9 ml-3 shadow-lg p-3 mb-5 bg-white rounded";
+    const _fullSize =
+      "container pull-left col-lg-12 col-md-12 col-sm-12  shadow-lg p-3 mb-5 bg-white rounded";
+    const containerSize = popUp ? _fullSize : _standardSize;
 
     return (
-      <div className="container pull-left col-lg-6 col-md-7 col-sm-9 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
-        <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+      <div className={containerSize}>
+        {!popUp && (
+          <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+        )}
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
             {this.renderInput("description", "Descripción")}

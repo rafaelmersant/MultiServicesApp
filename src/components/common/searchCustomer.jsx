@@ -18,6 +18,16 @@ class SearchCustomer extends Component {
     );
     if (input.value === "") customers = [];
 
+    if (input.value.length > 0 && customers.length === 0)
+      customers = [
+        {
+          id: 0,
+          firstName: "No existe el cliente",
+          lastName: ", desea crearlo?",
+          email: ""
+        }
+      ];
+
     this.setState({ customers });
   };
 
@@ -62,7 +72,8 @@ class SearchCustomer extends Component {
                 onClick={() => onSelect(customer)}
                 className="list-group-item list-group-item-action w-100"
               >
-                {customer.firstName} {customer.lastName} |
+                {customer.firstName} {customer.lastName}
+                {customer.email.length > 0 && " | "}
                 <span className="text-secondary">
                   <em>{" " + customer.email}</em>
                 </span>

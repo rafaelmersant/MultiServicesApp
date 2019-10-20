@@ -19,7 +19,7 @@ class ProductsCategories extends Component {
     currentPage: 1,
     pageSize: 10,
     searchQuery: "",
-    sortColumn: { path: "name", order: "asc" }
+    sortColumn: { path: "creationDate", order: "desc" }
   };
 
   async componentDidMount() {

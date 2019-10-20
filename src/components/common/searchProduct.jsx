@@ -18,6 +18,15 @@ class SearchProduct extends Component {
     );
     if (input.value === "") products = [];
 
+    if (input.value.length > 0 && products.length === 0)
+      products = [
+        {
+          id: 0,
+          description: "No existe el producto, desea crearlo?",
+          category: { id: 0, description: "" }
+        }
+      ];
+
     this.setState({ products });
   };
 
@@ -61,7 +70,8 @@ class SearchProduct extends Component {
                 onClick={() => onSelect(product)}
                 className="list-group-item list-group-item-action w-100"
               >
-                {product.description} |
+                {product.description}
+                {product.category.description.length > 0 && " | "}
                 <span className="text-secondary">
                   <em>{" " + product.category.description}</em>
                 </span>

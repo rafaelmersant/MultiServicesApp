@@ -8,11 +8,13 @@ function productUrl(id) {
 }
 
 export function getProducts(companyId) {
-  return http.get(`${apiEndpoint}/?company=${companyId}`);
+  return http.get(`${apiEndpoint}/?company=${companyId}&ordering=description`);
 }
 
 export function getProductsByDescription(companyId, description) {
-  return http.get(`${apiEndpoint}/?company=${companyId}&search=${description}`);
+  return http.get(
+    `${apiEndpoint}/?company=${companyId}&search=${description}&ordering=description`
+  );
 }
 
 export function getProduct(productId) {

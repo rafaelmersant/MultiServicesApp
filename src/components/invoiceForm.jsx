@@ -6,6 +6,7 @@ import Input from "./common/input";
 import SearchProduct from "./common/searchProduct";
 import SearchCustomer from "./common/searchCustomer";
 import { formatNumber } from "../utils/custom";
+import CustomerModal from "./modals/customerModal";
 import { getCurrentUser } from "../services/authService";
 import { getProducts } from "../services/productService";
 import { getNextNCF, saveEntry } from "../services/ncfService";
@@ -24,6 +25,7 @@ import {
 } from "../services/inventoryService";
 import InvoiceDetailTable from "./invoiceDetailTable";
 import _ from "lodash";
+import ProductModal from "./modals/productModal";
 
 class InvoiceForm extends Form {
   _isMounted = false;
@@ -262,6 +264,11 @@ class InvoiceForm extends Form {
     };
     handler(window.event);
 
+    if (product.id === 0) {
+      this.raiseProductModal.click();
+      return false;
+    }
+
     const product_found = _.find(this.state.details, function(item) {
       return item.product_id === product.id;
     });
@@ -296,6 +303,11 @@ class InvoiceForm extends Form {
       e.preventDefault();
     };
     handler(window.event);
+
+    if (customer.id === 0) {
+      this.raiseCustomerModal.click();
+      return false;
+    }
 
     const data = { ...this.state.data };
     data.customer_id = customer.id;
@@ -421,6 +433,16 @@ class InvoiceForm extends Form {
     }
   };
 
+  handleSetNewCustomer = e => {
+    this.handleSelectCustomer(e);
+    this.forceUpdate();
+  };
+
+  handleSetNewProduct = e => {
+    this.setState({ searchProductText: `${e.description}` });
+    this.handleSelectProduct(e);
+  };
+
   async getNextNCF() {
     const { data: entry } = await getNextNCF(getCurrentUser().companyId);
 
@@ -517,7 +539,22 @@ class InvoiceForm extends Form {
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
             <div className="row">
-              <div className="col-9">
+              <button
+                type="button"
+                data-toggle="modal"
+                data-target="#customerModal"
+                hidden="hidden"
+                ref={button => (this.raiseCustomerModal = button)}
+              ></button>
+              <button
+                type="button"
+                data-toggle="modal"
+                data-target="#productModal"
+                hidden="hidden"
+                ref={button => (this.raiseProductModal = button)}
+              ></button>
+
+              <div className="col-8 ml-0">
                 <SearchCustomer
                   onSelect={this.handleSelectCustomer}
                   onFocus={() => this.handleFocusCustomer(false)}
@@ -669,6 +706,8 @@ class InvoiceForm extends Form {
               this.renderButton("Guardar")}
           </form>
         </div>
+        <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
+        <ProductModal setNewProduct={this.handleSetNewProduct} />
       </div>
     );
   }

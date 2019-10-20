@@ -68,6 +68,15 @@ class UserForm extends Form {
   async componentDidMount() {
     await this.populateCompanies();
     await this.populateCustomer();
+
+    if (this.props.customerName && this.props.customerName.length) {
+      const data = { ...this.state.data };
+      data.firstName = this.props.customerName;
+      this.setState({ data });
+      this.forceUpdate();
+      console.log(this.props);
+      console.log("ENTRO");
+    }
   }
 
   mapToViewModel(customer) {
@@ -87,16 +96,27 @@ class UserForm extends Form {
   }
 
   doSubmit = async () => {
-    await saveCustomer(this.state.data);
-    this.props.history.push("/customers");
+    const { data: customer } = await saveCustomer(this.state.data);
+
+    if (!this.props.popUp) this.props.history.push("/customers");
+
+    this.props.closeMe(customer);
   };
 
   render() {
-    const { user } = this.props;
+    const { user, popUp } = this.props;
+    const _standardSize =
+      "container pull-left col-lg-8 col-md-8 col-sm-11 ml-3 shadow-lg p-3 mb-5 bg-white rounded";
+    const _fullSize =
+      "container pull-left col-lg-12 col-md-12 col-sm-12  shadow-lg p-3 mb-5 bg-white rounded";
+    const containerSize = popUp ? _fullSize : _standardSize;
 
     return (
-      <div className="container pull-left col-lg-8 col-md-8 col-sm-11 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
-        <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+      <div className={containerSize}>
+        {!popUp && (
+          <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+        )}
+
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
             <div className="row">
