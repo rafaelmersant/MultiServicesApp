@@ -100,6 +100,11 @@ class ProductForm extends Form {
     this.setState({ data });
   };
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props === nextProps || this.state === nextState) return false;
+    else return true;
+  }
+
   async componentDidMount() {
     await this.populateCompanies();
     await this.populateCategories();
@@ -140,7 +145,7 @@ class ProductForm extends Form {
   };
 
   render() {
-    const { user, popUp } = this.props;
+    const { popUp } = this.props;
     const _standardSize =
       "container pull-left col-lg-8 col-md-8 col-sm-9 ml-3 shadow-lg p-3 mb-5 bg-white rounded";
     const _fullSize =
@@ -186,22 +191,24 @@ class ProductForm extends Form {
                   this.state.categories
                 )}
               </div>
-              <div className="col-1 ml-0 pl-0">
-                <button
-                  type="button"
-                  className="fa fa-plus-circle"
-                  data-toggle="modal"
-                  data-target="#categoryModal"
-                  style={{
-                    color: "green",
-                    border: "0",
-                    backgroundColor: "transparent",
-                    marginTop: "32px",
-                    fontSize: "36px",
-                    outline: "none"
-                  }}
-                ></button>
-              </div>
+              {!popUp && (
+                <div className="col-1 ml-0 pl-0">
+                  <button
+                    type="button"
+                    className="fa fa-plus-circle"
+                    data-toggle="modal"
+                    data-target="#categoryModal"
+                    style={{
+                      color: "green",
+                      border: "0",
+                      backgroundColor: "transparent",
+                      marginTop: "32px",
+                      fontSize: "36px",
+                      outline: "none"
+                    }}
+                  ></button>
+                </div>
+              )}
               <div className="col-6">
                 <Input
                   disabled="disabled"
