@@ -95,24 +95,17 @@ class ProductForm extends Form {
     };
     handler(window.event);
 
+    this.populateCategories();
+
     const data = { ...this.state.data };
     data.category_id = e.id;
     this.setState({ data });
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.props === nextProps || this.state === nextState) return false;
-    else return true;
-  }
-
   async componentDidMount() {
     await this.populateCompanies();
     await this.populateCategories();
     await this.populateProduct();
-  }
-
-  async componentDidUpdate() {
-    this.populateCategories();
   }
 
   mapToViewModel(product) {
@@ -140,8 +133,7 @@ class ProductForm extends Form {
     const { data: customer } = await saveProduct(this.state.data);
 
     if (!this.props.popUp) this.props.history.push("/products");
-
-    this.props.closeMe(customer);
+    else this.props.closeMe(customer);
   };
 
   render() {

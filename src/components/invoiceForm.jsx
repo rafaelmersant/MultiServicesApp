@@ -12,8 +12,9 @@ import { getProducts } from "../services/productService";
 import { getNextNCF, saveEntry } from "../services/ncfService";
 import {
   saveInvoiceHeader,
-  getNextInvoiceSequence,
   saveInvoiceDetail,
+  saveInvoiceSequence,
+  getInvoiceSequence,
   getInvoiceHeader,
   getInvoiceDetail,
   deleteInvoiceDetail
@@ -68,6 +69,13 @@ class InvoiceForm extends Form {
     ],
     errors: {},
     currentProduct: {},
+    invoiceSequence: {
+      id: 0,
+      sequence: 1,
+      company_id: getCurrentUser().companyId,
+      creationDate: new Date().toISOString(),
+      createdUser: getCurrentUser().email
+    },
     action: "Nueva Factura",
     hideSearchProduct: false,
     hideSearchCustomer: false,
@@ -85,7 +93,7 @@ class InvoiceForm extends Form {
     paymentMethod: Joi.optional(),
     paid: Joi.optional(),
     reference: Joi.optional(),
-    subtotal: Joi.optional(),
+    subtotal: Joi.number().min(1),
     itbis: Joi.optional(),
     discount: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
@@ -174,12 +182,21 @@ class InvoiceForm extends Form {
   }
 
   async refreshNextInvoiceSequence() {
+    const newSequence = { ...this.state.invoiceSequence };
+
     const companyId = getCurrentUser().companyId;
-    const { data: sequence } = await getNextInvoiceSequence(companyId);
+    const { data: sequence } = await getInvoiceSequence(companyId);
+
+    if (sequence.length) {
+      newSequence.sequence = sequence[0].sequence + 1;
+      newSequence.id = sequence[0].id;
+      newSequence.company_id = sequence[0].company.id;
+    }
 
     const { data } = { ...this.state };
-    data.sequence = sequence.sequence;
-    this.setState({ data });
+    data.sequence = newSequence.sequence;
+
+    this.setState({ data, invoiceSequence: newSequence });
   }
 
   async populateInvoice() {
@@ -288,7 +305,8 @@ class InvoiceForm extends Form {
 
     const { data: stock } = await getProductsStocks(product.id);
     const available = stock.length ? stock[0].quantityAvailable : 0;
-    if (available > 0) toast.success(`Cantidad disponible: ${available}`);
+    if (available > 0)
+      toast.success(`Cantidad disponible: ${formatNumber(available)}`);
     else toast.error(`No tiene disponible en inventario`);
   };
 
@@ -501,7 +519,9 @@ class InvoiceForm extends Form {
             discount: item.discount,
             creationDate: new Date().toISOString()
           };
+
           await saveInvoiceDetail(detail);
+          await saveInvoiceSequence(this.state.invoiceSequence);
           await this.updateInventory(detail);
         });
 

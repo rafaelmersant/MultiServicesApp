@@ -56,12 +56,17 @@ class InvoicesTable extends Component {
 
   deleteColumn = {
     key: "delete",
-    content: user => (
+    content: invoice => (
       <div className="text-center">
         <button
-          onClick={() => this.props.onDelete(user)}
+          onClick={() => this.props.onDelete(invoice)}
           className="fa fa-trash"
           style={{ color: "red", fontSize: "16px" }}
+        ></button>
+        <button
+          onClick={() => this.props.onPrint(invoice)}
+          className="fa fa-print"
+          style={{ color: "green", fontSize: "16px" }}
         ></button>
       </div>
     )

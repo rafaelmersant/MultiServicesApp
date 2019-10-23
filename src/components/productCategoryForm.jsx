@@ -75,8 +75,7 @@ class ProductCategoryForm extends Form {
     const { data: category } = await saveProductCategory(this.state.data);
 
     if (!this.props.popUp) this.props.history.push("/productsCategories");
-
-    this.props.closeMe(category);
+    else this.props.closeMe(category);
   };
 
   render() {

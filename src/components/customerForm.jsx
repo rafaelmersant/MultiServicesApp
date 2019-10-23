@@ -99,8 +99,7 @@ class UserForm extends Form {
     const { data: customer } = await saveCustomer(this.state.data);
 
     if (!this.props.popUp) this.props.history.push("/customers");
-
-    this.props.closeMe(customer);
+    else this.props.closeMe(customer);
   };
 
   render() {
