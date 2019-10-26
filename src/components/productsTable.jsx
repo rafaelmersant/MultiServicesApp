@@ -17,7 +17,7 @@ class ProductsTable extends Component {
     { path: "itbis", label: "ITBIS" },
     { path: "category.description", label: "Categoria" },
     { path: "measure", label: "Medida" },
-    { path: "creationDate", label: "Creado" }
+    { path: "creationDate", label: "Creado (m/d/a)" }
   ];
 
   deleteColumn = {

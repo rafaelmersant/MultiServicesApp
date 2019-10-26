@@ -4,11 +4,10 @@ import toast from "react-toastify";
 import Form from "./common/form";
 import SearchProduct from "./common/searchProduct";
 import Input from "./common/input";
-import Select from "./common/select";
+import ProductModal from "./modals/productModal";
 import { formatNumber } from "../utils/custom";
-import { getCompanies } from "../services/companyService";
-import { getProducts } from "../services/productService";
 import { getCurrentUser } from "../services/authService";
+import { saveProduct } from "../services/productService";
 import {
   saveProductTracking,
   updateProductStock,
@@ -24,18 +23,20 @@ class InventoryForm extends Form {
       product_id: "",
       typeTracking: "E",
       quantity: "",
+      price: "",
+      cost: "",
+      provider: "",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
     },
-    products: [],
-    companies: [],
+    product: {},
     typeTrackings: [{ id: "E", name: "Entrada" }, { id: "S", name: "Salida" }],
     errors: {},
     action: "Nuevo Registro de Inventario",
     hideSearch: false,
     availableStock: 0,
-    searchProductInput: ""
+    searchProductText: ""
   };
 
   schema = {
@@ -47,63 +48,77 @@ class InventoryForm extends Form {
     quantity: Joi.number()
       .required()
       .label("Cantidad"),
+    price: Joi.number()
+      .required()
+      .label("Precio"),
+    cost: Joi.optional(),
+    provider: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
     creationDate: Joi.string()
   };
 
-  async populateCompanies() {
-    const { data: companies } = await getCompanies();
-    this.setState({ companies });
-  }
-
-  async populateProducts() {
-    const companyId = getCurrentUser().companyId;
-    const { data: products } = await getProducts(companyId);
-    this.setState({ products });
-  }
-
   async getProductStock(productId) {
     const { data: stock } = await getProductsStocks(productId);
+
     if (stock.length)
       this.setState({ availableStock: stock[0].quantityAvailable });
   }
 
-  handleSelect = async product => {
+  handleSelectProduct = async product => {
+    const handler = e => {
+      e.preventDefault();
+    };
+    handler(window.event);
+
+    if (product.id === 0) {
+      this.raiseProductModal.click();
+      return false;
+    }
+
     const data = { ...this.state.data };
     data.product_id = product.id;
+    data.price = product.price;
+    data.cost = product.cost;
 
     this.getProductStock(product.id);
 
-    this.setState({ data, hideSearch: true });
+    this.setState({
+      data,
+      product,
+      searchProductText: product.description,
+      hideSearch: true
+    });
   };
 
-  handleFocus = value => {
+  handleFocusProduct = value => {
     setTimeout(() => {
       this.setState({ hideSearch: value });
     }, 200);
   };
 
-  handleChangeProduct = async ({ currentTarget: input }) => {
-    const productId = input.value;
-
-    this.getProductStock(productId);
-
-    const updated = { ...this.state.data };
-    updated.product_id = productId;
-    this.setState({ data: updated, searchCustomerInput: "" });
+  handleSetNewProduct = e => {
+    this.setState({ searchProductText: `${e.description}` });
+    this.handleSelectProduct(e);
   };
 
   async componentDidMount() {
     this._isMounted = true;
-
-    await this.populateCompanies();
-    await this.populateProducts();
   }
 
   componentWillUnmount() {
     this._isMounted = false;
   }
+
+  updateProduct = async () => {
+    const product = { ...this.state.product };
+    product.price = this.state.data.price;
+    product.cost = this.state.data.cost;
+    product.category_id = product.category.id;
+    product.company_id = product.company.id;
+
+    await saveProduct(product);
+  };
 
   doSubmit = async () => {
     try {
@@ -111,6 +126,8 @@ class InventoryForm extends Form {
 
       const { data: inventory } = this.state;
       await updateProductStock(inventory);
+
+      if (inventory.typeTracking === "E") this.updateProduct();
 
       this.props.history.push("/inventories");
     } catch (ex) {
@@ -136,30 +153,35 @@ class InventoryForm extends Form {
         <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
         <div className="col-12 pb-3 bg-light">
           <SearchProduct
-            onSelect={this.handleSelect}
-            onFocus={() => this.handleFocus(false)}
-            onBlur={() => this.handleFocus(true)}
+            onSelect={this.handleSelectProduct}
+            onFocus={() => this.handleFocusProduct(false)}
+            onBlur={() => this.handleFocusProduct(true)}
             hide={this.state.hideSearch}
             companyId={getCurrentUser().companyId}
-            value={this.state.searchProductInput}
+            value={this.state.searchProductText}
+            label="Producto"
           />
 
           <form onSubmit={this.handleSubmit}>
-            <Select
-              name="product_id"
-              value={this.state.data.product_id}
-              label="Producto"
-              options={this.state.products}
-              onChange={this.handleChangeProduct}
-              error={this.state.errors["product_id"]}
-            />
+            <div className="row">
+              <div className="col">
+                {this.renderSelect(
+                  "typeTracking",
+                  "Tipo",
+                  this.state.typeTrackings
+                )}
+              </div>
+              <div className="col">
+                {this.renderInput("quantity", "Cantidad")}
+              </div>
+            </div>
 
-            {this.renderSelect(
-              "typeTracking",
-              "Tipo",
-              this.state.typeTrackings
-            )}
-            {this.renderInput("quantity", "Cantidad")}
+            <div className="row">
+              <div className="col">{this.renderInput("price", "Precio")}</div>
+              <div className="col">{this.renderInput("cost", "Costo")}</div>
+            </div>
+
+            {this.renderInput("provider", "Proveedor")}
 
             <div className="row">
               {false && (
@@ -183,7 +205,17 @@ class InventoryForm extends Form {
             </div>
 
             {this.renderButton("Guardar")}
+
+            <button
+              type="button"
+              data-toggle="modal"
+              data-target="#productModal"
+              hidden="hidden"
+              ref={button => (this.raiseProductModal = button)}
+            ></button>
           </form>
+
+          <ProductModal setNewProduct={this.handleSetNewProduct} />
         </div>
       </div>
     );

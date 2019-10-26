@@ -63,11 +63,6 @@ class InvoicesTable extends Component {
           className="fa fa-trash"
           style={{ color: "red", fontSize: "16px" }}
         ></button>
-        <button
-          onClick={() => this.props.onPrint(invoice)}
-          className="fa fa-print"
-          style={{ color: "green", fontSize: "16px" }}
-        ></button>
       </div>
     )
   };

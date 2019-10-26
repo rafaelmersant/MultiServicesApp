@@ -81,18 +81,6 @@ class Invoices extends Component {
     }
   };
 
-  handlePrintInvoice = invoice => {
-    const printWindow = window.open(
-      `/invoicePrint/${invoice.sequence}`,
-      "printInvoice",
-      "height=500,width=550"
-    );
-    if (window.focus) {
-      printWindow.focus();
-    }
-    return false;
-  };
-
   getPagedData = () => {
     const {
       pageSize,
@@ -140,7 +128,6 @@ class Invoices extends Component {
               user={user}
               sortColumn={sortColumn}
               onDelete={this.handleDelete}
-              onPrint={this.handlePrintInvoice}
               onSort={this.handleSort}
             />
 

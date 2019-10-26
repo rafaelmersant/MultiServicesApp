@@ -21,7 +21,7 @@ class NCFsTable extends Component {
         </span>
       )
     },
-    { path: "creationDate", label: "Creado" }
+    { path: "creationDate", label: "Creado (m/d/a)" }
   ];
 
   deleteColumn = {

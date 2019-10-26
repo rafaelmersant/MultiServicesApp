@@ -22,6 +22,7 @@ class ProductForm extends Form {
       measure: "",
       model: "",
       category_id: "",
+      barcode: "",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
@@ -47,6 +48,7 @@ class ProductForm extends Form {
     measure: Joi.optional(),
     model: Joi.optional(),
     category_id: Joi.number().label("Categoria"),
+    barcode: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
     creationDate: Joi.string()
@@ -121,6 +123,7 @@ class ProductForm extends Form {
       measure: product[0].measure ? product[0].measure : "",
       model: product[0].model ? product[0].model : "",
       category_id: product[0].category.id,
+      barcode: product[0].barcode,
       company_id: product[0].company.id,
       createdUser: product[0].createdUser
         ? product[0].createdUser
@@ -152,9 +155,13 @@ class ProductForm extends Form {
 
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
-            <div className="form-row">
-              <div className="form-group col-12">
+            <div className="row">
+              <div className="col-9 col-md-8">
                 {this.renderInput("description", "Descripción")}
+              </div>
+
+              <div className="col-3 col-md-4">
+                {this.renderInput("barcode", "Código de Barra")}
               </div>
             </div>
 

@@ -1,12 +1,15 @@
 import React from "react";
 import Joi from "joi-browser";
 import { toast } from "react-toastify";
+import ReactToPrint from "react-to-print";
 import Form from "./common/form";
 import Input from "./common/input";
 import SearchProduct from "./common/searchProduct";
 import SearchCustomer from "./common/searchCustomer";
 import { formatNumber } from "../utils/custom";
 import CustomerModal from "./modals/customerModal";
+import ProductModal from "./modals/productModal";
+import PrintInvoice from "./reports/printInvoice";
 import { getCurrentUser } from "../services/authService";
 import { getProducts } from "../services/productService";
 import { getNextNCF, saveEntry } from "../services/ncfService";
@@ -26,7 +29,6 @@ import {
 } from "../services/inventoryService";
 import InvoiceDetailTable from "./invoiceDetailTable";
 import _ from "lodash";
-import ProductModal from "./modals/productModal";
 
 class InvoiceForm extends Form {
   _isMounted = false;
@@ -81,7 +83,9 @@ class InvoiceForm extends Form {
     hideSearchCustomer: false,
     ncf: false,
     searchCustomerText: "",
-    searchProductText: ""
+    searchProductText: "",
+    serializedInvoiceHeader: {},
+    serializedInvoiceDetail: []
   };
 
   //Schema (Joi)
@@ -219,7 +223,9 @@ class InvoiceForm extends Form {
         searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
         hideSearchCustomer: true,
         ncf: invoiceHeader[0].ncf.length,
-        action: "Detalle de Factura"
+        action: "Detalle de Factura",
+        serializedInvoiceHeader: invoiceHeader,
+        serializedInvoiceDetail: invoiceDetail
       });
 
       console.log("state", this.state);
@@ -728,6 +734,25 @@ class InvoiceForm extends Form {
         </div>
         <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
         <ProductModal setNewProduct={this.handleSetNewProduct} />
+
+        {this.state.data.id > 0 && (
+          <ReactToPrint
+            trigger={() => (
+              <button
+                className="fa fa-print text-success pull-right"
+                style={{ fontSize: "30px" }}
+              ></button>
+            )}
+            content={() => this.componentRef}
+          />
+        )}
+        <div hidden="hidden">
+          <PrintInvoice
+            ref={el => (this.componentRef = el)}
+            invoiceHeader={this.state.serializedInvoiceHeader}
+            invoiceDetail={this.state.serializedInvoiceDetail}
+          />
+        </div>
       </div>
     );
   }

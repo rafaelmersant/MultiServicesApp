@@ -15,7 +15,7 @@ class ProductCategoriesTable extends Component {
         </Link>
       )
     },
-    { path: "creationDate", label: "Creado" }
+    { path: "creationDate", label: "Creado (m/d/a)" }
   ];
 
   deleteColumn = {

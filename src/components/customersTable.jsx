@@ -5,6 +5,7 @@ import auth from "../services/authService";
 
 class CustomersTable extends Component {
   columns = [
+    { path: "id", label: "Codigo" },
     {
       path: "firstName",
       label: "Nombre",
@@ -21,7 +22,7 @@ class CustomersTable extends Component {
     },
     { path: "email", label: "Email" },
     { path: "phoneNumber", label: "Teléfono" },
-    { path: "creationDate", label: "Creado" }
+    { path: "creationDate", label: "Creado (m/d/a)" }
   ];
 
   deleteColumn = {

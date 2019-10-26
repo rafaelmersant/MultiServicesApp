@@ -8,7 +8,7 @@ function entryUrl(id) {
 }
 
 export function getEntries(companyId) {
-  return http.get(`${apiEndpoint}/?company=${companyId}`);
+  return http.get(`${apiEndpoint}/?company_id=${companyId}`);
 }
 
 export function getNextNCF(companyId) {

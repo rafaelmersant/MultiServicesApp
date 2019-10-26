@@ -108,12 +108,6 @@ class ProductsCategories extends Component {
           <div className="col margin-top-msg">
             <NewButton label="Nueva Categoria" to="/productCategory/new" />
 
-            {/* {user && (
-              <NavLink className="btn btn-primary mb-3" to="/users/new">
-                Nuevo Usuario
-              </NavLink>
-            )} */}
-
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}
