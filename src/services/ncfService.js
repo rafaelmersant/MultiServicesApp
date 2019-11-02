@@ -7,12 +7,17 @@ function entryUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getEntries(companyId) {
-  return http.get(`${apiEndpoint}/?company_id=${companyId}`);
+export function getEntries(typeDoc, companyId) {
+  if (typeDoc === null)
+    return http.get(`${apiEndpoint}/?company_id=${companyId}`);
+
+  return http.get(`${apiEndpoint}/?typeDoc=${typeDoc}&company_id=${companyId}`);
 }
 
-export function getNextNCF(companyId) {
-  return http.get(`${apiEndpoint}/?companyId=${companyId}&active=1`);
+export function getNextNCF(typeDoc, companyId) {
+  return http.get(
+    `${apiEndpoint}/?typeDoc=${typeDoc}&companyId=${companyId}&active=1`
+  );
 }
 
 export function getEntryById(id) {

@@ -22,7 +22,7 @@ class NCF extends Component {
 
   async getEntries() {
     const companyId = getCurrentUser().companyId;
-    const { data: ncfs } = await getEntries(companyId);
+    const { data: ncfs } = await getEntries(null, companyId);
 
     this.setState({ ncfs });
   }

@@ -22,6 +22,7 @@ class NCFForm extends Form {
       creationDate: new Date().toISOString()
     },
     dueDate: new Date(),
+    typeDoc: [{ id: "BC01", name: "BC01" }, { id: "BC02", name: "BC02" }],
     errors: {},
     action: "Nueva Secuencia"
   };
@@ -66,8 +67,11 @@ class NCFForm extends Form {
     this.setState({ dueDate: date });
   };
 
-  deactivateOldEntries = async () => {
-    const { data: entries } = await getEntries(getCurrentUser().companyId);
+  deactivateOldEntries = async typeDoc => {
+    const { data: entries } = await getEntries(
+      typeDoc,
+      getCurrentUser().companyId
+    );
     entries.forEach(async item => {
       const entry = { ...item };
       entry.active = false;
@@ -103,7 +107,7 @@ class NCFForm extends Form {
       return false;
     }
 
-    this.deactivateOldEntries();
+    this.deactivateOldEntries(this.state.data.typeDoc);
 
     const data = { ...this.state.data };
     data.dueDate = this.state.dueDate.toISOString();
@@ -121,7 +125,7 @@ class NCFForm extends Form {
         <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
-            {this.renderInput("typeDoc", "Tipo de NCF", "text", "disabled")}
+            {this.renderSelect("typeDoc", "Tipo de NCF", this.state.typeDoc)}
 
             {this.renderInput("start", "Secuencia Inicial")}
             {this.renderInput("end", "Secuencia Termina")}

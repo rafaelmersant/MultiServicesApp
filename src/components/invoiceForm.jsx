@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import ReactToPrint from "react-to-print";
 import Form from "./common/form";
 import Input from "./common/input";
+import Select from "./common/select";
 import SearchProduct from "./common/searchProduct";
 import SearchCustomer from "./common/searchCustomer";
 import { formatNumber } from "../utils/custom";
@@ -37,14 +38,15 @@ class InvoiceForm extends Form {
     data: {
       id: 0,
       sequence: 0,
-      customer_id: "",
       ncf: "",
+      customer_id: "",
       paymentMethod: "CASH",
       paid: true,
       reference: "",
       subtotal: 0,
       itbis: 0,
       discount: 0,
+      typeDoc: "BC02",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
@@ -69,6 +71,11 @@ class InvoiceForm extends Form {
       { id: "CASH", name: "Efectivo" },
       { id: "CREDIT", name: "Tarjeta de Credito" }
     ],
+    typeDoc: [
+      { id: "0", name: "No usar" },
+      { id: "BC01", name: "BC01" },
+      { id: "BC02", name: "BC02" }
+    ],
     errors: {},
     currentProduct: {},
     invoiceSequence: {
@@ -81,7 +88,6 @@ class InvoiceForm extends Form {
     action: "Nueva Factura",
     hideSearchProduct: false,
     hideSearchCustomer: false,
-    ncf: false,
     searchCustomerText: "",
     searchProductText: "",
     serializedInvoiceHeader: {},
@@ -91,15 +97,16 @@ class InvoiceForm extends Form {
   //Schema (Joi)
   schema = {
     id: Joi.number(),
+    ncf: Joi.optional(),
     sequence: Joi.number().label("No. Factura"),
     customer_id: Joi.number().label("Cliente"),
-    ncf: Joi.optional().label("NCF"),
     paymentMethod: Joi.optional(),
     paid: Joi.optional(),
     reference: Joi.optional(),
     subtotal: Joi.number().min(1),
     itbis: Joi.optional(),
     discount: Joi.optional(),
+    typeDoc: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
     creationDate: Joi.string()
@@ -415,20 +422,8 @@ class InvoiceForm extends Form {
     }
   };
 
-  handleChangeNCF = async () => {
-    this.setState({ ncf: !this.state.ncf });
-
-    const { data: entry } = await getNextNCF(getCurrentUser().companyId);
-    const hasNCF =
-      entry.length && entry[0].current + 1 <= entry[0].end
-        ? entry[0].current + 1
-        : 0;
-
-    if (hasNCF === 0) {
-      toast.error("No tiene secuencia disponible para NCF.");
-      this.setState({ ncf: false });
-      return false;
-    }
+  handleChangeNCF = async ({ currentTarget: input }) => {
+    this.setNCF(input.value);
   };
 
   handleChangeQuantity = ({ currentTarget: input }) => {
@@ -467,8 +462,35 @@ class InvoiceForm extends Form {
     this.handleSelectProduct(e);
   };
 
+  async setNCF(typeDoc) {
+    const data = { ...this.state.data };
+    data.typeDoc = typeDoc;
+    this.setState({ data });
+
+    const { data: entry } = await getNextNCF(
+      typeDoc,
+      getCurrentUser().companyId
+    );
+
+    const hasNCF =
+      entry.length && entry[0].current + 1 <= entry[0].end
+        ? entry[0].current + 1
+        : 0;
+
+    if (hasNCF === 0 && typeDoc !== "0") {
+      toast.error(`No tiene secuencia disponible para NCF ${typeDoc}.`);
+
+      data.typeDoc = "0";
+      this.setState({ data });
+      return false;
+    }
+  }
+
   async getNextNCF() {
-    const { data: entry } = await getNextNCF(getCurrentUser().companyId);
+    const { data: entry } = await getNextNCF(
+      this.state.data.typeDoc,
+      getCurrentUser().companyId
+    );
 
     const nextNCF =
       entry.length && entry[0].current + 1 <= entry[0].end
@@ -496,6 +518,7 @@ class InvoiceForm extends Form {
 
     if (!this.state.data.id) {
       this.refreshNextInvoiceSequence();
+      this.setNCF(this.state.data.typeDoc);
     }
   }
 
@@ -506,7 +529,7 @@ class InvoiceForm extends Form {
   doSubmit = async () => {
     try {
       console.log("doSubmite - state", this.state);
-      if (this.state.ncf) this.getNextNCF();
+      if (this.state.data.typeDoc !== "0") this.getNextNCF();
 
       setTimeout(async () => {
         this.refreshNextInvoiceSequence();
@@ -565,21 +588,6 @@ class InvoiceForm extends Form {
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
             <div className="row">
-              <button
-                type="button"
-                data-toggle="modal"
-                data-target="#customerModal"
-                hidden="hidden"
-                ref={button => (this.raiseCustomerModal = button)}
-              ></button>
-              <button
-                type="button"
-                data-toggle="modal"
-                data-target="#productModal"
-                hidden="hidden"
-                ref={button => (this.raiseProductModal = button)}
-              ></button>
-
               <div className="col-8 ml-0">
                 <SearchCustomer
                   onSelect={this.handleSelectCustomer}
@@ -592,34 +600,31 @@ class InvoiceForm extends Form {
               </div>
 
               {!this.state.data.ncf && (
-                <div className="col-1 mt-4">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="chkNCF"
-                    checked={this.state.ncf}
+                <div className="col-2">
+                  <Select
+                    name="typeDoc"
+                    value={this.state.data.typeDoc}
+                    label="NCF"
+                    options={this.state.typeDoc}
                     onChange={this.handleChangeNCF}
+                    error={null}
                     disabled={this.state.data.id}
                   />
-                  <label className="form-check-label" htmlFor="chkNCF">
-                    NCF
-                  </label>
                 </div>
               )}
 
-              {this.state.ncf.toString().replace("0", "") &&
-                this.state.data.id.toString().replace("0", "") && (
-                  <div className="col-2">
-                    <Input
-                      type="text"
-                      name="ncf"
-                      value={this.state.data.ncf}
-                      label="NCF"
-                      onChange={this.handleChange}
-                      disabled="disabled"
-                    />
-                  </div>
-                )}
+              {this.state.data.ncf.length > 0 && this.state.data.id > 0 && (
+                <div className="col-2">
+                  <Input
+                    type="text"
+                    name="ncf"
+                    value={this.state.data.ncf}
+                    label="NCF"
+                    onChange={this.handleChange}
+                    disabled="disabled"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="row">
@@ -732,6 +737,22 @@ class InvoiceForm extends Form {
               this.renderButton("Guardar")}
           </form>
         </div>
+
+        <button
+          type="button"
+          data-toggle="modal"
+          data-target="#customerModal"
+          hidden="hidden"
+          ref={button => (this.raiseCustomerModal = button)}
+        ></button>
+        <button
+          type="button"
+          data-toggle="modal"
+          data-target="#productModal"
+          hidden="hidden"
+          ref={button => (this.raiseProductModal = button)}
+        ></button>
+
         <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
         <ProductModal setNewProduct={this.handleSetNewProduct} />
 
