@@ -11,7 +11,7 @@ class NCFForm extends Form {
   state = {
     data: {
       id: 0,
-      typeDoc: "BC01",
+      typeDoc: "B01",
       start: 0,
       end: 0,
       current: 0,
@@ -22,7 +22,7 @@ class NCFForm extends Form {
       creationDate: new Date().toISOString()
     },
     dueDate: new Date(),
-    typeDoc: [{ id: "BC01", name: "BC01" }, { id: "BC02", name: "BC02" }],
+    typeDoc: [{ id: "B01", name: "B01" }, { id: "B02", name: "B02" }],
     errors: {},
     action: "Nueva Secuencia"
   };
@@ -102,7 +102,7 @@ class NCFForm extends Form {
   }
 
   doSubmit = async () => {
-    if (this.state.data.end <= this.state.data.start) {
+    if (parseInt(this.state.data.end) <= parseInt(this.state.data.start)) {
       toast.error("La secuencia inicial no puede ser mayor que la final.");
       return false;
     }

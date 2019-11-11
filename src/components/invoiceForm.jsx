@@ -46,7 +46,7 @@ class InvoiceForm extends Form {
       subtotal: 0,
       itbis: 0,
       discount: 0,
-      typeDoc: "BC02",
+      typeDoc: "B02",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
@@ -73,8 +73,8 @@ class InvoiceForm extends Form {
     ],
     typeDoc: [
       { id: "0", name: "No usar" },
-      { id: "BC01", name: "BC01" },
-      { id: "BC02", name: "BC02" }
+      { id: "B01", name: "B01" },
+      { id: "B02", name: "B02" }
     ],
     errors: {},
     currentProduct: {},
@@ -560,7 +560,7 @@ class InvoiceForm extends Form {
       }, 100);
 
       setTimeout(() => {
-        this.props.history.push("/invoices");
+        this.props.history.push(`/invoice/${this.state.data.sequence}`);
       }, 300);
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
