@@ -10,6 +10,9 @@ import SearchCustomer from "./common/searchCustomer";
 import { formatNumber } from "../utils/custom";
 import CustomerModal from "./modals/customerModal";
 import ProductModal from "./modals/productModal";
+import DatePicker from "react-datepicker";
+import { registerLocale } from "react-datepicker";
+import es from "date-fns/locale/es";
 import PrintInvoice from "./reports/printInvoice";
 import { getCurrentUser } from "../services/authService";
 import { getProducts } from "../services/productService";
@@ -31,6 +34,8 @@ import {
 import InvoiceDetailTable from "./invoiceDetailTable";
 import _ from "lodash";
 
+registerLocale("es", es);
+
 class InvoiceForm extends Form {
   _isMounted = false;
 
@@ -49,8 +54,10 @@ class InvoiceForm extends Form {
       typeDoc: "B02",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
+      serverDate: new Date().toISOString()
     },
+    invoiceDate: new Date(),
     products: [],
     details: [],
     detailsToDelete: [],
@@ -109,7 +116,8 @@ class InvoiceForm extends Form {
     typeDoc: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
-    creationDate: Joi.string()
+    creationDate: Joi.string(),
+    serverDate: Joi.string()
   };
 
   async populateProducts() {
@@ -227,6 +235,7 @@ class InvoiceForm extends Form {
       this.setState({
         data: this.mapToViewInvoiceHeader(invoiceHeader),
         details: this.mapToViewInvoiceDetail(invoiceDetail),
+        invoiceDate: new Date(invoiceHeader[0].creationDate),
         searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
         hideSearchCustomer: true,
         ncf: invoiceHeader[0].ncf.length,
@@ -287,6 +296,12 @@ class InvoiceForm extends Form {
 
     return details;
   }
+
+  handleChangeInvoiceDate = date => {
+    const data = { ...this.state.data };
+    data.creationDate = date.toISOString();
+    this.setState({ data, invoiceDate: date });
+  };
 
   handleSelectProduct = async product => {
     const handler = e => {
@@ -498,7 +513,7 @@ class InvoiceForm extends Form {
         : 0;
 
     const data = { ...this.state.data };
-    const sec = `00000000${nextNCF}`.substr(`00000000${nextNCF}`.length - 7, 7);
+    const sec = `00000000${nextNCF}`.substr(`00000000${nextNCF}`.length - 8, 8);
     data.ncf = `${entry[0].typeDoc}${sec}`;
     this.setState({ data });
 
@@ -528,7 +543,7 @@ class InvoiceForm extends Form {
 
   doSubmit = async () => {
     try {
-      console.log("doSubmite - state", this.state);
+      console.log("doSubmit - state", this.state);
       if (this.state.data.typeDoc !== "0") this.getNextNCF();
 
       setTimeout(async () => {
@@ -560,7 +575,7 @@ class InvoiceForm extends Form {
       }, 100);
 
       setTimeout(() => {
-        this.props.history.push(`/invoice/${this.state.data.sequence}`);
+        window.location = `/invoice/${this.state.data.sequence}`;
       }, 300);
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
@@ -587,6 +602,17 @@ class InvoiceForm extends Form {
         <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
+            <div className="row pull-right">
+              <label className="mr-1">Fecha</label>
+              <div className="mr-3">
+                <DatePicker
+                  selected={this.state.invoiceDate}
+                  onChange={date => this.handleChangeInvoiceDate(date)}
+                  dateFormat="dd/MM/yyyy"
+                />
+              </div>
+            </div>
+
             <div className="row">
               <div className="col-8 ml-0">
                 <SearchCustomer
