@@ -5,7 +5,7 @@ import { paginate } from "../utils/paginate";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
-import CompaniesTable from "./companiesTable";
+import CompaniesTable from "./tables/companiesTable";
 import { getCompanies, deleteCompany } from "../services/companyService";
 
 class Companies extends Component {

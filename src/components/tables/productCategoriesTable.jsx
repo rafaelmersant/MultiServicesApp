@@ -1,26 +1,29 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Table from "./common/table";
-import auth from "../services/authService";
+import Table from "../common/table";
+import auth from "../../services/authService";
 
-class UsersTable extends Component {
+class ProductCategoriesTable extends Component {
   columns = [
     {
-      path: "name",
-      label: "Name",
-      content: user => <Link to={`/user/${user.id}`}> {user.name} </Link>
+      path: "description",
+      label: "Descripción",
+      content: category => (
+        <Link to={`/productCategory/${category.id}`}>
+          {" "}
+          {category.description}{" "}
+        </Link>
+      )
     },
-    { path: "email", label: "Email" },
-    { path: "userRole", label: "Rol" },
-    { path: "creationDate", label: "Creado" }
+    { path: "creationDate", label: "Creado (m/d/a)" }
   ];
 
   deleteColumn = {
     key: "delete",
-    content: user => (
+    content: category => (
       <div className="text-center">
         <button
-          onClick={() => this.props.onDelete(user)}
+          onClick={() => this.props.onDelete(category)}
           className="fa fa-trash"
           style={{ color: "red", fontSize: "16px" }}
         ></button>
@@ -38,12 +41,12 @@ class UsersTable extends Component {
   }
 
   render() {
-    const { users, sortColumn, onSort } = this.props;
+    const { categories, sortColumn, onSort } = this.props;
 
     return (
       <Table
         columns={this.columns}
-        data={users}
+        data={categories}
         sortColumn={sortColumn}
         onSort={onSort}
       />
@@ -51,4 +54,4 @@ class UsersTable extends Component {
   }
 }
 
-export default UsersTable;
+export default ProductCategoriesTable;

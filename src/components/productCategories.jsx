@@ -11,7 +11,7 @@ import {
 } from "../services/productCategoryService";
 import { getCategoryInProduct } from "../services/productService";
 import { getCurrentUser } from "../services/authService";
-import ProductCategoriesTable from "./productCategoriesTable";
+import ProductCategoriesTable from "./tables/productCategoriesTable";
 
 class ProductsCategories extends Component {
   state = {

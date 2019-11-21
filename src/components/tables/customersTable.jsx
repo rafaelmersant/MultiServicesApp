@@ -1,29 +1,36 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Table from "./common/table";
-import auth from "../services/authService";
+import Table from "../common/table";
+import auth from "../../services/authService";
 
-class CompaniesTable extends Component {
+class CustomersTable extends Component {
   columns = [
+    { path: "id", label: "Codigo" },
     {
-      path: "name",
-      label: "Name",
-      content: company => (
-        <Link to={`/company/${company.id}`}> {company.name} </Link>
+      path: "firstName",
+      label: "Nombre",
+      content: customer => (
+        <Link to={`/customer/${customer.id}`}> {customer.firstName} </Link>
+      )
+    },
+    {
+      path: "lastName",
+      label: "Apellido",
+      content: customer => (
+        <Link to={`/customer/${customer.id}`}> {customer.lastName} </Link>
       )
     },
     { path: "email", label: "Email" },
     { path: "phoneNumber", label: "Teléfono" },
-    { path: "rnc", label: "RNC" },
-    { path: "creationDate", label: "Creado" }
+    { path: "creationDate", label: "Creado (m/d/a)" }
   ];
 
   deleteColumn = {
     key: "delete",
-    content: company => (
+    content: customer => (
       <div className="text-center">
         <button
-          onClick={() => this.props.onDelete(company)}
+          onClick={() => this.props.onDelete(customer)}
           className="fa fa-trash"
           style={{ color: "red", fontSize: "16px" }}
         ></button>
@@ -41,12 +48,12 @@ class CompaniesTable extends Component {
   }
 
   render() {
-    const { companies, sortColumn, onSort } = this.props;
+    const { customers, sortColumn, onSort } = this.props;
 
     return (
       <Table
         columns={this.columns}
-        data={companies}
+        data={customers}
         sortColumn={sortColumn}
         onSort={onSort}
       />
@@ -54,4 +61,4 @@ class CompaniesTable extends Component {
   }
 }
 
-export default CompaniesTable;
+export default CustomersTable;

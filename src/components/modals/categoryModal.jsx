@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import ProductCategoryForm from "../productCategoryForm";
+import ProductCategoryForm from "../forms/productCategoryForm";
 
 class CategoryModal extends Component {
   handleClosePopUp = e => {

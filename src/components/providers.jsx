@@ -8,7 +8,7 @@ import { paginate } from "../utils/paginate";
 import { getProviders, deleteProvider } from "../services/providerService";
 // import { getCustomerInInvoice } from "../services/invoiceServices";
 import { getCurrentUser } from "../services/authService";
-import ProvidersTable from "./providersTable";
+import ProvidersTable from "./tables/providersTable";
 
 class Providers extends Component {
   state = {

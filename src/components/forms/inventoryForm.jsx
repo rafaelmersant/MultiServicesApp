@@ -1,18 +1,18 @@
 import React from "react";
 import Joi from "joi-browser";
 import toast from "react-toastify";
-import Form from "./common/form";
-import SearchProduct from "./common/searchProduct";
-import Input from "./common/input";
-import ProductModal from "./modals/productModal";
-import { formatNumber } from "../utils/custom";
-import { getCurrentUser } from "../services/authService";
-import { saveProduct } from "../services/productService";
+import Form from "../common/form";
+import SearchProduct from "../common/searchProduct";
+import Input from "../common/input";
+import ProductModal from "../modals/productModal";
+import { formatNumber } from "../../utils/custom";
+import { getCurrentUser } from "../../services/authService";
+import { saveProduct } from "../../services/productService";
 import {
   saveProductTracking,
   updateProductStock,
   getProductsStocks
-} from "../services/inventoryService";
+} from "../../services/inventoryService";
 
 class InventoryForm extends Form {
   _isMounted = false;

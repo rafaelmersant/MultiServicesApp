@@ -12,7 +12,7 @@ import {
   getInvoiceDetail,
   deleteInvoiceDetail
 } from "../services/invoiceServices";
-import InvoicesTable from "./invoicesTable";
+import InvoicesTable from "./tables/invoicesTable";
 
 class Invoices extends Component {
   state = {

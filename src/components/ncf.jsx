@@ -6,7 +6,7 @@ import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
 import { getEntries, deleteEntry } from "../services/ncfService";
 import { getCurrentUser } from "../services/authService";
-import NCFsTable from "./NCFsTable";
+import NCFsTable from "./tables/NCFsTable";
 
 class NCF extends Component {
   state = {

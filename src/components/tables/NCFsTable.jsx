@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import Table from "./common/table";
-import auth from "../services/authService";
+import Table from "../common/table";
+import auth from "../../services/authService";
 
 class NCFsTable extends Component {
   columns = [

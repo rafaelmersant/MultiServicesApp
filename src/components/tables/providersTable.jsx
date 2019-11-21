@@ -1,23 +1,23 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Table from "./common/table";
-import auth from "../services/authService";
+import Table from "../common/table";
+import auth from "../../services/authService";
 
-class CustomersTable extends Component {
+class ProvidersTable extends Component {
   columns = [
     { path: "id", label: "Codigo" },
     {
       path: "firstName",
       label: "Nombre",
-      content: customer => (
-        <Link to={`/customer/${customer.id}`}> {customer.firstName} </Link>
+      content: provider => (
+        <Link to={`/provider/${provider.id}`}> {provider.firstName} </Link>
       )
     },
     {
       path: "lastName",
       label: "Apellido",
-      content: customer => (
-        <Link to={`/customer/${customer.id}`}> {customer.lastName} </Link>
+      content: provider => (
+        <Link to={`/provider/${provider.id}`}> {provider.lastName} </Link>
       )
     },
     { path: "email", label: "Email" },
@@ -27,10 +27,10 @@ class CustomersTable extends Component {
 
   deleteColumn = {
     key: "delete",
-    content: customer => (
+    content: provider => (
       <div className="text-center">
         <button
-          onClick={() => this.props.onDelete(customer)}
+          onClick={() => this.props.onDelete(provider)}
           className="fa fa-trash"
           style={{ color: "red", fontSize: "16px" }}
         ></button>
@@ -48,12 +48,12 @@ class CustomersTable extends Component {
   }
 
   render() {
-    const { customers, sortColumn, onSort } = this.props;
+    const { providers, sortColumn, onSort } = this.props;
 
     return (
       <Table
         columns={this.columns}
-        data={customers}
+        data={providers}
         sortColumn={sortColumn}
         onSort={onSort}
       />
@@ -61,4 +61,4 @@ class CustomersTable extends Component {
   }
 }
 
-export default CustomersTable;
+export default ProvidersTable;

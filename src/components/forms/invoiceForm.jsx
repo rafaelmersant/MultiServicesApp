@@ -2,21 +2,21 @@ import React from "react";
 import Joi from "joi-browser";
 import { toast } from "react-toastify";
 import ReactToPrint from "react-to-print";
-import Form from "./common/form";
-import Input from "./common/input";
-import Select from "./common/select";
-import SearchProduct from "./common/searchProduct";
-import SearchCustomer from "./common/searchCustomer";
-import { formatNumber } from "../utils/custom";
-import CustomerModal from "./modals/customerModal";
-import ProductModal from "./modals/productModal";
+import Form from "../common/form";
+import Input from "../common/input";
+import Select from "../common/select";
+import SearchProduct from "../common/searchProduct";
+import SearchCustomer from "../common/searchCustomer";
+import { formatNumber } from "../../utils/custom";
+import CustomerModal from "../modals/customerModal";
+import ProductModal from "../modals/productModal";
 import DatePicker from "react-datepicker";
 import { registerLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
-import PrintInvoice from "./reports/printInvoice";
-import { getCurrentUser } from "../services/authService";
-import { getProducts } from "../services/productService";
-import { getNextNCF, saveEntry } from "../services/ncfService";
+import PrintInvoice from "../reports/printInvoice";
+import { getCurrentUser } from "../../services/authService";
+import { getProducts } from "../../services/productService";
+import { getNextNCF, saveEntry } from "../../services/ncfService";
 import {
   saveInvoiceHeader,
   saveInvoiceDetail,
@@ -25,13 +25,13 @@ import {
   getInvoiceHeader,
   getInvoiceDetail,
   deleteInvoiceDetail
-} from "../services/invoiceServices";
+} from "../../services/invoiceServices";
 import {
   saveProductTracking,
   updateProductStock,
   getProductsStocks
-} from "../services/inventoryService";
-import InvoiceDetailTable from "./invoiceDetailTable";
+} from "../../services/inventoryService";
+import InvoiceDetailTable from "../tables/invoiceDetailTable";
 import _ from "lodash";
 
 registerLocale("es", es);

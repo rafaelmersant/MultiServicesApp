@@ -2,9 +2,9 @@ import React from "react";
 import Joi from "joi-browser";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
-import Form from "./common/form";
-import { getEntryById, saveEntry, getEntries } from "../services/ncfService";
-import { getCurrentUser } from "../services/authService";
+import Form from "../common/form";
+import { getEntryById, saveEntry, getEntries } from "../../services/ncfService";
+import { getCurrentUser } from "../../services/authService";
 import "react-datepicker/dist/react-datepicker.css";
 
 class NCFForm extends Form {
@@ -22,7 +22,10 @@ class NCFForm extends Form {
       creationDate: new Date().toISOString()
     },
     dueDate: new Date(),
-    typeDoc: [{ id: "B01", name: "B01" }, { id: "B02", name: "B02" }],
+    typeDoc: [
+      { id: "B01", name: "B01" },
+      { id: "B02", name: "B02" }
+    ],
     errors: {},
     action: "Nueva Secuencia"
   };

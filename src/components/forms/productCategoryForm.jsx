@@ -1,12 +1,12 @@
 import React from "react";
 import Joi from "joi-browser";
-import Form from "./common/form";
-import { getCompanies } from "../services/companyService";
+import Form from "../common/form";
+import { getCompanies } from "../../services/companyService";
 import {
   getProductCategory,
   saveProductCategory
-} from "../services/productCategoryService";
-import { getCurrentUser } from "../services/authService";
+} from "../../services/productCategoryService";
+import { getCurrentUser } from "../../services/authService";
 
 class ProductCategoryForm extends Form {
   state = {

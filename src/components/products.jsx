@@ -8,7 +8,7 @@ import { paginate } from "../utils/paginate";
 import { getProducts, deleteProduct } from "../services/productService";
 import { getCurrentUser } from "../services/authService";
 import { getProductInInvoice } from "../services/invoiceServices";
-import ProductsTable from "./productsTable";
+import ProductsTable from "./tables/productsTable";
 
 class Products extends Component {
   state = {

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import CustomerForm from "../customerForm";
+import CustomerForm from "../forms/customerForm";
 
 class CustomerModal extends Component {
   handleClosePopUp = e => {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import TableBody from "./common/tableBody";
-import auth from "../services/authService";
-import { formatNumber } from "../utils/custom";
+import TableBody from "../common/tableBody";
+import auth from "../../services/authService";
+import { formatNumber } from "../../utils/custom";
 
 class InvoiceDetailTable extends Component {
   columns = [

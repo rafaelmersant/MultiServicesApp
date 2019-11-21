@@ -1,9 +1,9 @@
 import React from "react";
 import Joi from "joi-browser";
-import Form from "./common/form";
-import { getCompanies } from "../services/companyService";
-import { getUser, saveUser, getEmailExists } from "../services/userService";
-import { getCurrentUser } from "../services/authService";
+import Form from "../common/form";
+import { getCompanies } from "../../services/companyService";
+import { getUser, saveUser, getEmailExists } from "../../services/userService";
+import { getCurrentUser } from "../../services/authService";
 import { toast } from "react-toastify";
 
 class UserForm extends Form {

@@ -1,9 +1,9 @@
 import React from "react";
 import Joi from "joi-browser";
-import Form from "./common/form";
-import { getCompanies } from "../services/companyService";
-import { getProvider, saveProvider } from "../services/providerService";
-import { getCurrentUser } from "../services/authService";
+import Form from "../common/form";
+import { getCompanies } from "../../services/companyService";
+import { getProvider, saveProvider } from "../../services/providerService";
+import { getCurrentUser } from "../../services/authService";
 
 class ProviderForm extends Form {
   state = {

@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import Table from "./common/table";
-import auth from "../services/authService";
-import { formatNumber } from "../utils/custom";
+import Table from "../common/table";
+import auth from "../../services/authService";
+import { formatNumber } from "../../utils/custom";
 
 class InvoicesTable extends Component {
   columns = [

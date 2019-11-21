@@ -1,14 +1,14 @@
 import React from "react";
 import Joi from "joi-browser";
-import Form from "./common/form";
-import Input from "./common/input";
-import { formatNumber } from "../utils/custom";
-import { getCompanies } from "../services/companyService";
-import { getProductsCategories } from "../services/productCategoryService";
-import { getProduct, saveProduct } from "../services/productService";
-import { getCurrentUser } from "../services/authService";
-import { getProductsStocks } from "../services/inventoryService";
-import CategoryModal from "./modals/categoryModal";
+import Form from "../common/form";
+import Input from "../common/input";
+import { formatNumber } from "../../utils/custom";
+import { getCompanies } from "../../services/companyService";
+import { getProductsCategories } from "../../services/productCategoryService";
+import { getProduct, saveProduct } from "../../services/productService";
+import { getCurrentUser } from "../../services/authService";
+import { getProductsStocks } from "../../services/inventoryService";
+import CategoryModal from "../modals/categoryModal";
 
 class ProductForm extends Form {
   state = {

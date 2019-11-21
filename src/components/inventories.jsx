@@ -4,7 +4,7 @@ import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
-import ProductTrackingTable from "./productTrackingTable";
+import ProductTrackingTable from "./tables/productTrackingTable";
 import { getProductsTrackings } from "../services/inventoryService";
 import { getCurrentUser } from "../services/authService";
 

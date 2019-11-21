@@ -6,7 +6,7 @@ import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
 import { getUsers, deleteUser } from "../services/userService";
-import UsersTable from "./usersTable";
+import UsersTable from "./tables/usersTable";
 
 class Users extends Component {
   state = {

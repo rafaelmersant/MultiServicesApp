@@ -1,10 +1,10 @@
 import React from "react";
 import { Redirect } from "react-router-dom";
 import Joi from "joi-browser";
-import Form from "./common/form";
-import auth from "../services/authService";
+import Form from "../common/form";
+import auth from "../../services/authService";
 import { toast } from "react-toastify";
-import { getCompany } from "../services/companyService";
+import { getCompany } from "../../services/companyService";
 
 class LoginForm extends Form {
   state = {
