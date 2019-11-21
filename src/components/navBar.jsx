@@ -56,6 +56,12 @@ const NavBar = ({ user }) => {
             </NavLink>
           </li>
 
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/providers">
+              | Proveedores
+            </NavLink>
+          </li>
+
           {user && (user.role === "Admin" || user.role === "Owner") && (
             <li className="nav-item">
               <NavLink className="nav-link" to="/ncf">

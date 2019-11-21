@@ -25,13 +25,15 @@ class InventoryForm extends Form {
       quantity: "",
       price: "",
       cost: "",
-      provider: "",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
     },
     product: {},
-    typeTrackings: [{ id: "E", name: "Entrada" }, { id: "S", name: "Salida" }],
+    typeTrackings: [
+      { id: "E", name: "Entrada" },
+      { id: "S", name: "Salida" }
+    ],
     errors: {},
     action: "Nuevo Registro de Inventario",
     hideSearch: false,
@@ -52,7 +54,6 @@ class InventoryForm extends Form {
       .required()
       .label("Precio"),
     cost: Joi.optional(),
-    provider: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
     creationDate: Joi.string()
@@ -180,8 +181,6 @@ class InventoryForm extends Form {
               <div className="col">{this.renderInput("price", "Precio")}</div>
               <div className="col">{this.renderInput("cost", "Costo")}</div>
             </div>
-
-            {this.renderInput("provider", "Proveedor")}
 
             <div className="row">
               {false && (

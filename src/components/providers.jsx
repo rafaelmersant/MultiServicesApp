@@ -1,16 +1,18 @@
 import React, { Component } from "react";
 import { toast } from "react-toastify";
 import _ from "lodash";
-import { paginate } from "../utils/paginate";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
-import CompaniesTable from "./companiesTable";
-import { getCompanies, deleteCompany } from "../services/companyService";
+import { paginate } from "../utils/paginate";
+import { getProviders, deleteProvider } from "../services/providerService";
+// import { getCustomerInInvoice } from "../services/invoiceServices";
+import { getCurrentUser } from "../services/authService";
+import ProvidersTable from "./providersTable";
 
-class Companies extends Component {
+class Providers extends Component {
   state = {
-    companies: [],
+    providers: [],
     currentPage: 1,
     pageSize: 10,
     searchQuery: "",
@@ -18,27 +20,37 @@ class Companies extends Component {
   };
 
   async componentDidMount() {
-    const { data: companies } = await getCompanies();
+    const companyId = getCurrentUser().companyId;
+    const { data: providers } = await getProviders(companyId);
 
-    this.setState({ companies });
+    this.setState({ providers });
   }
 
-  handleDelete = async company => {
+  handleDelete = async provider => {
+    // const { data: found } = await getCustomerInInvoice(
+    //   getCurrentUser().companyId,
+    //   customer.id
+    // );
+    // if (found.length) {
+    //   toast.error("No puede eliminar un cliente que tiene factura creada.");
+    //   return false;
+    // }
+
     const answer = window.confirm(
-      "Esta seguro de eliminar esta compañia? \nNo podrá deshacer esta acción"
+      "Esta seguro de eliminar este proveedor? \nNo podrá deshacer esta acción"
     );
     if (answer) {
-      const originalCompanies = this.state.companies;
-      const companies = this.state.companies.filter(m => m.id !== company.id);
-      this.setState({ companies });
+      const originalProviders = this.state.providers;
+      const providers = this.state.providers.filter(m => m.id !== provider.id);
+      this.setState({ providers });
 
       try {
-        await deleteCompany(company.id);
+        await deleteProvider(provider.id);
       } catch (ex) {
         if (ex.response && ex.response.status === 404)
-          toast.error("Esta compañía ya fue eliminada");
+          toast.error("Este proveedor ya fue eliminado");
 
-        this.setState({ companies: originalCompanies });
+        this.setState({ providers: originalProviders });
       }
     }
   };
@@ -61,41 +73,43 @@ class Companies extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      companies: allCompanies
+      providers: allProviders
     } = this.state;
 
-    let filtered = allCompanies;
+    let filtered = allProviders;
     if (searchQuery)
-      filtered = allCompanies.filter(m =>
-        m.name.toLowerCase().startsWith(searchQuery.toLocaleLowerCase())
+      filtered = allProviders.filter(m =>
+        `${m.firstName.toLowerCase()} ${m.lastName.toLowerCase()}`.startsWith(
+          searchQuery.toLocaleLowerCase()
+        )
       );
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-    const companies = paginate(sorted, currentPage, pageSize);
+    const providers = paginate(sorted, currentPage, pageSize);
 
-    return { totalCount: filtered.length, companies };
+    return { totalCount: filtered.length, providers };
   };
 
   render() {
     const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
     const { user } = this.props;
 
-    const { totalCount, companies } = this.getPagedData();
+    const { totalCount, providers } = this.getPagedData();
 
     return (
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <NewButton label="Nueva Compañía" to="/company/new" />
+            <NewButton label="Nuevo Proveedor" to="/provider/new" />
 
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}
               placeholder="Buscar..."
             />
-            <CompaniesTable
-              companies={companies}
+            <ProvidersTable
+              providers={providers}
               user={user}
               sortColumn={sortColumn}
               onDelete={this.handleDelete}
@@ -110,7 +124,7 @@ class Companies extends Component {
                 onPageChange={this.handlePageChange}
               />
               <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} compañías</em>
+                <em>Mostrando {totalCount} proveedores</em>
               </p>
             </div>
           </div>
@@ -120,4 +134,4 @@ class Companies extends Component {
   }
 }
 
-export default Companies;
+export default Providers;

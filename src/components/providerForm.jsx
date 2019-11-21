@@ -2,10 +2,10 @@ import React from "react";
 import Joi from "joi-browser";
 import Form from "./common/form";
 import { getCompanies } from "../services/companyService";
-import { getCustomer, saveCustomer } from "../services/customerService";
+import { getProvider, saveProvider } from "../services/providerService";
 import { getCurrentUser } from "../services/authService";
 
-class CustomerForm extends Form {
+class ProviderForm extends Form {
   state = {
     data: {
       id: 0,
@@ -14,13 +14,14 @@ class CustomerForm extends Form {
       email: "",
       address: "",
       phoneNumber: "",
+      rnc: "",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
     },
     companies: [],
     errors: {},
-    action: "Nuevo Cliente"
+    action: "Nuevo Proveedor"
   };
 
   schema = {
@@ -36,6 +37,7 @@ class CustomerForm extends Form {
     email: Joi.optional(),
     address: Joi.optional(),
     phoneNumber: Joi.optional(),
+    rnc: Joi.optional(),
     company_id: Joi.number()
       .required()
       .label("Compañîa"),
@@ -48,16 +50,16 @@ class CustomerForm extends Form {
     this.setState({ companies });
   }
 
-  async populateCustomer() {
+  async populateProvider() {
     try {
-      const customerId = this.props.match.params.id;
-      if (customerId === "new") return;
+      const providerId = this.props.match.params.id;
+      if (providerId === "new") return;
 
-      const { data: customer } = await getCustomer(customerId);
+      const { data: provider } = await getProvider(providerId);
 
       this.setState({
-        data: this.mapToViewModel(customer),
-        action: "Editar Cliente"
+        data: this.mapToViewModel(provider),
+        action: "Editar Proveedor"
       });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -67,37 +69,38 @@ class CustomerForm extends Form {
 
   async componentDidMount() {
     await this.populateCompanies();
-    await this.populateCustomer();
+    await this.populateProvider();
 
-    if (this.props.customerName && this.props.customerName.length) {
+    if (this.props.providerName && this.props.providerName.length) {
       const data = { ...this.state.data };
-      data.firstName = this.props.customerName;
+      data.firstName = this.props.providerName;
       this.setState({ data });
       this.forceUpdate();
     }
   }
 
-  mapToViewModel(customer) {
+  mapToViewModel(provider) {
     return {
-      id: customer[0].id,
-      firstName: customer[0].firstName,
-      lastName: customer[0].lastName,
-      email: customer[0].email ? customer[0].email : "",
-      address: customer[0].address ? customer[0].address : "",
-      phoneNumber: customer[0].phoneNumber ? customer[0].phoneNumber : "",
-      company_id: customer[0].company.id,
-      createdUser: customer[0].createdByUser
-        ? customer[0].createdByUser
+      id: provider[0].id,
+      firstName: provider[0].firstName,
+      lastName: provider[0].lastName,
+      email: provider[0].email ? provider[0].email : "",
+      address: provider[0].address ? provider[0].address : "",
+      phoneNumber: provider[0].phoneNumber ? provider[0].phoneNumber : "",
+      rnc: provider[0].rnc ? provider[0].rnc : "",
+      company_id: provider[0].company.id,
+      createdUser: provider[0].createdByUser
+        ? provider[0].createdByUser
         : getCurrentUser().email,
-      creationDate: customer[0].creationDate
+      creationDate: provider[0].creationDate
     };
   }
 
   doSubmit = async () => {
-    const { data: customer } = await saveCustomer(this.state.data);
+    const { data: provider } = await saveProvider(this.state.data);
 
-    if (!this.props.popUp) this.props.history.push("/customers");
-    else this.props.closeMe(customer);
+    if (!this.props.popUp) this.props.history.push("/providers");
+    else this.props.closeMe(provider);
   };
 
   render() {
@@ -129,6 +132,7 @@ class CustomerForm extends Form {
               <div className="col">
                 {this.renderInput("phoneNumber", "Teléfono")}
               </div>
+              <div className="col">{this.renderInput("rnc", "RNC")}</div>
             </div>
 
             {this.renderInput("address", "Dirección")}
@@ -144,4 +148,4 @@ class CustomerForm extends Form {
   }
 }
 
-export default CustomerForm;
+export default ProviderForm;
