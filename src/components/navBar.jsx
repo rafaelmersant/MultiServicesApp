@@ -33,7 +33,7 @@ const NavBar = ({ user }) => {
           </li>
 
           <li className="nav-item">
-            <NavLink className="nav-link" to="/inventories">
+            <NavLink className="nav-link" to="/inventoriesFull">
               | Inventario
             </NavLink>
           </li>

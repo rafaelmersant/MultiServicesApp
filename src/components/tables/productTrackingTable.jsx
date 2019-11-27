@@ -34,6 +34,11 @@ class ProductTrackingTable extends Component {
             .replace("INVO", "Facturación")}
         </span>
       )
+    },
+    {
+      path: "provider",
+      label: "Proveedor",
+      content: item => <span>{item.header && item.header.provider.name}</span>
     }
   ];
 

@@ -19,6 +19,7 @@ class InventoryForm extends Form {
 
   state = {
     data: {
+      header_id: null,
       id: 0,
       product_id: "",
       typeTracking: "E",
@@ -42,6 +43,7 @@ class InventoryForm extends Form {
   };
 
   schema = {
+    header_id: Joi.optional(),
     id: Joi.number(),
     product_id: Joi.number().label("Producto"),
     typeTracking: Joi.string()

@@ -11,7 +11,9 @@ import InvoiceForm from "./components/forms/invoiceForm";
 import Invoices from "./components/invoices";
 import PrintInvoice from "./components/reports/printInvoice";
 import Inventories from "./components/inventories";
+import InventoriesFull from "./components/inventoriesFull";
 import InventoryForm from "./components/forms/inventoryForm";
+import InventoryFullForm from "./components/forms/inventoryFullForm";
 import Products from "./components/products";
 import ProductForm from "./components/forms/productForm";
 import Companies from "./components/companies";
@@ -59,7 +61,15 @@ class App extends Component {
 
             <ProtectedRoute path="/invoice/:id" component={InvoiceForm} />
             <ProtectedRoute path="/inventories" component={Inventories} />
+            <ProtectedRoute
+              path="/inventoriesFull"
+              component={InventoriesFull}
+            />
             <ProtectedRoute path="/inventory/:id" component={InventoryForm} />
+            <ProtectedRoute
+              path="/inventoryFull/:id"
+              component={InventoryFullForm}
+            />
             <ProtectedRoute path="/customers" component={Customers} />
             <ProtectedRoute path="/customer/:id" component={CustomerForm} />
             <ProtectedRoute path="/products" component={Products} />

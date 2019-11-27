@@ -2,8 +2,13 @@ import http from "./httpService";
 import { getCurrentUser } from "./authService";
 import { apiUrl } from "../config.json";
 
+const apiEndpointProdTrackingHeader = `${apiUrl}/productsTrackingsHeader`;
 const apiEndpointProdTracking = `${apiUrl}/productsTrackings`;
 const apiEndpointProdStock = `${apiUrl}/productsStocks`;
+
+function productsTrackingHeaderUrl(id) {
+  return `${apiEndpointProdTrackingHeader}/${id}`;
+}
 
 function productsTrackingUrl(id) {
   return `${apiEndpointProdTracking}/${id}`;
@@ -11,6 +16,10 @@ function productsTrackingUrl(id) {
 
 function productsStockUrl(id) {
   return `${apiEndpointProdStock}/${id}`;
+}
+
+export function getProductsTrackingsHeader(companyId) {
+  return http.get(`${apiEndpointProdTrackingHeader}/?company=${companyId}`);
 }
 
 export function getProductsTrackings(companyId, invoicesRecords) {
@@ -21,6 +30,10 @@ export function getProductsTrackings(companyId, invoicesRecords) {
       `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE`
     );
   }
+}
+
+export function getProductsTrackingsByHeader(headerId) {
+  return http.get(`${apiEndpointProdTracking}/?header=${headerId}`);
 }
 
 export function getProductsTrackingsRange(productId, startDate, endDate) {
@@ -39,8 +52,18 @@ export function getProductsStocks(productId) {
   return http.get(`${apiEndpointProdStock}/`);
 }
 
+export function saveProductTrackingHeader(entry) {
+  if (entry.id) {
+    const body = { ...entry };
+    delete body.id;
+    return http.put(productsTrackingHeaderUrl(entry.id), body);
+  }
+  return http.post(`${apiEndpointProdTrackingHeader}/`, entry);
+}
+
 export function saveProductTracking(entry) {
   const tracking = { ...entry };
+  console.log("tracking", tracking);
   if (tracking.typeTracking === "S") tracking.quantity = tracking.quantity * -1;
 
   if (entry.id) {
@@ -59,6 +82,10 @@ export function saveProductStock(stock) {
   }
 
   return http.post(`${apiEndpointProdStock}/`, stock);
+}
+
+export function deleteTrackingHeader(trackingId) {
+  return http.delete(productsTrackingHeaderUrl(trackingId));
 }
 
 export function deleteTracking(trackingId) {

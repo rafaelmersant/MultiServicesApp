@@ -85,7 +85,8 @@ class Inventories extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <NewButton label="Nuevo Registro" to="/inventory/new" />
+            {/* <NewButton label="Nuevo Registro" to="/inventory/new" /> */}
+            <NewButton label="Nuevo Registro" to="/inventoryFull/new" />
 
             <div className="row">
               <div className="col">
