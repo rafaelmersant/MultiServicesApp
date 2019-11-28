@@ -75,7 +75,7 @@ class InventoriesFull extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <NewButton label="Nuevo Registro" to="/inventoryFull/new" />
+            <NewButton label="Nueva Entrada" to="/inventoryFull/new" />
 
             <SearchBox
               value={searchQuery}

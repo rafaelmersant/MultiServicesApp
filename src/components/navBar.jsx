@@ -32,10 +32,32 @@ const NavBar = ({ user }) => {
             </NavLink>
           </li>
 
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <NavLink className="nav-link" to="/inventoriesFull">
               | Inventario
             </NavLink>
+          </li> */}
+
+          <li className="nav-item dropdown">
+            <NavLink
+              className="clickable text-secondary nav-link dropdown-toggle"
+              id="navbarDropdown"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+              to=""
+            >
+              | Inventario
+            </NavLink>
+            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+              <NavLink className="dropdown-item" to="/inventoriesFull">
+                Entrada de Inventario
+              </NavLink>
+
+              <NavLink className="dropdown-item" to="/inventories">
+                Movimientos de Productos
+              </NavLink>
+            </div>
           </li>
 
           <li className="nav-item">

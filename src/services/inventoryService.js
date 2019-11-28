@@ -22,6 +22,10 @@ export function getProductsTrackingsHeader(companyId) {
   return http.get(`${apiEndpointProdTrackingHeader}/?company=${companyId}`);
 }
 
+export function getProductsTrackingsHeaderById(id) {
+  return http.get(`${apiEndpointProdTrackingHeader}/?id=${id}`);
+}
+
 export function getProductsTrackings(companyId, invoicesRecords) {
   if (invoicesRecords) {
     return http.get(`${apiEndpointProdTracking}/?company=${companyId}`);

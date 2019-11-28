@@ -14,7 +14,9 @@ import {
   saveProductTrackingHeader,
   saveProductTracking,
   updateProductStock,
-  getProductsTrackingsByHeader
+  getProductsTrackingsByHeader,
+  getProductsTrackingsHeaderById,
+  deleteTracking
 } from "../../services/inventoryService";
 import ProductsInvTable from "../tables/productsInvTable";
 
@@ -36,7 +38,7 @@ class InventoryFullForm extends Form {
       createdUser: getCurrentUser().email
     },
     inventory: {
-      header_id: 0,
+      header_id: 1, //Default header
       id: 0,
       product_id: "",
       typeTracking: "E",
@@ -63,7 +65,8 @@ class InventoryFullForm extends Form {
     hideSearch: false,
     availableStock: 0,
     searchProductText: "",
-    showDetail: false
+    showDetail: false,
+    buttonAction: "Agregar Detalle"
   };
 
   schema = {
@@ -136,9 +139,54 @@ class InventoryFullForm extends Form {
     this.setState({ details });
   }
 
+  async populateHeader() {
+    try {
+      const headerId = this.props.match.params.id;
+      if (headerId === "new") return;
+
+      const { data: header } = await getProductsTrackingsHeaderById(headerId);
+
+      this.setState({
+        data: this.mapToViewModel(header),
+        header: header[0],
+        showDetail: true,
+        docDate: new Date(header[0].docDate),
+        creationDate: new Date(header[0].creationDate),
+        buttonAction: "Guardar cambios",
+        action: "Editar Entrada de Inventario"
+      });
+
+      setTimeout(() => {
+        this.populateDetail();
+      }, 200);
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404)
+        return this.props.history.replace("/not-found");
+    }
+  }
+
+  mapToViewModel(header) {
+    return {
+      id: header[0].id,
+      provider_id: header[0].provider.id,
+      ncf: header[0].ncf ? header[0].ncf : "",
+      totalAmount: header[0].totalAmount ? header[0].totalAmount : 0,
+      itbis: header[0].itbis ? header[0].itbis : 0,
+      cost: header[0].cost ? header[0].cost : 0,
+      docDate: header[0].docDate,
+      creationDate: header[0].creationDate,
+      serverDate: header[0].serverDate,
+      company_id: header[0].company.id,
+      createdUser: header[0].createdUser
+        ? header[0].createdUser
+        : getCurrentUser().email
+    };
+  }
+
   async componentDidMount() {
     this._isMounted = true;
     await this.populateProviders();
+    await this.populateHeader();
   }
 
   componentWillUnmount() {
@@ -186,7 +234,11 @@ class InventoryFullForm extends Form {
     try {
       const { data: header } = await saveProductTrackingHeader(this.state.data);
 
-      this.setState({ header, showDetail: true });
+      this.setState({
+        header,
+        showDetail: true,
+        buttonAction: "Guardar cambios"
+      });
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");
@@ -221,6 +273,26 @@ class InventoryFullForm extends Form {
     inventory[input.name] = input.value;
 
     this.setState({ inventory });
+  };
+
+  handleDelete = async detail => {
+    const answer = window.confirm(
+      "Esta seguro de eliminar este producto? \nNo podrá deshacer esta acción"
+    );
+    if (answer) {
+      const originalDetail = this.state.details;
+      const details = this.state.details.filter(m => m.id !== detail.id);
+      this.setState({ details });
+
+      try {
+        await deleteTracking(detail.id);
+      } catch (ex) {
+        if (ex.response && ex.response.status === 404)
+          toast.error("Este producto ya fue eliminado");
+
+        this.setState({ details: originalDetail });
+      }
+    }
   };
 
   render() {
@@ -265,7 +337,7 @@ class InventoryFullForm extends Form {
                   />
                 </div>
               </div>
-              {!this.state.showDetail && this.renderButton("Agregar detalle")}
+              {this.renderButton(this.state.buttonAction)}
             </div>
           </div>
         </form>
@@ -330,32 +402,13 @@ class InventoryFullForm extends Form {
                 </table>
               </div>
 
-              {/* {false && (
-                <div className="row">
-                  {false && (
-                    <div className="col">
-                      {this.renderSelect(
-                        "company_id",
-                        "Compañía",
-                        this.state.companies
-                      )}
-                    </div>
-                  )}
-                  <div className="col">
-                    <Input
-                      disabled="disabled"
-                      type="text"
-                      name="available"
-                      value={formatNumber(this.state.availableStock)}
-                      label="Disponible"
-                    />
-                  </div>
-                </div>
-              )} */}
-
               <button
                 className="btn btn-success pl-5 pr-5"
                 onClick={this.attachNewProduct}
+                disabled={
+                  !this.state.inventory.product_id ||
+                  !this.state.inventory.quantity.length
+                }
               >
                 Agregar
               </button>

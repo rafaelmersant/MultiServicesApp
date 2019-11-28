@@ -19,7 +19,7 @@ class InventoryForm extends Form {
 
   state = {
     data: {
-      header_id: null,
+      header_id: 1,
       id: 0,
       product_id: "",
       typeTracking: "E",
