@@ -26,6 +26,14 @@ code {
   font-family: Arial, Helvetica, sans-serif
 }
 
+.font-receipt-small {
+  font-size: 18px;
+}
+
+.font-receipt-big {
+  font-size: 26px;
+}
+
 table a {
   color: #17a2b8 !important;
 }

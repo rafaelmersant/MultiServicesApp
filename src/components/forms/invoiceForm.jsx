@@ -59,6 +59,8 @@ class InvoiceForm extends Form {
       serverDate: new Date().toISOString()
     },
     invoiceDate: new Date(),
+    itbisTotal: 0,
+    valorTotal: 0,
     products: [],
     details: [],
     detailsToDelete: [],
@@ -187,6 +189,7 @@ class InvoiceForm extends Form {
 
   async updateInventory(entry) {
     const inventory = {
+      header_id: 1,
       id: 0,
       product_id: entry.product_id,
       typeTracking: "S",
@@ -233,6 +236,14 @@ class InvoiceForm extends Form {
         invoiceHeader[0].id
       );
 
+      let itbisTotal = invoiceDetail.reduce((s, f) => f.product.itbis);
+      let valorTotal = invoiceDetail.reduce((s, f) => s + (f.quantity * f.product.price));
+      console.log('valorTotal', valorTotal)
+      // this.state.invoiceDetail.forEach(item => {
+      //   this.itbisTotal += item.itbis;
+      //   this.valorTotal += (item.quantity * item.product.price);
+      // })
+
       this.setState({
         data: this.mapToViewInvoiceHeader(invoiceHeader),
         details: this.mapToViewInvoiceDetail(invoiceDetail),
@@ -242,10 +253,12 @@ class InvoiceForm extends Form {
         ncf: invoiceHeader[0].ncf.length,
         action: "Detalle de Factura",
         serializedInvoiceHeader: invoiceHeader,
-        serializedInvoiceDetail: invoiceDetail
+        serializedInvoiceDetail: invoiceDetail,
+        itbisTotal: 0,
+        valorTotal: 0
       });
 
-      console.log("state", this.state);
+      //console.log("state", this.state);
       this.forceUpdate();
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -254,7 +267,7 @@ class InvoiceForm extends Form {
   }
 
   mapToViewInvoiceHeader(invoiceHeader) {
-    console.log("mapToViewInvoiceHeader - invoiceHeader", invoiceHeader);
+    //console.log("mapToViewInvoiceHeader - invoiceHeader", invoiceHeader);
     return {
       id: invoiceHeader[0].id,
       sequence: parseFloat(invoiceHeader[0].sequence),
@@ -315,7 +328,7 @@ class InvoiceForm extends Form {
       return false;
     }
 
-    const product_found = _.find(this.state.details, function(item) {
+    const product_found = _.find(this.state.details, function (item) {
       return item.product_id === product.id;
     });
 
@@ -799,6 +812,8 @@ class InvoiceForm extends Form {
             ref={el => (this.componentRef = el)}
             invoiceHeader={this.state.serializedInvoiceHeader}
             invoiceDetail={this.state.serializedInvoiceDetail}
+            itbisTotal={this.state.itbisTotal}
+            valorTotal={this.state.valorTotal}
           />
         </div>
         <NavLink className="btn btn-secondary mt-4" to="/invoices">

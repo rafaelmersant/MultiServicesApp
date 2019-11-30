@@ -306,7 +306,7 @@ class InventoryFullForm extends Form {
           <div className="header">
             <div className="col-12 pb-3 bg-light">
               <div className="row mb-3 mr-2 ml-1">
-                <label htmlFor="creationDate">Fecha Documento</label>
+                <label htmlFor="creationDate" style={{ marginRight: "10px" }}>Fecha</label>
                 <DatePicker
                   selected={this.state.creationDate}
                   onChange={date => this.handleChangeCreationDate(date)}
