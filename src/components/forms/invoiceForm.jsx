@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import Joi from "joi-browser";
 import { toast } from "react-toastify";
 import ReactToPrint from "react-to-print";
@@ -800,6 +801,9 @@ class InvoiceForm extends Form {
             invoiceDetail={this.state.serializedInvoiceDetail}
           />
         </div>
+        <NavLink className="btn btn-secondary mt-4" to="/invoices">
+          {"<-"} Ir al listado
+        </NavLink>
       </div>
     );
   }

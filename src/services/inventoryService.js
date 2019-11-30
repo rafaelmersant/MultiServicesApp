@@ -56,6 +56,10 @@ export function getProductsStocks(productId) {
   return http.get(`${apiEndpointProdStock}/`);
 }
 
+export function getProductsStocksByCompany(companyId) {
+  return http.get(`${apiEndpointProdStock}/?company=${companyId}`);
+}
+
 export function saveProductTrackingHeader(entry) {
   if (entry.id) {
     const body = { ...entry };

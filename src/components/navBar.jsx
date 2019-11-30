@@ -108,7 +108,7 @@ const NavBar = ({ user }) => {
                 Facturas
               </NavLink>
 
-              <NavLink className="dropdown-item" to="/reports/inventory">
+              <NavLink className="dropdown-item" to="/inventory/report">
                 Inventario
               </NavLink>
             </div>

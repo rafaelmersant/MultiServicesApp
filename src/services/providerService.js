@@ -8,7 +8,10 @@ function providerUrl(id) {
 }
 
 export function getProviders(companyId) {
-  if (companyId) return http.get(`${apiEndpoint}/?company_id=${companyId}`);
+  if (companyId)
+    return http.get(
+      `${apiEndpoint}/?company_id=${companyId}&ordering=firstName`
+    );
 
   return http.get(`${apiEndpoint}/`);
 }

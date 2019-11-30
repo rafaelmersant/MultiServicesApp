@@ -14,11 +14,18 @@ class CustomerForm extends Form {
       email: "",
       address: "",
       phoneNumber: "",
+      identification: "",
+      identificationType: "0",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
     },
     companies: [],
+    identificationTypes: [
+      { id: "0", name: "Seleccionar..." },
+      { id: "C", name: "Cédula" },
+      { id: "R", name: "RNC" }
+    ],
     errors: {},
     action: "Nuevo Cliente"
   };
@@ -36,6 +43,8 @@ class CustomerForm extends Form {
     email: Joi.optional(),
     address: Joi.optional(),
     phoneNumber: Joi.optional(),
+    identification: Joi.optional(),
+    identificationType: Joi.optional(),
     company_id: Joi.number()
       .required()
       .label("Compañîa"),
@@ -85,6 +94,12 @@ class CustomerForm extends Form {
       email: customer[0].email ? customer[0].email : "",
       address: customer[0].address ? customer[0].address : "",
       phoneNumber: customer[0].phoneNumber ? customer[0].phoneNumber : "",
+      identificationType: customer[0].identificationType
+        ? customer[0].identificationType
+        : "0",
+      identification: customer[0].identification
+        ? customer[0].identification
+        : "",
       company_id: customer[0].company.id,
       createdUser: customer[0].createdByUser
         ? customer[0].createdByUser
@@ -128,6 +143,18 @@ class CustomerForm extends Form {
               <div className="col">{this.renderInput("email", "Email")}</div>
               <div className="col">
                 {this.renderInput("phoneNumber", "Teléfono")}
+              </div>
+            </div>
+            <div className="row">
+              <div className="col">
+                {this.renderSelect(
+                  "identificationType",
+                  "Tipo de Identificación",
+                  this.state.identificationTypes
+                )}
+              </div>
+              <div className="col">
+                {this.renderInput("identification", "Identificación")}
               </div>
             </div>
 

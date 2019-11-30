@@ -1,11 +1,12 @@
 import React from "react";
+import { NavLink } from "react-router-dom";
 import Joi from "joi-browser";
-import toast from "react-toastify";
+import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import Form from "../common/form";
 import SearchProduct from "../common/searchProduct";
 import Input from "../common/input";
-import Select from "../common/select";
+// import Select from "../common/select";
 import ProductModal from "../modals/productModal";
 import { getCurrentUser } from "../../services/authService";
 import { saveProduct } from "../../services/productService";
@@ -233,6 +234,7 @@ class InventoryFullForm extends Form {
   doSubmit = async () => {
     try {
       const { data: header } = await saveProductTrackingHeader(this.state.data);
+      if (this.state.showDetail) toast.success("Los cambios fueron guardados!");
 
       this.setState({
         header,
@@ -346,7 +348,7 @@ class InventoryFullForm extends Form {
           <div className="detail">
             <div className="col pb-3 bg-light">
               <div className="row">
-                <table className="w-100">
+                <table style={{ width: "95%" }} className="ml-3">
                   <thead>
                     <tr>
                       <td className="w-50">
@@ -360,7 +362,7 @@ class InventoryFullForm extends Form {
                           label="Producto"
                         />
                       </td>
-                      <td>
+                      {/* <td>
                         <Select
                           name="typeTracking"
                           value={this.state.inventory.typeTracking}
@@ -369,7 +371,7 @@ class InventoryFullForm extends Form {
                           onChange={this.handleChangeInput}
                           error={null}
                         />
-                      </td>
+                      </td> */}
                       <td>
                         <Input
                           type="text"
@@ -435,6 +437,10 @@ class InventoryFullForm extends Form {
             </div>
           </div>
         )}
+
+        <NavLink className="btn btn-secondary mt-4" to="/inventoriesFull">
+          {"<-"} Ir al listado
+        </NavLink>
       </div>
     );
   }
