@@ -59,8 +59,6 @@ class InvoiceForm extends Form {
       serverDate: new Date().toISOString()
     },
     invoiceDate: new Date(),
-    itbisTotal: 0,
-    valorTotal: 0,
     products: [],
     details: [],
     detailsToDelete: [],
@@ -156,7 +154,7 @@ class InvoiceForm extends Form {
     const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
     const total = Math.round(price * quantity * 100) / 100;
     const subtotal =
-      Math.round((total + itbis * quantity - discount) * 100) / 100;
+      Math.round((total + itbis - discount) * 100) / 100;
 
     line.quantity = quantity;
     line.product_id = product.id;
@@ -184,7 +182,7 @@ class InvoiceForm extends Form {
 
     this.setState({ data });
 
-    console.log("UpdateTotals - data", data);
+    //console.log("UpdateTotals - data", data);
   };
 
   async updateInventory(entry) {
@@ -236,14 +234,6 @@ class InvoiceForm extends Form {
         invoiceHeader[0].id
       );
 
-      let itbisTotal = invoiceDetail.reduce((s, f) => f.product.itbis);
-      let valorTotal = invoiceDetail.reduce((s, f) => s + (f.quantity * f.product.price));
-      console.log('valorTotal', valorTotal)
-      // this.state.invoiceDetail.forEach(item => {
-      //   this.itbisTotal += item.itbis;
-      //   this.valorTotal += (item.quantity * item.product.price);
-      // })
-
       this.setState({
         data: this.mapToViewInvoiceHeader(invoiceHeader),
         details: this.mapToViewInvoiceDetail(invoiceDetail),
@@ -253,9 +243,7 @@ class InvoiceForm extends Form {
         ncf: invoiceHeader[0].ncf.length,
         action: "Detalle de Factura",
         serializedInvoiceHeader: invoiceHeader,
-        serializedInvoiceDetail: invoiceDetail,
-        itbisTotal: 0,
-        valorTotal: 0
+        serializedInvoiceDetail: invoiceDetail
       });
 
       //console.log("state", this.state);
@@ -289,7 +277,7 @@ class InvoiceForm extends Form {
 
   mapToViewInvoiceDetail(invoiceDetail) {
     let details = [];
-    console.log("mapToViewInvoiceDetail - invoiceDetail", invoiceDetail);
+    //console.log("mapToViewInvoiceDetail - invoiceDetail", invoiceDetail);
     invoiceDetail.forEach(item => {
       details.push({
         id: item.id,
@@ -393,8 +381,11 @@ class InvoiceForm extends Form {
 
     setTimeout(() => {
       this.updateLine(this.state.currentProduct);
-      let details = [...this.state.details];
-      if (this.state.line.product_id) details.push(this.state.line);
+      const details = [...this.state.details];
+      const line = { ...this.state.line };
+      line.itbis = line.itbis * line.quantity;
+
+      if (this.state.line.product_id) details.push(line);
 
       console.log("Add details", details);
 
@@ -812,8 +803,9 @@ class InvoiceForm extends Form {
             ref={el => (this.componentRef = el)}
             invoiceHeader={this.state.serializedInvoiceHeader}
             invoiceDetail={this.state.serializedInvoiceDetail}
-            itbisTotal={this.state.itbisTotal}
-            valorTotal={this.state.valorTotal}
+            itbisTotal={this.state.data.itbis}
+            valorTotal={this.state.data.subtotal}
+            discountTotal={this.state.data.discount}
           />
         </div>
         <NavLink className="btn btn-secondary mt-4" to="/invoices">

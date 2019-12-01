@@ -8,7 +8,7 @@ class InvoiceDetailTable extends Component {
     { path: "quantity", label: "Cant." },
     { path: "product", label: "Producto" },
     { path: "price", label: "Precio" },
-    { path: "itbis", label: "ITBIS" },
+    { path: "itbis", label: "ITBIS Total" },
     { path: "discount", label: "Desc." },
     { path: "total", label: "Importe" }
   ];
