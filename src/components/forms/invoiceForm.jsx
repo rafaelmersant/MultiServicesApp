@@ -153,8 +153,7 @@ class InvoiceForm extends Form {
     const price = Math.round(parseFloat(product.price) * 100) / 100;
     const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
     const total = Math.round(price * quantity * 100) / 100;
-    const subtotal =
-      Math.round((total + itbis - discount) * 100) / 100;
+    const subtotal = Math.round((total + itbis - discount) * 100) / 100;
 
     line.quantity = quantity;
     line.product_id = product.id;
@@ -316,12 +315,21 @@ class InvoiceForm extends Form {
       return false;
     }
 
-    const product_found = _.find(this.state.details, function (item) {
+    const product_found = _.find(this.state.details, function(item) {
       return item.product_id === product.id;
     });
 
     if (product_found !== undefined) {
       toast.error("Este producto ya fue agregado.");
+      return false;
+    }
+
+    const available = this.availableInStock(product.id);
+
+    if (available > 0) {
+      toast.success(`Cantidad disponible: ${formatNumber(available)}`);
+    } else {
+      toast.error(`No tiene disponible en inventario`);
       return false;
     }
 
@@ -332,12 +340,13 @@ class InvoiceForm extends Form {
       currentProduct: product,
       searchProductText: product.description
     });
+  };
 
-    const { data: stock } = await getProductsStocks(product.id);
+  availableInStock = async productId => {
+    const { data: stock } = await getProductsStocks(productId);
     const available = stock.length ? stock[0].quantityAvailable : 0;
-    if (available > 0)
-      toast.success(`Cantidad disponible: ${formatNumber(available)}`);
-    else toast.error(`No tiene disponible en inventario`);
+
+    return available;
   };
 
   handleFocusProduct = value => {
