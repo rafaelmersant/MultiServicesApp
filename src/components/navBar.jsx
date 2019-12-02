@@ -111,6 +111,12 @@ const NavBar = ({ user }) => {
               <NavLink className="dropdown-item" to="/inventory/report">
                 Inventario
               </NavLink>
+              <NavLink className="dropdown-item" to="/reports/report606">
+                <span className="text-info"> Reporte 606</span>
+              </NavLink>
+              <NavLink className="dropdown-item" to="/reports/entrtiesProvider">
+                <span className="text-info">Entradas por Proveedor</span>
+              </NavLink>
             </div>
           </li>
 

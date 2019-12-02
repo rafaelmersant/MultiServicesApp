@@ -11,7 +11,7 @@ class ProductsStock extends Component {
   state = {
     products: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 1000,
     searchQuery: "",
     sortColumn: { path: "creationDate", order: "desc" }
   };
@@ -72,6 +72,7 @@ class ProductsStock extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
+            <h2 className="pull-right text-info">Reporte de Inventario</h2>
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}

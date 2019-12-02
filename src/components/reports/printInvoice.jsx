@@ -110,7 +110,7 @@ class PrintInvoice extends Component {
             </thead>
             <tbody>
               {invoiceDetail.map(item => (
-                <React.Fragment>
+                <React.Fragment key={item.id}>
                   <tr key={item.id}>
                     <td>
                       <span className="font-receipt font-receipt-small">

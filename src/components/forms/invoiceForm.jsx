@@ -142,6 +142,15 @@ class InvoiceForm extends Form {
     this.setState({ line });
   }
 
+  availableInStock = async productId => {
+    const { data: stock } = await getProductsStocks(productId);
+    return stock.length ? stock[0].quantityAvailable : 0;
+  };
+
+  newInvoice = () => {
+    window.location = `/invoice/new`;
+  };
+
   updateLine = product => {
     const line = { ...this.state.line };
 
@@ -247,6 +256,11 @@ class InvoiceForm extends Form {
 
       //console.log("state", this.state);
       this.forceUpdate();
+
+      if (sessionStorage["printInvoice"] === "y") {
+        this.printButton.click();
+        sessionStorage["printInvoice"] = "";
+      }
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         return this.props.history.replace("/not-found");
@@ -324,8 +338,7 @@ class InvoiceForm extends Form {
       return false;
     }
 
-    const available = this.availableInStock(product.id);
-
+    const available = await this.availableInStock(product.id);
     if (available > 0) {
       toast.success(`Cantidad disponible: ${formatNumber(available)}`);
     } else {
@@ -340,13 +353,6 @@ class InvoiceForm extends Form {
       currentProduct: product,
       searchProductText: product.description
     });
-  };
-
-  availableInStock = async productId => {
-    const { data: stock } = await getProductsStocks(productId);
-    const available = stock.length ? stock[0].quantityAvailable : 0;
-
-    return available;
   };
 
   handleFocusProduct = value => {
@@ -543,7 +549,7 @@ class InvoiceForm extends Form {
     this._isMounted = true;
 
     await this.populateProducts();
-    await this.populateInvoice();
+    await this.populateInvoice(false);
 
     if (!this.state.data.id) {
       this.refreshNextInvoiceSequence();
@@ -589,6 +595,7 @@ class InvoiceForm extends Form {
       }, 100);
 
       setTimeout(() => {
+        sessionStorage["printInvoice"] = "y";
         window.location = `/invoice/${this.state.data.sequence}`;
       }, 300);
     } catch (ex) {
@@ -612,215 +619,228 @@ class InvoiceForm extends Form {
     const { user } = this.props;
 
     return (
-      <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
-        <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
-        <div className="col-12 pb-3 bg-light">
-          <form onSubmit={this.handleSubmit}>
-            <div className="row pull-right">
-              <label className="mr-1">Fecha</label>
-              <div className="mr-3">
-                <DatePicker
-                  selected={this.state.invoiceDate}
-                  onChange={date => this.handleChangeInvoiceDate(date)}
-                  dateFormat="dd/MM/yyyy"
-                />
-              </div>
-            </div>
-
-            <div className="row">
-              <div className="col-8 ml-0">
-                <SearchCustomer
-                  onSelect={this.handleSelectCustomer}
-                  onFocus={() => this.handleFocusCustomer(false)}
-                  onBlur={() => this.handleFocusCustomer(true)}
-                  hide={this.state.hideSearchCustomer}
-                  value={this.state.searchCustomerText}
-                  companyId={getCurrentUser().companyId}
-                />
-              </div>
-
-              {!this.state.data.ncf && (
-                <div className="col-2">
-                  <Select
-                    name="typeDoc"
-                    value={this.state.data.typeDoc}
-                    label="NCF"
-                    options={this.state.typeDoc}
-                    onChange={this.handleChangeNCF}
-                    error={null}
-                    disabled={this.state.data.id}
+      <React.Fragment>
+        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
+          <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+          <div className="col-12 pb-3 bg-light">
+            <form onSubmit={this.handleSubmit}>
+              <div className="row pull-right">
+                <label className="mr-1">Fecha</label>
+                <div className="mr-3">
+                  <DatePicker
+                    selected={this.state.invoiceDate}
+                    onChange={date => this.handleChangeInvoiceDate(date)}
+                    dateFormat="dd/MM/yyyy"
                   />
                 </div>
-              )}
+              </div>
 
-              {this.state.data.ncf.length > 0 && this.state.data.id > 0 && (
-                <div className="col-2">
+              <div className="row">
+                <div className="col-8 ml-0">
+                  <SearchCustomer
+                    onSelect={this.handleSelectCustomer}
+                    onFocus={() => this.handleFocusCustomer(false)}
+                    onBlur={() => this.handleFocusCustomer(true)}
+                    hide={this.state.hideSearchCustomer}
+                    value={this.state.searchCustomerText}
+                    companyId={getCurrentUser().companyId}
+                  />
+                </div>
+
+                {!this.state.data.ncf && (
+                  <div className="col-2">
+                    <Select
+                      name="typeDoc"
+                      value={this.state.data.typeDoc}
+                      label="NCF"
+                      options={this.state.typeDoc}
+                      onChange={this.handleChangeNCF}
+                      error={null}
+                      disabled={this.state.data.id}
+                    />
+                  </div>
+                )}
+
+                {this.state.data.ncf.length > 0 && this.state.data.id > 0 && (
+                  <div className="col-2">
+                    <Input
+                      type="text"
+                      name="ncf"
+                      value={this.state.data.ncf}
+                      label="NCF"
+                      onChange={this.handleChange}
+                      disabled="disabled"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="row">
+                <div className="col-4">
+                  {this.renderSelect(
+                    "paymentMethod",
+                    "Metodo de Pago",
+                    this.state.paymentMethods
+                  )}
+                </div>
+                <div className="col-6">
+                  {this.renderInput(
+                    "reference",
+                    "Referencia",
+                    "text",
+                    "",
+                    "Opcional"
+                  )}
+                </div>
+                <div className="col mt-4">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="chkPaid"
+                    checked={this.state.data.paid}
+                    onChange={this.handleChangePaid}
+                    disabled={this.state.data.id && this.state.data.paid}
+                  />
+                  <label className="form-check-label" htmlFor="chkPaid">
+                    Pagada
+                  </label>
+                </div>
+              </div>
+
+              <div className="row mr-0 ml-0 pr-0 pl-0">
+                <div className="col-1 mr-0 ml-0 pr-0 pl-0">
                   <Input
                     type="text"
-                    name="ncf"
-                    value={this.state.data.ncf}
-                    label="NCF"
+                    name="quantity"
+                    value={this.state.line.quantity}
+                    label="Cant."
+                    onChange={this.handleChangeQuantity}
+                  />
+                </div>
+                <div className="col-5 mr-0 ml-0 pr-0 pl-0">
+                  <SearchProduct
+                    onSelect={this.handleSelectProduct}
+                    onFocus={() => this.handleFocusProduct(false)}
+                    onBlur={() => this.handleFocusProduct(true)}
+                    hide={this.state.hideSearchProduct}
+                    companyId={getCurrentUser().companyId}
+                    value={this.state.searchProductText}
+                    label="Producto"
+                  />
+                </div>
+
+                <div className="col-2 mr-0 ml-0 pr-0 pl-0">
+                  <Input
+                    type="text"
+                    name="price"
+                    value={formatNumber(this.state.line.price)}
+                    label="Precio"
                     onChange={this.handleChange}
                     disabled="disabled"
                   />
                 </div>
-              )}
-            </div>
-
-            <div className="row">
-              <div className="col-4">
-                {this.renderSelect(
-                  "paymentMethod",
-                  "Metodo de Pago",
-                  this.state.paymentMethods
-                )}
-              </div>
-              <div className="col-6">
-                {this.renderInput(
-                  "reference",
-                  "Referencia",
-                  "text",
-                  "",
-                  "Opcional"
-                )}
-              </div>
-              <div className="col mt-4">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="chkPaid"
-                  checked={this.state.data.paid}
-                  onChange={this.handleChangePaid}
-                  disabled={this.state.data.id && this.state.data.paid}
-                />
-                <label className="form-check-label" htmlFor="chkPaid">
-                  Pagada
-                </label>
-              </div>
-            </div>
-
-            <div className="row mr-0 ml-0 pr-0 pl-0">
-              <div className="col-1 mr-0 ml-0 pr-0 pl-0">
-                <Input
-                  type="text"
-                  name="quantity"
-                  value={this.state.line.quantity}
-                  label="Cant."
-                  onChange={this.handleChangeQuantity}
-                />
-              </div>
-              <div className="col-5 mr-0 ml-0 pr-0 pl-0">
-                <SearchProduct
-                  onSelect={this.handleSelectProduct}
-                  onFocus={() => this.handleFocusProduct(false)}
-                  onBlur={() => this.handleFocusProduct(true)}
-                  hide={this.state.hideSearchProduct}
-                  companyId={getCurrentUser().companyId}
-                  value={this.state.searchProductText}
-                  label="Producto"
-                />
-              </div>
-
-              <div className="col-2 mr-0 ml-0 pr-0 pl-0">
-                <Input
-                  type="text"
-                  name="price"
-                  value={formatNumber(this.state.line.price)}
-                  label="Precio"
-                  onChange={this.handleChange}
-                  disabled="disabled"
-                />
-              </div>
-              <div className="col-2 mr-0 ml-0 pr-0 pl-0">
-                <Input
-                  type="text"
-                  name="itbis"
-                  value={formatNumber(this.state.line.itbis)}
-                  label="ITBIS"
-                  onChange={this.handleChange}
-                  disabled="disabled"
-                />
-              </div>
-              <div className="col-1 mr-0 ml-0 pr-0 pl-0">
-                <Input
-                  type="text"
-                  name="discount"
-                  value={this.state.line.discount}
-                  label="Desc."
-                  onChange={this.handleChangeDiscount}
-                  onBlur={this.handleBlurDiscount}
-                />
-              </div>
-              <div
-                className="col-1 pt-0 pb-0 mr-0 ml-0 pr-0 pl-0"
-                style={{ marginTop: "1.98em" }}
-              >
-                <button
-                  className="btn btn-info"
-                  onClick={this.handleAddDetail}
-                  disabled={!this.state.line.product_id}
+                <div className="col-2 mr-0 ml-0 pr-0 pl-0">
+                  <Input
+                    type="text"
+                    name="itbis"
+                    value={formatNumber(this.state.line.itbis)}
+                    label="ITBIS"
+                    onChange={this.handleChange}
+                    disabled="disabled"
+                  />
+                </div>
+                <div className="col-1 mr-0 ml-0 pr-0 pl-0">
+                  <Input
+                    type="text"
+                    name="discount"
+                    value={this.state.line.discount}
+                    label="Desc."
+                    onChange={this.handleChangeDiscount}
+                    onBlur={this.handleBlurDiscount}
+                  />
+                </div>
+                <div
+                  className="col-1 pt-0 pb-0 mr-0 ml-0 pr-0 pl-0"
+                  style={{ marginTop: "1.98em" }}
                 >
-                  Agregar
-                </button>
+                  <button
+                    className="btn btn-info"
+                    onClick={this.handleAddDetail}
+                    disabled={!this.state.line.product_id}
+                  >
+                    Agregar
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <InvoiceDetailTable
-              invoiceHeader={this.state.data}
-              details={this.state.details}
-              user={user}
-              onDelete={this.handleDeleteDetail}
-              onEdit={this.handleEditDetail}
+              <InvoiceDetailTable
+                invoiceHeader={this.state.data}
+                details={this.state.details}
+                user={user}
+                onDelete={this.handleDeleteDetail}
+                onEdit={this.handleEditDetail}
+              />
+
+              {(!this.state.data.paid || !this.state.data.id) &&
+                this.renderButton("Guardar")}
+            </form>
+          </div>
+
+          <button
+            type="button"
+            data-toggle="modal"
+            data-target="#customerModal"
+            hidden="hidden"
+            ref={button => (this.raiseCustomerModal = button)}
+          ></button>
+          <button
+            type="button"
+            data-toggle="modal"
+            data-target="#productModal"
+            hidden="hidden"
+            ref={button => (this.raiseProductModal = button)}
+          ></button>
+
+          <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
+          <ProductModal setNewProduct={this.handleSetNewProduct} />
+
+          {this.state.data.id > 0 && (
+            <ReactToPrint
+              trigger={() => (
+                <button
+                  ref={button => (this.printButton = button)}
+                  className="fa fa-print text-success pull-right"
+                  style={{ fontSize: "30px" }}
+                ></button>
+              )}
+              content={() => this.componentRef}
             />
-
-            {(!this.state.data.paid || !this.state.data.id) &&
-              this.renderButton("Guardar")}
-          </form>
+          )}
+          <div hidden="hidden">
+            <PrintInvoice
+              ref={el => (this.componentRef = el)}
+              invoiceHeader={this.state.serializedInvoiceHeader}
+              invoiceDetail={this.state.serializedInvoiceDetail}
+              itbisTotal={this.state.data.itbis}
+              valorTotal={this.state.data.subtotal}
+              discountTotal={this.state.data.discount}
+            />
+          </div>
         </div>
 
-        <button
-          type="button"
-          data-toggle="modal"
-          data-target="#customerModal"
-          hidden="hidden"
-          ref={button => (this.raiseCustomerModal = button)}
-        ></button>
-        <button
-          type="button"
-          data-toggle="modal"
-          data-target="#productModal"
-          hidden="hidden"
-          ref={button => (this.raiseProductModal = button)}
-        ></button>
+        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3">
+          <NavLink className="btn btn-secondary" to="/invoices">
+            {"<-"} Ir al listado
+          </NavLink>
 
-        <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
-        <ProductModal setNewProduct={this.handleSetNewProduct} />
-
-        {this.state.data.id > 0 && (
-          <ReactToPrint
-            trigger={() => (
-              <button
-                className="fa fa-print text-success pull-right"
-                style={{ fontSize: "30px" }}
-              ></button>
-            )}
-            content={() => this.componentRef}
-          />
-        )}
-        <div hidden="hidden">
-          <PrintInvoice
-            ref={el => (this.componentRef = el)}
-            invoiceHeader={this.state.serializedInvoiceHeader}
-            invoiceDetail={this.state.serializedInvoiceDetail}
-            itbisTotal={this.state.data.itbis}
-            valorTotal={this.state.data.subtotal}
-            discountTotal={this.state.data.discount}
-          />
+          <button
+            className="btn btn-warning mb-3 pull-right"
+            onClick={this.newInvoice}
+          >
+            Nueva Factura
+          </button>
         </div>
-        <NavLink className="btn btn-secondary mt-4" to="/invoices">
-          {"<-"} Ir al listado
-        </NavLink>
-      </div>
+      </React.Fragment>
     );
   }
 }
