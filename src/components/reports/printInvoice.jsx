@@ -29,23 +29,33 @@ class PrintInvoice extends Component {
             <div className="text-center">
               <span className="font-receipt">
                 {invoiceHeader[0].company.address}
-              </span>{" "}
+              </span>
+            </div>
+            <div className="text-center">
+              <span className="font-receipt">
+                {invoiceHeader[0].company.phoneNumber}
+              </span>
+            </div>
+            <div className="text-center">
+              <span className="font-receipt">
+                {invoiceHeader[0].company.email}
+              </span>
             </div>
 
             {invoiceHeader[0].company.rnc.length > 0 && (
               <span className="font-receipt font-receipt-small">
-                RNC: {invoiceHeader[0].company.rnc}{" "}
+                RNC: {invoiceHeader[0].company.rnc}
               </span>
             )}
 
             <span className="font-receipt font-receipt-small d-block">
-              {new Date().toLocaleDateString("en-GB")}{" "}
+              {new Date().toLocaleDateString("en-GB")}
               {new Date().toLocaleTimeString()}
             </span>
 
             {invoiceHeader[0].ncf.length > 0 && (
               <span className="font-receipt font-receipt-small d-block">
-                NCF: {invoiceHeader[0].ncf}{" "}
+                NCF: {invoiceHeader[0].ncf}
               </span>
             )}
 
@@ -53,6 +63,12 @@ class PrintInvoice extends Component {
               Cliente: {invoiceHeader[0].customer.firstName}{" "}
               {invoiceHeader[0].customer.lastName}
             </span>
+
+            {invoiceHeader[0].ncf.includes("B01") && (
+              <span className="font-receipt font-receipt-small d-block">
+                Cédula/RNC: {invoiceHeader[0].customer.identification}
+              </span>
+            )}
           </div>
         )}
 
@@ -131,10 +147,23 @@ class PrintInvoice extends Component {
                   <tr key={item.product.id}>
                     <td colSpan="3">
                       <span className="font-receipt font-receipt-small">
-                        {item.quantity} x {formatNumber(item.product.price)}{" "}
+                        {item.quantity} x {formatNumber(item.product.price)}
                       </span>
                     </td>
                   </tr>
+                  {item.discount > 0 && (
+                    <tr key={item.product.id}>
+                      <td colSpan="2">
+                        <span className="font-receipt font-receipt-small">
+                          {item.product.description} {"desc."}
+                        </span>
+                      </td>
+                      <td className="text-right">
+                        {"-"}
+                        {formatNumber(item.discount)}
+                      </td>
+                    </tr>
+                  )}
                 </React.Fragment>
               ))}
 
