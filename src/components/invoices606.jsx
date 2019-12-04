@@ -3,13 +3,13 @@ import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import { paginate } from "../utils/paginate";
-import ProductStockTable from "./tables/productStockTable";
-import { getProductsStocksByCompany } from "../services/inventoryService";
 import { getCurrentUser } from "../services/authService";
+import { getInvoicesHeader } from "../services/invoiceServices";
+import Invoices606Table from "./tables/invoices606Table";
 
-class ProductsStock extends Component {
+class Invoices606 extends Component {
   state = {
-    products: [],
+    invoices: [],
     currentPage: 1,
     pageSize: 4000,
     searchQuery: "",
@@ -17,13 +17,13 @@ class ProductsStock extends Component {
   };
 
   async componentDidMount() {
-    this.getProducts();
+    this.populateInvoices();
   }
 
-  async getProducts() {
+  async populateInvoices() {
     const companyId = getCurrentUser().companyId;
-    const { data: products } = await getProductsStocksByCompany(companyId);
-    this.setState({ products });
+    const { data: invoices } = await getInvoicesHeader(companyId);
+    this.setState({ invoices });
   }
 
   handlePageChange = page => {
@@ -44,43 +44,41 @@ class ProductsStock extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      products: allProducts
+      invoices: allInvoices
     } = this.state;
 
-    let filtered = allProducts;
+    let filtered = allInvoices;
     if (searchQuery)
-      filtered = allProducts.filter(m =>
-        `${m.product.description.toLowerCase()}`.startsWith(
-          searchQuery.toLocaleLowerCase()
-        )
+      filtered = allInvoices.filter(m =>
+        `${m.ncf.toLowerCase()}`.startsWith(searchQuery.toLocaleLowerCase())
       );
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-    const products = paginate(sorted, currentPage, pageSize);
+    const invoices = paginate(sorted, currentPage, pageSize);
 
-    return { totalCount: filtered.length, products };
+    return { totalCount: filtered.length, invoices };
   };
 
   render() {
     const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
     const { user } = this.props;
 
-    const { totalCount, products } = this.getPagedData();
+    const { totalCount, invoices } = this.getPagedData();
 
     return (
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <h2 className="pull-right text-info">Reporte de Inventario</h2>
+            <h2 className="pull-right text-info">Reporte 606</h2>
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}
-              placeholder="Buscar producto..."
+              placeholder="Buscar NCF..."
             />
 
-            <ProductStockTable
-              products={products}
+            <Invoices606Table
+              invoices={invoices}
               user={user}
               sortColumn={sortColumn}
               onDelete={this.handleDelete}
@@ -95,7 +93,7 @@ class ProductsStock extends Component {
                 onPageChange={this.handlePageChange}
               />
               <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} registros</em>
+                <em>Mostrando {totalCount} facturas</em>
               </p>
             </div>
           </div>
@@ -105,4 +103,4 @@ class ProductsStock extends Component {
   }
 }
 
-export default ProductsStock;
+export default Invoices606;

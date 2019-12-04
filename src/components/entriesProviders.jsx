@@ -3,27 +3,27 @@ import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import { paginate } from "../utils/paginate";
-import ProductStockTable from "./tables/productStockTable";
-import { getProductsStocksByCompany } from "../services/inventoryService";
+import EntriesProviderTable from "./tables/entriesProviderTable";
+import { getProductsTrackingsHeader } from "../services/inventoryService";
 import { getCurrentUser } from "../services/authService";
 
-class ProductsStock extends Component {
+class EntriesProviders extends Component {
   state = {
-    products: [],
+    entries: [],
     currentPage: 1,
-    pageSize: 4000,
+    pageSize: 1000,
     searchQuery: "",
     sortColumn: { path: "creationDate", order: "desc" }
   };
 
   async componentDidMount() {
-    this.getProducts();
+    this.getInventoryRecords();
   }
 
-  async getProducts() {
+  async getInventoryRecords() {
     const companyId = getCurrentUser().companyId;
-    const { data: products } = await getProductsStocksByCompany(companyId);
-    this.setState({ products });
+    const { data: entries } = await getProductsTrackingsHeader(companyId);
+    this.setState({ entries });
   }
 
   handlePageChange = page => {
@@ -44,43 +44,43 @@ class ProductsStock extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      products: allProducts
+      entries: allentries
     } = this.state;
 
-    let filtered = allProducts;
+    let filtered = allentries;
     if (searchQuery)
-      filtered = allProducts.filter(m =>
-        `${m.product.description.toLowerCase()}`.startsWith(
+      filtered = allentries.filter(m =>
+        `${m.provider.name.toLowerCase()}`.startsWith(
           searchQuery.toLocaleLowerCase()
         )
       );
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-    const products = paginate(sorted, currentPage, pageSize);
+    const entries = paginate(sorted, currentPage, pageSize);
 
-    return { totalCount: filtered.length, products };
+    return { totalCount: filtered.length, entries };
   };
 
   render() {
     const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
     const { user } = this.props;
 
-    const { totalCount, products } = this.getPagedData();
+    const { totalCount, entries } = this.getPagedData();
 
     return (
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <h2 className="pull-right text-info">Reporte de Inventario</h2>
+            <h2 className="pull-right text-info">Entradas por Proveedor</h2>
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}
-              placeholder="Buscar producto..."
+              placeholder="Buscar proveedor..."
             />
 
-            <ProductStockTable
-              products={products}
+            <EntriesProviderTable
+              entries={entries}
               user={user}
               sortColumn={sortColumn}
               onDelete={this.handleDelete}
@@ -105,4 +105,4 @@ class ProductsStock extends Component {
   }
 }
 
-export default ProductsStock;
+export default EntriesProviders;

@@ -828,7 +828,7 @@ class InvoiceForm extends Form {
           </div>
         </div>
 
-        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3">
+        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 mb-5">
           <NavLink className="btn btn-secondary" to="/invoices">
             {"<-"} Ir al listado
           </NavLink>

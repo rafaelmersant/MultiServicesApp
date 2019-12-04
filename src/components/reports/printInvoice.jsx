@@ -155,7 +155,7 @@ class PrintInvoice extends Component {
                     <tr key={item.product.id}>
                       <td colSpan="2">
                         <span className="font-receipt font-receipt-small">
-                          {item.product.description} {"desc."}
+                          {"DESCUENTO"}
                         </span>
                       </td>
                       <td className="text-right">
