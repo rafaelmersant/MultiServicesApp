@@ -28,17 +28,29 @@ class InvoicesTable extends Component {
     {
       path: "discount",
       label: "Descuento",
-      content: item => <span>{formatNumber(item.discount)}</span>
+      content: item => (
+        <div className="text-right">
+          <span>{formatNumber(item.discount)}</span>
+        </div>
+      )
     },
     {
       path: "itbis",
       label: "ITBIS",
-      content: item => <span>{formatNumber(item.itbis)}</span>
+      content: item => (
+        <div className="text-right">
+          <span>{formatNumber(item.itbis)}</span>
+        </div>
+      )
     },
     {
       path: "subtotal",
       label: "Total",
-      content: item => <span>{formatNumber(item.subtotal)}</span>
+      content: item => (
+        <div className="text-right">
+          <span>{formatNumber(item.subtotal)}</span>
+        </div>
+      )
     },
     {
       path: "paid",

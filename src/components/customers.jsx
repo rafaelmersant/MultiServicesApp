@@ -101,6 +101,7 @@ class Customers extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
+            <h5 className="pull-left text-info mt-2">Listado de Clientes</h5>
             <NewButton label="Nuevo Cliente" to="/customer/new" />
 
             <SearchBox

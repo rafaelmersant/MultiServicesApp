@@ -85,6 +85,8 @@ class Inventories extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
+            <h5 className="text-info mt-2">Movimientos de Inventario</h5>
+
             <NewButton label="Ajuste de Inventario" to="/inventory/new" />
 
             <div className="row">

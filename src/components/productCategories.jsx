@@ -106,6 +106,9 @@ class ProductsCategories extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
+            <h5 className="pull-left text-info mt-2">
+              Listado de Categorias de Productos
+            </h5>
             <NewButton label="Nueva Categoria" to="/productCategory/new" />
 
             <SearchBox

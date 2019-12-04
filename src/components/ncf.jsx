@@ -80,6 +80,9 @@ class NCF extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
+            <h5 className="pull-left text-info mt-2">
+              Registros de Secuencias NCF
+            </h5>
             <NewButton label="Nueva Secuencia" to="/ncf/new" />
 
             <NCFsTable
