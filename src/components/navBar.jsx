@@ -5,11 +5,17 @@ const NavBar = ({ user }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <NavLink className="navbar-brand" to="/">
-        <span className="text-info">
+        {/* <span className="text-info">
           {localStorage.getItem("ms_companyName")
             ? localStorage.getItem("ms_companyName")
             : "Sistema"}
-        </span>
+        </span> */}
+
+        <img
+          width="170px"
+          src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
+          alt="FERRINMAS"
+        />
       </NavLink>
 
       <button
@@ -112,10 +118,10 @@ const NavBar = ({ user }) => {
                 Inventario
               </NavLink>
               <NavLink className="dropdown-item" to="/reports/report606">
-                <span className="text-info"> Reporte 606</span>
+                Reporte 606
               </NavLink>
               <NavLink className="dropdown-item" to="/reports/entrtiesProvider">
-                <span className="text-info">Entradas por Proveedor</span>
+                Entradas por Proveedor
               </NavLink>
             </div>
           </li>

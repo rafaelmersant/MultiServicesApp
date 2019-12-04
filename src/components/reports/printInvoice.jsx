@@ -19,7 +19,11 @@ class PrintInvoice extends Component {
         {invoiceHeader.length && (
           <div>
             <div className="text-center">
-              <img src={require("./FERRINMAS.jpg")} alt="FERRINMAS" />
+              <img
+                src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
+                //src={require("../../../public/images/FERRINMAS_small.jpg")}
+                alt="FERRINMAS"
+              />
             </div>
 
             {/* <h3 className="font-receipt text-center">
