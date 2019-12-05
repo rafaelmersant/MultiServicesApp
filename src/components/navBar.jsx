@@ -110,7 +110,7 @@ const NavBar = ({ user }) => {
               | Reportes
             </NavLink>
             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-              <NavLink className="dropdown-item" to="/reports/invoice">
+              <NavLink className="dropdown-item" to="/reports/report607">
                 Facturas
               </NavLink>
 

@@ -5,9 +5,9 @@ import SearchBox from "./common/searchBox";
 import { paginate } from "../utils/paginate";
 import { getCurrentUser } from "../services/authService";
 import { getInvoicesHeader } from "../services/invoiceServices";
-import Invoices606Table from "./tables/invoices606Table";
+import Invoices607Table from "./tables/invoices607Table";
 
-class Invoices606 extends Component {
+class Invoices607 extends Component {
   state = {
     invoices: [],
     currentPage: 1,
@@ -70,14 +70,14 @@ class Invoices606 extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <h2 className="pull-right text-info">Reporte 606</h2>
+            <h2 className="pull-right text-info">Reporte 607</h2>
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}
               placeholder="Buscar NCF..."
             />
 
-            <Invoices606Table
+            <Invoices607Table
               invoices={invoices}
               user={user}
               sortColumn={sortColumn}
@@ -103,4 +103,4 @@ class Invoices606 extends Component {
   }
 }
 
-export default Invoices606;
+export default Invoices607;

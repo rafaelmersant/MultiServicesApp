@@ -10,6 +10,7 @@ import Logout from "./components/logout";
 import InvoiceForm from "./components/forms/invoiceForm";
 import Invoices from "./components/invoices";
 import Invoices606 from "./components/invoices606";
+import Invoices607 from "./components/invoices607";
 import EntriesProviders from "./components/entriesProviders";
 import PrintInvoice from "./components/reports/printInvoice";
 import Inventories from "./components/inventories";
@@ -84,6 +85,7 @@ class App extends Component {
               component={ReportInventory}
             />
             <ProtectedRoute path="/reports/report606" component={Invoices606} />
+            <ProtectedRoute path="/reports/report607" component={Invoices607} />
             <ProtectedRoute
               path="/reports/entrtiesProvider"
               component={EntriesProviders}
