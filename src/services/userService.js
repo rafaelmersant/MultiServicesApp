@@ -15,6 +15,10 @@ export function getUser(userId) {
   return http.get(`${apiEndpoint}/?id=${userId}`);
 }
 
+export function getUserByEmail(email) {
+  return http.get(`${apiEndpoint}/?email=${email}`);
+}
+
 export function getEmailExists(companyId, email) {
   return http.get(`${apiEndpoint}/?company=${companyId}&email=${email}`);
 }

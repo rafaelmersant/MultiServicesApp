@@ -16,6 +16,7 @@ import { registerLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 import PrintInvoice from "../reports/printInvoice";
 import { getCurrentUser } from "../../services/authService";
+import { getUserByEmail } from "../../services/userService";
 import { getProducts } from "../../services/productService";
 import { getNextNCF, saveEntry } from "../../services/ncfService";
 import {
@@ -93,6 +94,7 @@ class InvoiceForm extends Form {
       creationDate: new Date().toISOString(),
       createdUser: getCurrentUser().email
     },
+    createdUserName: "",
     action: "Nueva Factura",
     hideSearchProduct: false,
     hideSearchCustomer: false,
@@ -242,6 +244,10 @@ class InvoiceForm extends Form {
         invoiceHeader[0].id
       );
 
+      const { data: createdUserData } = await getUserByEmail(
+        this.state.data.createdUser
+      );
+
       this.setState({
         data: this.mapToViewInvoiceHeader(invoiceHeader),
         details: this.mapToViewInvoiceDetail(invoiceDetail),
@@ -251,7 +257,8 @@ class InvoiceForm extends Form {
         ncf: invoiceHeader[0].ncf.length,
         action: "Detalle de Factura",
         serializedInvoiceHeader: invoiceHeader,
-        serializedInvoiceDetail: invoiceDetail
+        serializedInvoiceDetail: invoiceDetail,
+        createdUserName: createdUserData[0].name
       });
 
       //console.log("state", this.state);
@@ -824,6 +831,7 @@ class InvoiceForm extends Form {
               itbisTotal={this.state.data.itbis}
               valorTotal={this.state.data.subtotal}
               discountTotal={this.state.data.discount}
+              createdUserName={this.state.createdUserName}
             />
           </div>
         </div>

@@ -103,7 +103,7 @@ class UserForm extends Form {
       this.state.data.email
     );
 
-    if (email.length) {
+    if (email.length && this.state.data.id === 0) {
       toast.error("Este email ya existe en el sistema.");
       return false;
     }

@@ -11,7 +11,8 @@ class PrintInvoice extends Component {
       invoiceDetail,
       itbisTotal,
       valorTotal,
-      discountTotal
+      discountTotal,
+      createdUserName
     } = this.props;
 
     return (
@@ -113,7 +114,7 @@ class PrintInvoice extends Component {
               <tr key="h2">
                 {/* <td style={{cellSpacing: "5px"}}><span className="font-receipt">CANT</span></td> */}
                 <td style={{ cellSpacing: "10px" }}>
-                  <span className="font-receipt">DESCRIPCION</span>
+                  <span className="font-receipt">ITEM</span>
                 </td>
                 <td className="text-right" style={{ cellSpacing: "10px" }}>
                   <span className="font-receipt">ITBIS</span>
@@ -130,8 +131,8 @@ class PrintInvoice extends Component {
             </thead>
             <tbody>
               {invoiceDetail.map(item => (
-                <React.Fragment key={item.id}>
-                  <tr key={item.id}>
+                <React.Fragment key={"F" + item.id}>
+                  <tr key={"M" + item.id}>
                     <td>
                       <span className="font-receipt font-receipt-small">
                         {item.product.description}
@@ -156,7 +157,7 @@ class PrintInvoice extends Component {
                     </td>
                   </tr>
                   {item.discount > 0 && (
-                    <tr key={item.product.id}>
+                    <tr key={"D" + item.product.id}>
                       <td colSpan="2">
                         <span className="font-receipt font-receipt-small">
                           {"DESCUENTO"}
@@ -221,15 +222,19 @@ class PrintInvoice extends Component {
           </table>
         )}
         <div className="mt-4">
-          No. Factura: {invoiceHeader.length && invoiceHeader[0].sequence}
+          Items: <span className="font-receipt">{invoiceDetail.length}</span>
+        </div>
+        <div>
+          No. Factura:{" "}
+          <span className="font-receipt">
+            {invoiceHeader.length && invoiceHeader[0].sequence}
+          </span>
         </div>
         <div>
           Método de pago:{" "}
           {invoiceHeader.length && invoiceHeader[0].paymentMethod}
         </div>
-        <div>
-          Le atendió: {invoiceHeader.length && invoiceHeader[0].createdUser}
-        </div>
+        <div>Le atendió: {createdUserName}</div>
         <div className="mt-4" style={{ marginLeft: "115px" }}>
           GRACIAS POR SU COMPRA!
         </div>
