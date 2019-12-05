@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import Table from "../common/table";
-import auth from "../../services/authService";
 import { formatNumber } from "../../utils/custom";
 
 class Invoices606Table extends Component {
@@ -11,17 +9,32 @@ class Invoices606Table extends Component {
     {
       path: "discount",
       label: "Descuento",
-      content: item => <span>{formatNumber(item.discount)}</span>
+      align: "text-right",
+      content: item => (
+        <div className="text-right">
+          <span>{formatNumber(item.discount)}</span>
+        </div>
+      )
     },
     {
       path: "itbis",
       label: "ITBIS",
-      content: item => <span>{formatNumber(item.itbis)}</span>
+      align: "text-right",
+      content: item => (
+        <div className="text-right">
+          <span>{formatNumber(item.itbis)}</span>
+        </div>
+      )
     },
     {
       path: "subtotal",
       label: "Total",
-      content: item => <span>{formatNumber(item.subtotal)}</span>
+      align: "text-right",
+      content: item => (
+        <div className="text-right">
+          <span>{formatNumber(item.subtotal)}</span>
+        </div>
+      )
     }
   ];
 

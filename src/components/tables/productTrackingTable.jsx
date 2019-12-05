@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Table from "../common/table";
+import { formatNumber } from "../../utils/custom";
 
 class ProductTrackingTable extends Component {
   columns = [
@@ -23,7 +24,13 @@ class ProductTrackingTable extends Component {
         </span>
       )
     },
-    { path: "quantity", label: "Cantidad" },
+    {
+      path: "quantity",
+      label: "Cantidad",
+      content: item => (
+        <div className="text-right">{formatNumber(item.quantity)}</div>
+      )
+    },
     {
       path: "concept",
       label: "Desde",

@@ -16,14 +16,22 @@ class EntriesProviderTable extends Component {
     {
       path: "totalAmount",
       label: "Monto Total",
+      align: "text-right",
       content: item => (
-        <span> {formatNumber(parseFloat(item.totalAmount))} </span>
+        <div className="text-right">
+          <span> {formatNumber(parseFloat(item.totalAmount))} </span>
+        </div>
       )
     },
     {
       path: "itbis",
       label: "ITBIS",
-      content: item => <span> {formatNumber(parseFloat(item.itbis))} </span>
+      align: "text-right",
+      content: item => (
+        <div className="text-right">
+          <span> {formatNumber(parseFloat(item.itbis))} </span>
+        </div>
+      )
     },
     { path: "ncf", label: "NCF" },
     { path: "creationDate", label: "Fecha (m/d/a)" }

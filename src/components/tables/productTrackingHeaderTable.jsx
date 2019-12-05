@@ -25,8 +25,11 @@ class ProductTrackingHeaderTable extends Component {
     {
       path: "totalAmount",
       label: "Monto Total",
+      align: "text-right",
       content: item => (
-        <span> {formatNumber(parseFloat(item.totalAmount))} </span>
+        <div className="text-right">
+          <span> {formatNumber(parseFloat(item.totalAmount))} </span>
+        </div>
       )
     },
     { path: "ncf", label: "NCF" }

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Table from "../common/table";
 import auth from "../../services/authService";
+import { formatNumber } from "../../utils/custom";
 
 class ProductsTable extends Component {
   columns = [
@@ -12,9 +13,27 @@ class ProductsTable extends Component {
         <Link to={`/product/${product.id}`}> {product.description} </Link>
       )
     },
-    { path: "price", label: "Precio" },
-    { path: "cost", label: "Costo" },
-    { path: "itbis", label: "ITBIS" },
+    {
+      path: "price",
+      label: "Precio",
+      content: item => (
+        <div className="text-right">{formatNumber(item.price)}</div>
+      )
+    },
+    {
+      path: "cost",
+      label: "Costo",
+      content: item => (
+        <div className="text-right">{formatNumber(item.cost)}</div>
+      )
+    },
+    {
+      path: "itbis",
+      label: "ITBIS",
+      content: item => (
+        <div className="text-right">{formatNumber(item.itbis)}</div>
+      )
+    },
     { path: "category.description", label: "Categoria" },
     { path: "measure", label: "Medida" },
     { path: "creationDate", label: "Creado (m/d/a)" }

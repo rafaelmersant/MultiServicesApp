@@ -9,33 +9,58 @@ class ProductStockTable extends Component {
       label: "Producto",
       content: stock => <span> {stock.product.description} </span>
     },
-    { path: "quantityAvailable", label: "Cantidad" },
+    {
+      path: "quantityAvailable",
+      label: "Cantidad",
+      align: "text-right",
+      content: stock => (
+        <div className="text-right">
+          {formatNumber(stock.quantityAvailable)}
+        </div>
+      )
+    },
     {
       path: "product.cost",
       label: "Costo",
-      content: stock => <span> {stock.product.cost} </span>
+      align: "text-right",
+      content: stock => (
+        <div className="text-right">
+          <span> {formatNumber(stock.product.cost)} </span>
+        </div>
+      )
     },
     {
       path: "product.price",
       label: "Precio",
-      content: stock => <span> {stock.product.price} </span>
+      align: "text-right",
+      content: stock => (
+        <div className="text-right">
+          <span> {formatNumber(stock.product.price)} </span>
+        </div>
+      )
     },
     {
       path: "totalCost",
       label: "Costo Total",
+      align: "text-right",
       content: stock => (
-        <span>
-          {formatNumber(stock.quantityAvailable * stock.product.cost)}
-        </span>
+        <div className="text-right">
+          <span>
+            {formatNumber(stock.quantityAvailable * stock.product.cost)}
+          </span>
+        </div>
       )
     },
     {
       path: "totalPrice",
       label: "Precio Total",
+      align: "text-right",
       content: stock => (
-        <span>
-          {formatNumber(stock.quantityAvailable * stock.product.price)}
-        </span>
+        <div className="text-right">
+          <span>
+            {formatNumber(stock.quantityAvailable * stock.product.price)}
+          </span>
+        </div>
       )
     }
   ];

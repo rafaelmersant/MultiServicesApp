@@ -28,6 +28,7 @@ class InvoicesTable extends Component {
     {
       path: "discount",
       label: "Descuento",
+      align: "text-right",
       content: item => (
         <div className="text-right">
           <span>{formatNumber(item.discount)}</span>
@@ -37,6 +38,7 @@ class InvoicesTable extends Component {
     {
       path: "itbis",
       label: "ITBIS",
+      align: "text-right",
       content: item => (
         <div className="text-right">
           <span>{formatNumber(item.itbis)}</span>
@@ -46,6 +48,7 @@ class InvoicesTable extends Component {
     {
       path: "subtotal",
       label: "Total",
+      align: "text-right",
       content: item => (
         <div className="text-right">
           <span>{formatNumber(item.subtotal)}</span>
@@ -55,13 +58,16 @@ class InvoicesTable extends Component {
     {
       path: "paid",
       label: "Estatus",
+      align: "text-center",
       content: invoice => (
-        <span>
-          {invoice.paid
-            .toString()
-            .replace(true, "Pagada")
-            .replace(false, "Pendiente")}
-        </span>
+        <div className="text-center">
+          <span>
+            {invoice.paid
+              .toString()
+              .replace(true, "Pagada")
+              .replace(false, "Pendiente")}
+          </span>
+        </div>
       )
     }
   ];
