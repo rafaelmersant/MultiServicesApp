@@ -633,7 +633,10 @@ class InvoiceForm extends Form {
             <form onSubmit={this.handleSubmit}>
               <div className="row pull-right">
                 <label className="mr-1">Fecha</label>
-                <div className="mr-3">
+                <div
+                  className="mr-3"
+                  disabled={getCurrentUser().role !== "Admin"}
+                >
                   <DatePicker
                     selected={this.state.invoiceDate}
                     onChange={date => this.handleChangeInvoiceDate(date)}

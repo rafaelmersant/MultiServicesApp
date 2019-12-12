@@ -48,14 +48,18 @@ class PrintInvoice extends Component {
             </div>
 
             {invoiceHeader[0].company.rnc.length > 0 && (
-              <span className="font-receipt font-receipt-small">
-                RNC: {invoiceHeader[0].company.rnc}
-              </span>
+              <div className="text-center">
+                <span className="font-receipt font-receipt-small">
+                  RNC: {invoiceHeader[0].company.rnc}
+                </span>
+              </div>
             )}
 
             <span className="font-receipt font-receipt-small d-block">
-              {new Date().toLocaleDateString("en-GB")}
-              {new Date().toLocaleTimeString()}
+              Fecha: {new Date().toLocaleDateString("en-GB")}
+              <span className="ml-2">
+                Hora: {new Date().toLocaleTimeString()}
+              </span>
             </span>
 
             {invoiceHeader[0].ncf.length > 0 && (
@@ -64,16 +68,16 @@ class PrintInvoice extends Component {
               </span>
             )}
 
-            <span className="font-receipt font-receipt-small d-block">
-              Cliente: {invoiceHeader[0].customer.firstName}{" "}
-              {invoiceHeader[0].customer.lastName}
-            </span>
-
-            {invoiceHeader[0].ncf.includes("B01") && (
+            {invoiceHeader[0].customer.identification.length && (
               <span className="font-receipt font-receipt-small d-block">
                 Cédula/RNC: {invoiceHeader[0].customer.identification}
               </span>
             )}
+
+            <span className="font-receipt font-receipt-small d-block">
+              Cliente: {invoiceHeader[0].customer.firstName}{" "}
+              {invoiceHeader[0].customer.lastName}
+            </span>
           </div>
         )}
 
@@ -87,7 +91,7 @@ class PrintInvoice extends Component {
             style={{ marginLeft: "45px" }}
           >
             {invoiceHeader.length &&
-              invoiceHeader[0].ncf.includes("B02") &&
+              !invoiceHeader[0].ncf.includes("B01") &&
               "FACTURA PARA CONSUMIDOR FINAL"}
           </span>
 
@@ -133,9 +137,17 @@ class PrintInvoice extends Component {
               {invoiceDetail.map(item => (
                 <React.Fragment key={"F" + item.id}>
                   <tr key={"M" + item.id}>
-                    <td>
+                    <td colSpan="3">
                       <span className="font-receipt font-receipt-small">
                         {item.product.description}
+                      </span>
+                    </td>
+                  </tr>
+
+                  <tr key={item.product.id}>
+                    <td>
+                      <span className="font-receipt font-receipt-small">
+                        {item.quantity} x {formatNumber(item.product.price)}
                       </span>
                     </td>
                     <td className="text-right">
@@ -149,13 +161,7 @@ class PrintInvoice extends Component {
                       </span>
                     </td>
                   </tr>
-                  <tr key={item.product.id}>
-                    <td colSpan="3">
-                      <span className="font-receipt font-receipt-small">
-                        {item.quantity} x {formatNumber(item.product.price)}
-                      </span>
-                    </td>
-                  </tr>
+
                   {item.discount > 0 && (
                     <tr key={"D" + item.product.id}>
                       <td colSpan="2">
