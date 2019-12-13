@@ -559,7 +559,7 @@ class InvoiceForm extends Form {
     await this.populateInvoice(false);
 
     if (!this.state.data.id) {
-      this.refreshNextInvoiceSequence();
+      await this.refreshNextInvoiceSequence();
       this.setNCF(this.state.data.typeDoc);
     }
   }
@@ -574,7 +574,7 @@ class InvoiceForm extends Form {
       if (this.state.data.typeDoc !== "0") this.getNextNCF();
 
       setTimeout(async () => {
-        this.refreshNextInvoiceSequence();
+        await this.refreshNextInvoiceSequence();
         const { data: invoiceHeader } = await saveInvoiceHeader(
           this.state.data
         );
