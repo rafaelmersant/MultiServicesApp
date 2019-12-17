@@ -33,7 +33,7 @@ const NavBar = ({ user }) => {
       <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
           <li className="nav-item">
-            <NavLink className="nav-link" to="/invoices">
+            <NavLink className="nav-link" to="/invoice/new">
               Facturación
             </NavLink>
           </li>
@@ -110,8 +110,11 @@ const NavBar = ({ user }) => {
               | Reportes
             </NavLink>
             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+              <NavLink className="dropdown-item" to="/invoices">
+                Listado de Facturas
+              </NavLink>
               <NavLink className="dropdown-item" to="/reports/report607">
-                Facturas
+                Facturas 607
               </NavLink>
 
               <NavLink className="dropdown-item" to="/inventory/report">
