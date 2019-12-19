@@ -81,9 +81,9 @@ class ProductCategoryForm extends Form {
   render() {
     const { user, popUp } = this.props;
     const _standardSize =
-      "container pull-left col-lg-6 col-md-7 col-sm-9 ml-3 shadow-lg p-3 mb-5 bg-white rounded";
+      "container pull-left col-lg-4 col-md-7 col-sm-9 ml-3 shadow p-3 mb-5 bg-white rounded";
     const _fullSize =
-      "container pull-left col-lg-12 col-md-12 col-sm-12  shadow-lg p-3 mb-5 bg-white rounded";
+      "container pull-left col-lg-12 col-md-12 col-sm-12  shadow p-3 mb-5 bg-white rounded";
     const containerSize = popUp ? _fullSize : _standardSize;
 
     return (

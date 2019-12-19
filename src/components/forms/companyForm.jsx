@@ -78,7 +78,7 @@ class CompanyForm extends Form {
 
   render() {
     return (
-      <div className="container pull-left col-6 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
+      <div className="container pull-left col-6 ml-3 shadow p-3 mb-5 bg-white rounded">
         <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>

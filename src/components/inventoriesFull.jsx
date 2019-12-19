@@ -75,7 +75,9 @@ class InventoriesFull extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <h5 className="pull-left text-info mt-2">Entradas de Inventario</h5>
+            <h5 className="pull-left text-info mt-2">
+              Entradas de Inventario por Proveedor
+            </h5>
             <NewButton label="Nueva Entrada" to="/inventoryFull/new" />
 
             <SearchBox

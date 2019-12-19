@@ -299,70 +299,75 @@ class InventoryFullForm extends Form {
 
   render() {
     return (
-      <div className="container pull-left col-lg-7 col-md-11 col-sm-11 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
-        <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+      <React.Fragment>
+        <div className="container pull-left col-lg-7 col-md-11 col-sm-11 ml-3 shadow p-3 mb-5 bg-white rounded">
+          <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
 
-        <form onSubmit={this.handleSubmit}>
-          <div className="header">
-            <div className="col-12 pb-3 bg-light">
-              <div className="row mb-3 mr-2 ml-1">
-                <label htmlFor="creationDate" style={{ marginRight: "10px" }}>Fecha</label>
-                <DatePicker
-                  selected={this.state.creationDate}
-                  onChange={date => this.handleChangeCreationDate(date)}
-                  dateFormat="dd/MM/yyyy"
-                />
-              </div>
-
-              <div className="row">
-                <div className="col">
-                  {this.renderSelect(
-                    "provider_id",
-                    "Proveedor",
-                    this.state.providers
-                  )}
-                </div>
-                <div className="col">{this.renderInput("ncf", "NCF")}</div>
-              </div>
-
-              <div className="row">
-                <div className="col">
-                  {this.renderInput("totalAmount", "Monto Total")}
-                </div>
-                <div className="col">{this.renderInput("itbis", "ITBIS")}</div>
-                <div className="col">
-                  <label htmlFor="docDate">Fecha Documento</label>
+          <form onSubmit={this.handleSubmit}>
+            <div className="header">
+              <div className="col-12 pb-3 bg-light">
+                <div className="row mb-3 mr-2 ml-1">
+                  <label htmlFor="creationDate" style={{ marginRight: "10px" }}>
+                    Fecha
+                  </label>
                   <DatePicker
-                    selected={this.state.docDate}
-                    onChange={date => this.handleChangeDocDate(date)}
+                    selected={this.state.creationDate}
+                    onChange={date => this.handleChangeCreationDate(date)}
                     dateFormat="dd/MM/yyyy"
                   />
                 </div>
-              </div>
-              {this.renderButton(this.state.buttonAction)}
-            </div>
-          </div>
-        </form>
 
-        {this.state.showDetail && (
-          <div className="detail">
-            <div className="col pb-3 bg-light">
-              <div className="row">
-                <table style={{ width: "95%" }} className="ml-3">
-                  <thead>
-                    <tr>
-                      <td className="w-50">
-                        <SearchProduct
-                          onSelect={this.handleSelectProduct}
-                          onFocus={() => this.handleFocusProduct(false)}
-                          onBlur={() => this.handleFocusProduct(true)}
-                          hide={this.state.hideSearch}
-                          companyId={getCurrentUser().companyId}
-                          value={this.state.searchProductText}
-                          label="Producto"
-                        />
-                      </td>
-                      {/* <td>
+                <div className="row">
+                  <div className="col">
+                    {this.renderSelect(
+                      "provider_id",
+                      "Proveedor",
+                      this.state.providers
+                    )}
+                  </div>
+                  <div className="col">{this.renderInput("ncf", "NCF")}</div>
+                </div>
+
+                <div className="row">
+                  <div className="col">
+                    {this.renderInput("totalAmount", "Monto Total")}
+                  </div>
+                  <div className="col">
+                    {this.renderInput("itbis", "ITBIS")}
+                  </div>
+                  <div className="col">
+                    <label htmlFor="docDate">Fecha Documento</label>
+                    <DatePicker
+                      selected={this.state.docDate}
+                      onChange={date => this.handleChangeDocDate(date)}
+                      dateFormat="dd/MM/yyyy"
+                    />
+                  </div>
+                </div>
+                {this.renderButton(this.state.buttonAction)}
+              </div>
+            </div>
+          </form>
+
+          {this.state.showDetail && (
+            <div className="detail">
+              <div className="col pb-3 bg-light">
+                <div className="row">
+                  <table style={{ width: "95%" }} className="ml-3">
+                    <thead>
+                      <tr>
+                        <td className="w-50">
+                          <SearchProduct
+                            onSelect={this.handleSelectProduct}
+                            onFocus={() => this.handleFocusProduct(false)}
+                            onBlur={() => this.handleFocusProduct(true)}
+                            hide={this.state.hideSearch}
+                            companyId={getCurrentUser().companyId}
+                            value={this.state.searchProductText}
+                            label="Producto"
+                          />
+                        </td>
+                        {/* <td>
                         <Select
                           name="typeTracking"
                           value={this.state.inventory.typeTracking}
@@ -372,76 +377,81 @@ class InventoryFullForm extends Form {
                           error={null}
                         />
                       </td> */}
-                      <td>
-                        <Input
-                          type="text"
-                          name="quantity"
-                          value={this.state.inventory.quantity}
-                          label="Cantidad"
-                          onChange={this.handleChangeInput}
-                        />
-                      </td>
-                      <td>
-                        <Input
-                          type="text"
-                          name="price"
-                          value={this.state.inventory.price}
-                          label="Precio"
-                          onChange={this.handleChangeInput}
-                        />
-                      </td>
-                      <td>
-                        <Input
-                          type="text"
-                          name="cost"
-                          value={this.state.inventory.cost}
-                          label="Costo"
-                          onChange={this.handleChangeInput}
-                        />
-                      </td>
-                    </tr>
-                  </thead>
-                </table>
+                        <td>
+                          <Input
+                            type="text"
+                            name="quantity"
+                            value={this.state.inventory.quantity}
+                            label="Cantidad"
+                            onChange={this.handleChangeInput}
+                          />
+                        </td>
+                        <td>
+                          <Input
+                            type="text"
+                            name="price"
+                            value={this.state.inventory.price}
+                            label="Precio"
+                            onChange={this.handleChangeInput}
+                          />
+                        </td>
+                        <td>
+                          <Input
+                            type="text"
+                            name="cost"
+                            value={this.state.inventory.cost}
+                            label="Costo"
+                            onChange={this.handleChangeInput}
+                          />
+                        </td>
+                      </tr>
+                    </thead>
+                  </table>
+                </div>
+
+                <button
+                  className="btn btn-success pl-5 pr-5"
+                  onClick={this.attachNewProduct}
+                  disabled={
+                    !this.state.inventory.product_id ||
+                    !this.state.inventory.quantity.length
+                  }
+                >
+                  Agregar
+                </button>
+
+                <div className="mt-2">
+                  <ProductsInvTable
+                    products={this.state.details}
+                    user={getCurrentUser()}
+                    sortColumn={{ path: "creationDate", order: "desc" }}
+                    onDelete={this.handleDelete}
+                    onSort={this.handleSort}
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  data-toggle="modal"
+                  data-target="#productModal"
+                  hidden="hidden"
+                  ref={button => (this.raiseProductModal = button)}
+                ></button>
+
+                <ProductModal setNewProduct={this.handleSetNewProduct} />
               </div>
-
-              <button
-                className="btn btn-success pl-5 pr-5"
-                onClick={this.attachNewProduct}
-                disabled={
-                  !this.state.inventory.product_id ||
-                  !this.state.inventory.quantity.length
-                }
-              >
-                Agregar
-              </button>
-
-              <div className="mt-2">
-                <ProductsInvTable
-                  products={this.state.details}
-                  user={getCurrentUser()}
-                  sortColumn={{ path: "creationDate", order: "desc" }}
-                  onDelete={this.handleDelete}
-                  onSort={this.handleSort}
-                />
-              </div>
-
-              <button
-                type="button"
-                data-toggle="modal"
-                data-target="#productModal"
-                hidden="hidden"
-                ref={button => (this.raiseProductModal = button)}
-              ></button>
-
-              <ProductModal setNewProduct={this.handleSetNewProduct} />
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        <NavLink className="btn btn-secondary mt-4" to="/inventoriesFull">
-          {"<-"} Ir al listado
-        </NavLink>
-      </div>
+        <div>
+          <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 mb-5">
+            <NavLink className="btn btn-secondary mt-4" to="/inventoriesFull">
+              {"<-"} Ir al listado
+            </NavLink>
+          </div>
+        </div>
+      </React.Fragment>
     );
   }
 }

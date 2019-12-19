@@ -142,9 +142,9 @@ class ProductForm extends Form {
   render() {
     const { popUp } = this.props;
     const _standardSize =
-      "container pull-left col-lg-8 col-md-8 col-sm-9 ml-3 shadow-lg p-3 mb-5 bg-white rounded";
+      "container pull-left col-lg-8 col-md-8 col-sm-9 ml-3 shadow p-3 mb-5 bg-white rounded border";
     const _fullSize =
-      "container pull-left col-lg-12 col-md-12 col-sm-12  shadow-lg p-3 mb-5 bg-white rounded";
+      "container pull-left col-lg-12 col-md-12 col-sm-12  shadow p-3 mb-5 bg-white rounded border";
     const containerSize = popUp ? _fullSize : _standardSize;
 
     return (
@@ -172,13 +172,15 @@ class ProductForm extends Form {
             </div>
 
             <div className="row">
-              <div className="col">{this.renderInput("price", "Precio")}</div>
               <div className="col">{this.renderInput("cost", "Costo")}</div>
               <div className="col">{this.renderInput("itbis", "ITBIS")}</div>
+              <div className="col">{this.renderInput("price", "Precio")}</div>
             </div>
 
             <div className="row">
-              <div className="col">{this.renderInput("measure", "Medida")}</div>
+              <div className="col">
+                {this.renderInput("measure", "Unidad de Medida")}
+              </div>
               <div className="col">{this.renderInput("model", "Modelo")}</div>
             </div>
 

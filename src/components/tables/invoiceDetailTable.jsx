@@ -9,7 +9,7 @@ class InvoiceDetailTable extends Component {
     { path: "product", label: "Producto" },
     { path: "price", label: "Precio" },
     { path: "itbis", label: "ITBIS Total" },
-    { path: "discount", label: "Desc." },
+    { path: "discount", label: "Desc. Total" },
     { path: "total", label: "Importe" }
   ];
 
@@ -41,8 +41,8 @@ class InvoiceDetailTable extends Component {
     const user = auth.getCurrentUser().email;
     const role = auth.getCurrentUser().role;
 
-    if (user && (role === "Admin" || role === "Owner"))
-      this.columns.push(this.deleteColumn);
+    // if (user && (role === "Admin" || role === "Owner"))
+    this.columns.push(this.deleteColumn);
   }
 
   render() {

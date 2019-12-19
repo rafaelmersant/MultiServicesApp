@@ -33,9 +33,9 @@ const NavBar = ({ user }) => {
       <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
           <li className="nav-item">
-            <NavLink className="nav-link" to="/invoice/new">
+            <a href="/invoice/new" className="nav-link">
               Facturación
-            </NavLink>
+            </a>
           </li>
 
           {/* <li className="nav-item">
@@ -44,90 +44,95 @@ const NavBar = ({ user }) => {
             </NavLink>
           </li> */}
 
-          <li className="nav-item dropdown">
-            <NavLink
-              className="clickable text-secondary nav-link dropdown-toggle"
-              id="navbarDropdown"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-              to=""
-            >
-              | Inventario
-            </NavLink>
-            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-              <NavLink className="dropdown-item" to="/inventoriesFull">
-                Entrada de Inventario
-              </NavLink>
-
-              <NavLink className="dropdown-item" to="/inventories">
-                Movimientos de Productos
-              </NavLink>
-            </div>
-          </li>
-
-          <li className="nav-item">
-            <NavLink className="nav-link" to="/products">
-              | Productos
-            </NavLink>
-          </li>
-
-          <li className="nav-item">
-            <NavLink className="nav-link" to="/productsCategories">
-              | Categorias
-            </NavLink>
-          </li>
-
-          <li className="nav-item">
-            <NavLink className="nav-link" to="/customers">
-              | Clientes
-            </NavLink>
-          </li>
-
-          <li className="nav-item">
-            <NavLink className="nav-link" to="/providers">
-              | Proveedores
-            </NavLink>
-          </li>
-
           {user && (user.role === "Admin" || user.role === "Owner") && (
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/ncf">
-                | NCF
-              </NavLink>
-            </li>
+            <React.Fragment>
+              <li className="nav-item dropdown">
+                <NavLink
+                  className="clickable text-secondary nav-link dropdown-toggle"
+                  id="navbarDropdown"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  to=""
+                >
+                  | Inventario
+                </NavLink>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <NavLink className="dropdown-item" to="/inventoriesFull">
+                    Entrada de Inventario
+                  </NavLink>
+
+                  <NavLink className="dropdown-item" to="/inventories">
+                    Movimientos de Productos
+                  </NavLink>
+                </div>
+              </li>
+
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/products">
+                  | Productos
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/productsCategories">
+                  | Categorias
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/customers">
+                  | Clientes
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/providers">
+                  | Proveedores
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/ncf">
+                  | NCF
+                </NavLink>
+              </li>
+
+              <li className="nav-item dropdown">
+                <NavLink
+                  className="clickable text-secondary nav-link dropdown-toggle"
+                  id="navbarDropdown"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  to=""
+                >
+                  | Reportes
+                </NavLink>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <NavLink className="dropdown-item" to="/invoices">
+                    Listado de Facturas
+                  </NavLink>
+                  <NavLink className="dropdown-item" to="/reports/report607">
+                    Facturas 607
+                  </NavLink>
+
+                  <NavLink className="dropdown-item" to="/inventory/report">
+                    Inventario
+                  </NavLink>
+                  <NavLink className="dropdown-item" to="/reports/report606">
+                    Reporte 606
+                  </NavLink>
+                  <NavLink
+                    className="dropdown-item"
+                    to="/reports/entrtiesProvider"
+                  >
+                    Entradas por Proveedor
+                  </NavLink>
+                </div>
+              </li>
+            </React.Fragment>
           )}
-
-          <li className="nav-item dropdown">
-            <NavLink
-              className="clickable text-secondary nav-link dropdown-toggle"
-              id="navbarDropdown"
-              data-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-              to=""
-            >
-              | Reportes
-            </NavLink>
-            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-              <NavLink className="dropdown-item" to="/invoices">
-                Listado de Facturas
-              </NavLink>
-              <NavLink className="dropdown-item" to="/reports/report607">
-                Facturas 607
-              </NavLink>
-
-              <NavLink className="dropdown-item" to="/inventory/report">
-                Inventario
-              </NavLink>
-              <NavLink className="dropdown-item" to="/reports/report606">
-                Reporte 606
-              </NavLink>
-              <NavLink className="dropdown-item" to="/reports/entrtiesProvider">
-                Entradas por Proveedor
-              </NavLink>
-            </div>
-          </li>
 
           {user && user.role === "Owner" && (
             <li className="nav-item">

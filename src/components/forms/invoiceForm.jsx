@@ -48,7 +48,7 @@ class InvoiceForm extends Form {
       ncf: "",
       customer_id: "",
       paymentMethod: "CASH",
-      paid: true,
+      paid: false,
       reference: "",
       subtotal: 0,
       itbis: 0,
@@ -164,7 +164,7 @@ class InvoiceForm extends Form {
     const price = Math.round(parseFloat(product.price) * 100) / 100;
     const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
     const total = Math.round(price * quantity * 100) / 100;
-    const subtotal = Math.round((total + itbis - discount) * 100) / 100;
+    //const subtotal = Math.round((total + itbis - discount) * 100) / 100;
 
     line.quantity = quantity;
     line.product_id = product.id;
@@ -173,7 +173,7 @@ class InvoiceForm extends Form {
     line.cost = Math.round(product.cost * 100) / 100;
     line.itbis = Math.round(itbis * 100) / 100;
     line.discount = Math.round(discount * 100) / 100;
-    line.total = subtotal;
+    line.total = total;
 
     this.setState({ line });
   };
@@ -261,7 +261,6 @@ class InvoiceForm extends Form {
         createdUserName: createdUserData[0].name
       });
 
-      //console.log("state", this.state);
       this.forceUpdate();
 
       if (sessionStorage["printInvoice"] === "y") {
@@ -275,7 +274,6 @@ class InvoiceForm extends Form {
   }
 
   mapToViewInvoiceHeader(invoiceHeader) {
-    //console.log("mapToViewInvoiceHeader - invoiceHeader", invoiceHeader);
     return {
       id: invoiceHeader[0].id,
       sequence: parseFloat(invoiceHeader[0].sequence),
@@ -297,7 +295,6 @@ class InvoiceForm extends Form {
 
   mapToViewInvoiceDetail(invoiceDetail) {
     let details = [];
-    //console.log("mapToViewInvoiceDetail - invoiceDetail", invoiceDetail);
     invoiceDetail.forEach(item => {
       details.push({
         id: item.id,
@@ -405,11 +402,12 @@ class InvoiceForm extends Form {
       this.updateLine(this.state.currentProduct);
       const details = [...this.state.details];
       const line = { ...this.state.line };
+
       line.itbis = line.itbis * line.quantity;
+      line.discount = line.discount * line.quantity;
+      line.total = line.total + line.itbis - line.discount;
 
       if (this.state.line.product_id) details.push(line);
-
-      console.log("Add details", details);
 
       this.setState({
         details,
@@ -548,9 +546,18 @@ class InvoiceForm extends Form {
     _entry.current += 1;
     _entry.company_id = getCurrentUser().companyId;
 
-    console.log(data.ncf);
     await saveEntry(_entry);
   }
+
+  isInvoiceEditable = () => {
+    const isPaid = this.state.data.paid;
+    const isNew = this.state.data.id === 0;
+    const isUserCapable =
+      getCurrentUser().role === "Admin" || getCurrentUser().role === "Owner";
+
+    if (isNew) return !isPaid && isNew;
+    else return !isPaid && !isNew && isUserCapable;
+  };
 
   async componentDidMount() {
     this._isMounted = true;
@@ -602,9 +609,9 @@ class InvoiceForm extends Form {
       }, 100);
 
       setTimeout(() => {
-        sessionStorage["printInvoice"] = "y";
+        //sessionStorage["printInvoice"] = "y";
         window.location = `/invoice/${this.state.data.sequence}`;
-      }, 300);
+      }, this.state.details.length * 150);
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");
@@ -627,15 +634,21 @@ class InvoiceForm extends Form {
 
     return (
       <React.Fragment>
-        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 shadow-lg p-3 mb-5 bg-white rounded">
+        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 shadow-sm p-3 mb-5 bg-white rounded border border-secondary">
           <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
-          <div className="col-12 pb-3 bg-light">
+          <div
+            className="col-12 pb-3 bg-light"
+            disabled={!this.isInvoiceEditable()}
+          >
             <form onSubmit={this.handleSubmit}>
               <div className="row pull-right">
                 <label className="mr-1">Fecha</label>
                 <div
                   className="mr-3"
-                  disabled={getCurrentUser().role !== "Admin"}
+                  disabled={
+                    getCurrentUser().role !== "Admin" ||
+                    getCurrentUser().role !== "Owner"
+                  }
                 >
                   <DatePicker
                     selected={this.state.invoiceDate}
@@ -646,7 +659,7 @@ class InvoiceForm extends Form {
               </div>
 
               <div className="row">
-                <div className="col-8 ml-0">
+                <div className="col-8" style={{ paddingLeft: "0" }}>
                   <SearchCustomer
                     onSelect={this.handleSelectCustomer}
                     onFocus={() => this.handleFocusCustomer(false)}
@@ -764,7 +777,7 @@ class InvoiceForm extends Form {
                     type="text"
                     name="discount"
                     value={this.state.line.discount}
-                    label="Desc."
+                    label="Desc/Unidad"
                     onChange={this.handleChangeDiscount}
                     onBlur={this.handleBlurDiscount}
                   />
@@ -791,8 +804,7 @@ class InvoiceForm extends Form {
                 onEdit={this.handleEditDetail}
               />
 
-              {(!this.state.data.paid || !this.state.data.id) &&
-                this.renderButton("Guardar")}
+              {this.isInvoiceEditable() && this.renderButton("Guardar")}
             </form>
           </div>
 
@@ -814,18 +826,20 @@ class InvoiceForm extends Form {
           <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
           <ProductModal setNewProduct={this.handleSetNewProduct} />
 
-          {this.state.data.id > 0 && (
-            <ReactToPrint
-              trigger={() => (
-                <button
-                  ref={button => (this.printButton = button)}
-                  className="fa fa-print text-success pull-right"
-                  style={{ fontSize: "30px" }}
-                ></button>
-              )}
-              content={() => this.componentRef}
-            />
-          )}
+          {this.state.data.id > 0 &&
+            (getCurrentUser().role === "Admin" ||
+              getCurrentUser().role === "Owner") && (
+              <ReactToPrint
+                trigger={() => (
+                  <button
+                    ref={button => (this.printButton = button)}
+                    className="fa fa-print text-success pull-right"
+                    style={{ fontSize: "30px" }}
+                  ></button>
+                )}
+                content={() => this.componentRef}
+              />
+            )}
           <div hidden="hidden">
             <PrintInvoice
               ref={el => (this.componentRef = el)}

@@ -22,6 +22,7 @@ class CustomersTable extends Component {
     },
     { path: "email", label: "Email" },
     { path: "phoneNumber", label: "Teléfono" },
+    { path: "address", label: "Dirección" },
     { path: "creationDate", label: "Creado (m/d/a)" }
   ];
 
