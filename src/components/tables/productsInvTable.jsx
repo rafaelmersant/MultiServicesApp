@@ -17,8 +17,8 @@ class ProductsInvTable extends Component {
     },
     { path: "typeTracking", label: "Tipo" },
     { path: "quantity", label: "Cantidad" },
-    { path: "price", label: "Precio" },
-    { path: "cost", label: "Costo" }
+    { path: "cost", label: "Costo" },
+    { path: "price", label: "Precio" }
   ];
 
   deleteColumn = {

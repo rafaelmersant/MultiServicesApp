@@ -29,11 +29,8 @@ class ProviderForm extends Form {
     firstName: Joi.string()
       .required()
       .max(100)
-      .label("Nombre"),
-    lastName: Joi.string()
-      .required()
-      .max(100)
-      .label("Apellidos"),
+      .label("Nombre de Empresa"),
+    lastName: Joi.optional(),
     email: Joi.optional(),
     address: Joi.optional(),
     phoneNumber: Joi.optional(),
@@ -121,11 +118,11 @@ class ProviderForm extends Form {
           <form onSubmit={this.handleSubmit}>
             <div className="row">
               <div className="col">
-                {this.renderInput("firstName", "Nombre")}
+                {this.renderInput("firstName", "Nombre de Empresa")}
               </div>
-              <div className="col">
+              {/* <div className="col">
                 {this.renderInput("lastName", "Apellidos")}
-              </div>
+              </div> */}
             </div>
             <div className="row">
               <div className="col">{this.renderInput("email", "Email")}</div>

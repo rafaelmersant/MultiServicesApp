@@ -389,18 +389,18 @@ class InventoryFullForm extends Form {
                         <td>
                           <Input
                             type="text"
-                            name="price"
-                            value={this.state.inventory.price}
-                            label="Precio"
+                            name="cost"
+                            value={this.state.inventory.cost}
+                            label="Costo"
                             onChange={this.handleChangeInput}
                           />
                         </td>
                         <td>
                           <Input
                             type="text"
-                            name="cost"
-                            value={this.state.inventory.cost}
-                            label="Costo"
+                            name="price"
+                            value={this.state.inventory.price}
+                            label="Precio"
                             onChange={this.handleChangeInput}
                           />
                         </td>

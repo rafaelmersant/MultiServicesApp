@@ -8,18 +8,18 @@ class ProvidersTable extends Component {
     { path: "id", label: "Codigo" },
     {
       path: "firstName",
-      label: "Nombre",
+      label: "Nombre de Empresa",
       content: provider => (
         <Link to={`/provider/${provider.id}`}> {provider.firstName} </Link>
       )
     },
-    {
-      path: "lastName",
-      label: "Apellido",
-      content: provider => (
-        <Link to={`/provider/${provider.id}`}> {provider.lastName} </Link>
-      )
-    },
+    // {
+    //   path: "lastName",
+    //   label: "Apellido",
+    //   content: provider => (
+    //     <Link to={`/provider/${provider.id}`}> {provider.lastName} </Link>
+    //   )
+    // },
     { path: "email", label: "Email" },
     { path: "phoneNumber", label: "Teléfono" },
     { path: "creationDate", label: "Creado (m/d/a)" }
