@@ -16,6 +16,8 @@ class CategoryModal extends Component {
         role="dialog"
         aria-labelledby="categoryModalLabel"
         aria-hidden="true"
+        data-backdrop="static"
+        data-keyboard="false"
       >
         <div className="modal-dialog" role="document">
           <div className="modal-content">

@@ -27,6 +27,7 @@ class ProductForm extends Form {
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
     },
+    itbis: false,
     companies: [],
     categories: [],
     errors: {},
@@ -104,6 +105,33 @@ class ProductForm extends Form {
     this.setState({ data });
   };
 
+  handleChangeITBIS = e => {
+    const { data } = { ...this.state };
+
+    if (!this.state.itbis) {
+      if (data.price.length > 0)
+        data.itbis = Math.round(parseFloat(data.price * 0.18) * 100) / 100;
+    } else {
+      data.itbis = 0;
+    }
+
+    this.setState({ data, itbis: !this.state.itbis });
+  };
+
+  handleChangePrice = ({ currentTarget: input }) => {
+    const data = { ...this.state.data };
+    data.price = input.value;
+
+    if (this.state.itbis) {
+      if (input.value.length > 0)
+        data.itbis = Math.round(parseFloat(input.value * 0.18) * 100) / 100;
+    } else {
+      data.itbis = 0;
+    }
+
+    this.setState({ data });
+  };
+
   async componentDidMount() {
     await this.populateCompanies();
     await this.populateCategories();
@@ -144,7 +172,8 @@ class ProductForm extends Form {
     const _standardSize =
       "container pull-left col-lg-8 col-md-8 col-sm-9 ml-3 shadow p-3 mb-5 bg-white rounded border";
     const _fullSize =
-      "container pull-left col-lg-12 col-md-12 col-sm-12  shadow p-3 mb-5 bg-white rounded border";
+      "container pull-left col-lg-12 col-md-12 col-sm-12 p-3 mb-5 bg-white rounded border";
+    const _customCol = popUp ? "col-3" : "col-2";
     const containerSize = popUp ? _fullSize : _standardSize;
 
     return (
@@ -172,9 +201,40 @@ class ProductForm extends Form {
             </div>
 
             <div className="row">
-              <div className="col">{this.renderInput("cost", "Costo")}</div>
-              <div className="col">{this.renderInput("itbis", "ITBIS")}</div>
-              <div className="col">{this.renderInput("price", "Precio")}</div>
+              <div className={_customCol}>
+                {this.renderInput("cost", "Costo")}
+              </div>
+              {/* <div className="col-2">{this.renderInput("price", "Precio")}</div> */}
+              <div className={_customCol}>
+                <Input
+                  type="text"
+                  name="available"
+                  value={this.state.data.price}
+                  label="Precio"
+                  onChange={this.handleChangePrice}
+                />
+              </div>
+              <div
+                className="col-1"
+                style={{
+                  marginTop: "35px",
+                  maxWidth: "10px",
+                  marginRight: "-22px"
+                }}
+              >
+                <input
+                  type="checkbox"
+                  className="form-check-input"
+                  id="chkITBIS"
+                  title="Click para activar/desactivar ITBIS"
+                  checked={this.state.itbis}
+                  onChange={this.handleChangeITBIS}
+                />
+                {/* <label className="form-check-label" htmlFor="chkITBIS"></label> */}
+              </div>
+              <div className={_customCol}>
+                {this.renderInput("itbis", "ITBIS", "text", "disabled")}
+              </div>
             </div>
 
             <div className="row">

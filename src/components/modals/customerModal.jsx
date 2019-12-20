@@ -16,6 +16,8 @@ class CustomerModal extends Component {
         role="dialog"
         aria-labelledby="customerModalLabel"
         aria-hidden="true"
+        data-backdrop="static"
+        data-keyboard="false"
       >
         <div className="modal-dialog" role="document">
           <div className="modal-content">
