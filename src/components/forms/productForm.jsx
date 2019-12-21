@@ -194,10 +194,16 @@ class ProductForm extends Form {
               </div>
             </div>
 
-            <div className="form-row">
+            {/* <div className="form-row">
               <div className="form-group col-12">
                 {this.renderInput("descriptionLong", "Descripción Larga")}
               </div>
+            </div> */}
+            <div className="row">
+              <div className="col">
+                {this.renderInput("measure", "Unidad de Medida")}
+              </div>
+              <div className="col">{this.renderInput("model", "Modelo")}</div>
             </div>
 
             <div className="row">
@@ -235,13 +241,15 @@ class ProductForm extends Form {
               <div className={_customCol}>
                 {this.renderInput("itbis", "ITBIS", "text", "disabled")}
               </div>
-            </div>
-
-            <div className="row">
-              <div className="col">
-                {this.renderInput("measure", "Unidad de Medida")}
+              <div className="col-5">
+                <Input
+                  disabled="disabled"
+                  type="text"
+                  name="available"
+                  value={formatNumber(this.state.availableStock)}
+                  label="Disponible en inventario"
+                />
               </div>
-              <div className="col">{this.renderInput("model", "Modelo")}</div>
             </div>
 
             <div className="row">
@@ -270,15 +278,6 @@ class ProductForm extends Form {
                   ></button>
                 </div>
               )}
-              <div className="col-6">
-                <Input
-                  disabled="disabled"
-                  type="text"
-                  name="available"
-                  value={formatNumber(this.state.availableStock)}
-                  label="Disponible en inventario"
-                />
-              </div>
             </div>
 
             {false &&

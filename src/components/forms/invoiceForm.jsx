@@ -125,7 +125,7 @@ class InvoiceForm extends Form {
 
   async populateProducts() {
     const companyId = getCurrentUser().companyId;
-    const { data: products } = await getProducts(companyId);
+    const { data: products } = []; //await getProducts(companyId);
     this.setState({ products });
   }
 
@@ -611,7 +611,7 @@ class InvoiceForm extends Form {
       setTimeout(() => {
         //sessionStorage["printInvoice"] = "y";
         window.location = `/invoice/${this.state.data.sequence}`;
-      }, this.state.details.length * 150);
+      }, this.state.details.length * 390);
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");

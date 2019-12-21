@@ -189,7 +189,7 @@ class PrintInvoice extends Component {
                     SUBTOTAL
                   </span>
                 </td>
-                <td>
+                <td className="text-right">
                   <span className="font-receipt font-receipt-medium">
                     {formatNumber(itbisTotal)}
                   </span>
