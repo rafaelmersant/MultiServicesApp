@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import TableBody from "../common/tableBody";
-import auth from "../../services/authService";
+//import auth from "../../services/authService";
 import { formatNumber } from "../../utils/custom";
 
 class InvoiceDetailTable extends Component {
@@ -38,8 +38,8 @@ class InvoiceDetailTable extends Component {
 
   constructor() {
     super();
-    const user = auth.getCurrentUser().email;
-    const role = auth.getCurrentUser().role;
+    // const user = auth.getCurrentUser().email;
+    // const role = auth.getCurrentUser().role;
 
     // if (user && (role === "Admin" || role === "Owner"))
     this.columns.push(this.deleteColumn);

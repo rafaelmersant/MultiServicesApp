@@ -5,7 +5,11 @@ import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
-import { getProducts, deleteProduct } from "../services/productService";
+import {
+  getProducts,
+  deleteProduct,
+  getProductsByDescription
+} from "../services/productService";
 import { getCurrentUser } from "../services/authService";
 import { getProductInInvoice } from "../services/invoiceServices";
 import ProductsTable from "./tables/productsTable";
@@ -14,15 +18,34 @@ class Products extends Component {
   state = {
     products: [],
     currentPage: 1,
-    pageSize: 150,
+    pageSize: 10,
     searchQuery: "",
+    totalProducts: 0,
     sortColumn: { path: "creationDate", order: "desc" }
   };
 
   async componentDidMount() {
-    const { data: products } = await getProducts(getCurrentUser().companyId);
+    await this.populateProducts("");
+  }
 
-    this.setState({ products });
+  async populateProducts(query) {
+    let products = [];
+
+    if (query === "") {
+      const { data: prods } = await getProducts(getCurrentUser().companyId);
+      products = prods;
+    } else {
+      const { data: prods } = await getProductsByDescription(
+        getCurrentUser().companyId,
+        query
+      );
+      products = prods;
+    }
+
+    this.setState({
+      products: products.results,
+      totalProducts: products.count
+    });
   }
 
   handleDelete = async product => {
@@ -60,6 +83,7 @@ class Products extends Component {
 
   handleSearch = query => {
     this.setState({ searchQuery: query, currentPage: 1 });
+    this.populateProducts(query);
   };
 
   handleSort = sortColumn => {
@@ -71,15 +95,15 @@ class Products extends Component {
       pageSize,
       currentPage,
       sortColumn,
-      searchQuery,
+      //searchQuery,
       products: allProducts
     } = this.state;
 
     let filtered = allProducts;
-    if (searchQuery)
-      filtered = allProducts.filter(m =>
-        m.description.toLowerCase().includes(searchQuery.toLocaleLowerCase())
-      );
+    // if (searchQuery)
+    //   filtered = allProducts.filter(m =>
+    //     m.description.toLowerCase().includes(searchQuery.toLocaleLowerCase())
+    //   );
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
@@ -89,7 +113,13 @@ class Products extends Component {
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
+    const {
+      pageSize,
+      currentPage,
+      sortColumn,
+      searchQuery,
+      totalProducts
+    } = this.state;
     const { user } = this.props;
 
     const { totalCount, products } = this.getPagedData();
@@ -122,7 +152,9 @@ class Products extends Component {
                 onPageChange={this.handlePageChange}
               />
               <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} productos</em>
+                <em>
+                  Mostrando {totalCount} productos de {totalProducts}
+                </em>
               </p>
             </div>
           </div>

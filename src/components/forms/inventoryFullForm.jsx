@@ -214,6 +214,15 @@ class InventoryFullForm extends Form {
 
       if (inventory.typeTracking === "E") this.updateProduct(inventory);
       this.populateDetail();
+
+      const cleanInventory = { ...this.state.inventory };
+      cleanInventory.product_id = "";
+      cleanInventory.quantity = "";
+      cleanInventory.price = "";
+      cleanInventory.cost = "";
+      cleanInventory.typeTracking = "E";
+
+      this.setState({ inventory: cleanInventory, searchProductText: "" });
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");

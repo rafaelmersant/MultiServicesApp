@@ -35,7 +35,6 @@ class ProductsTable extends Component {
       )
     },
     { path: "category.description", label: "Categoria" },
-    { path: "measure", label: "Medida" },
     { path: "creationDate", label: "Creado (m/d/a)" }
   ];
 

@@ -125,8 +125,8 @@ class InvoiceForm extends Form {
 
   async populateProducts() {
     const companyId = getCurrentUser().companyId;
-    const { data: products } = []; //await getProducts(companyId);
-    this.setState({ products });
+    const { data: products } = await getProducts(companyId);
+    this.setState({ products: products.results });
   }
 
   resetLineValues() {

@@ -16,6 +16,8 @@ class SearchProduct extends Component {
       this.props.companyId,
       input.value
     );
+    products = products.results;
+
     if (input.value === "") products = [];
 
     if (input.value.length > 0 && products.length === 0)
@@ -61,7 +63,7 @@ class SearchProduct extends Component {
 
         {products && !hide && (
           <div
-            className="list-group col-11 shadow-lg bg-white position-absolute p-0"
+            className="list-group col-12 shadow bg-white position-absolute p-0"
             style={{ marginTop: "-15px", zIndex: "999" }}
           >
             {products.map(product => (
