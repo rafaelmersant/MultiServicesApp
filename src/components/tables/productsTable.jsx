@@ -9,9 +9,18 @@ class ProductsTable extends Component {
     {
       path: "description",
       label: "Descripción",
-      content: product => (
-        <Link to={`/product/${product.id}`}> {product.description} </Link>
-      )
+      content: product => {
+        if (
+          auth.getCurrentUser().role === "Admin" ||
+          auth.getCurrentUser().role === "Owner"
+        ) {
+          return (
+            <Link to={`/product/${product.id}`}> {product.description} </Link>
+          );
+        } else {
+          return <span className="text-info"> {product.description} </span>;
+        }
+      }
     },
     {
       path: "price",

@@ -35,6 +35,7 @@ import {
 } from "../../services/inventoryService";
 import InvoiceDetailTable from "../tables/invoiceDetailTable";
 import _ from "lodash";
+import NewInvoiceModal from "../modals/newInvoiceModal";
 
 registerLocale("es", es);
 
@@ -266,6 +267,11 @@ class InvoiceForm extends Form {
       if (sessionStorage["printInvoice"] === "y") {
         this.printButton.click();
         sessionStorage["printInvoice"] = "";
+      }
+
+      if (sessionStorage["newInvoice"] === "y") {
+        this.raiseNewInvoiceModal.click();
+        sessionStorage["newInvoice"] = null;
       }
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -577,7 +583,7 @@ class InvoiceForm extends Form {
 
   doSubmit = async () => {
     try {
-      console.log("doSubmit - state", this.state);
+      //console.log("doSubmit - state", this.state);
       if (this.state.data.typeDoc !== "0") this.getNextNCF();
 
       setTimeout(async () => {
@@ -610,6 +616,7 @@ class InvoiceForm extends Form {
 
       setTimeout(() => {
         //sessionStorage["printInvoice"] = "y";
+        sessionStorage["newInvoice"] = "y";
         window.location = `/invoice/${this.state.data.sequence}`;
       }, this.state.details.length * 390);
     } catch (ex) {
@@ -864,6 +871,16 @@ class InvoiceForm extends Form {
           >
             Nueva Factura
           </button>
+        </div>
+        <div className="col-1 ml-0 pl-0">
+          <button
+            hidden
+            type="button"
+            data-toggle="modal"
+            data-target="#newInvoiceModal"
+            ref={button => (this.raiseNewInvoiceModal = button)}
+          ></button>
+          <NewInvoiceModal />
         </div>
       </React.Fragment>
     );

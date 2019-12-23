@@ -77,7 +77,7 @@ class ProductForm extends Form {
       const { data: product } = await getProduct(productId);
 
       this.setState({
-        data: this.mapToViewModel(product),
+        data: this.mapToViewModel(product.results),
         action: "Editar Producto"
       });
     } catch (ex) {

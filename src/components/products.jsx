@@ -129,7 +129,10 @@ class Products extends Component {
         <div className="row">
           <div className="col margin-top-msg">
             <h5 className="pull-left text-info mt-2">Listado de Productos</h5>
-            <NewButton label="Nuevo Producto" to="/product/new" />
+            {user &&
+              (user.role === "Admin" || user.role === "Owner")(
+                <NewButton label="Nuevo Producto" to="/product/new" />
+              )}
 
             <SearchBox
               value={searchQuery}

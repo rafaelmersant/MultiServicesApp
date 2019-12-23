@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 class NewInvoiceModal extends Component {
   handleClosePopUp = e => {
-    this.props.setNewCategory(e);
+    window.location = `/invoice/new`;
     this.closeButton.click();
   };
 
@@ -18,26 +18,28 @@ class NewInvoiceModal extends Component {
         data-backdrop="static"
         data-keyboard="false"
       >
-        <div className="modal-dialog" role="document">
+        <div className="modal-dialog mt-5" role="document">
           <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="newInvoiceModalLabel">
-                Agregar nueva categoria
-              </h5>
+            <div className="center">
               <button
-                ref={button => (this.closeButton = button)}
-                type="button"
-                className="close"
-                data-dismiss="modal"
-                aria-label="Close"
+                className="btn btn-warning w-100 pb-5 pt-5"
+                onClick={this.handleClosePopUp}
               >
-                <span aria-hidden="true">&times;</span>
+                <h1>Nueva Factura</h1>
               </button>
             </div>
-
-            <ProductCategoryForm popUp={true} closeMe={this.handleClosePopUp} />
           </div>
         </div>
+
+        <button
+          ref={button => (this.closeButton = button)}
+          type="button"
+          className="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
     );
   }
