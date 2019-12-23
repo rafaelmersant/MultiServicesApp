@@ -151,7 +151,7 @@ class ProductForm extends Form {
       measure: product[0].measure ? product[0].measure : "",
       model: product[0].model ? product[0].model : "",
       category_id: product[0].category.id,
-      barcode: product[0].barcode,
+      barcode: product[0].barcode ? product[0].barcode : "",
       company_id: product[0].company.id,
       createdUser: product[0].createdUser
         ? product[0].createdUser
