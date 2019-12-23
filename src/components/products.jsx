@@ -25,6 +25,9 @@ class Products extends Component {
   };
 
   async componentDidMount() {
+    if (sessionStorage["currentPage"] > 1)
+      this.setState({ currentPage: sessionStorage["currentPage"] });
+
     await this.populateProducts("");
   }
 
@@ -79,6 +82,7 @@ class Products extends Component {
 
   handlePageChange = page => {
     this.setState({ currentPage: page });
+    sessionStorage["currentPage"] = page;
   };
 
   handleSearch = query => {
