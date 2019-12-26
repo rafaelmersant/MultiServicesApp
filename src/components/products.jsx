@@ -132,7 +132,7 @@ class Products extends Component {
       searchQuery,
       totalProducts
     } = this.state;
-    const { user } = this.props;
+    const user = getCurrentUser();
 
     const { totalCount, products } = this.getPagedData();
 
@@ -141,10 +141,9 @@ class Products extends Component {
         <div className="row">
           <div className="col margin-top-msg">
             <h5 className="pull-left text-info mt-2">Listado de Productos</h5>
-            {user &&
-              (user.role === "Admin" || user.role === "Owner")(
-                <NewButton label="Nuevo Producto" to="/product/new" />
-              )}
+            {user && (user.role === "Admin" || user.role === "Owner") && (
+              <NewButton label="Nuevo Producto" to="/product/new" />
+            )}
 
             <SearchBox
               value={searchQuery}
