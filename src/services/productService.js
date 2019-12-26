@@ -7,7 +7,15 @@ function productUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getProducts(companyId) {
+export function getProducts(companyId, currentPage) {
+  console.log(
+    `${apiEndpoint}/?company=${companyId}&ordering=description&page=${currentPage}`
+  );
+  if (currentPage)
+    return http.get(
+      `${apiEndpoint}/?company=${companyId}&ordering=description&page=${currentPage}`
+    );
+
   return http.get(`${apiEndpoint}/?company=${companyId}&ordering=description`);
 }
 

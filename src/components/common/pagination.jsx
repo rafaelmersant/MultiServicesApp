@@ -12,11 +12,12 @@ const Pagination = props => {
 
   return (
     <nav>
-      <ul className="pagination">
+      <ul className="pagination" style={{ display: "table" }}>
         {pages.map(page => (
           <li
+            style={{ display: "inline-block" }}
             key={page}
-            className={page === currentPage ? "page-item active" : "page-item"}
+            className={page == currentPage ? "page-item active" : "page-item"}
           >
             <button className="page-link" onClick={() => onPageChange(page)}>
               {page}

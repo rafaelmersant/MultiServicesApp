@@ -28,14 +28,17 @@ class Products extends Component {
     if (sessionStorage["currentPage"] > 1)
       this.setState({ currentPage: sessionStorage["currentPage"] });
 
-    await this.populateProducts("");
+    await this.populateProducts("", sessionStorage["currentPage"]);
   }
 
-  async populateProducts(query) {
+  async populateProducts(query, page) {
     let products = [];
 
     if (query === "") {
-      const { data: prods } = await getProducts(getCurrentUser().companyId);
+      const { data: prods } = await getProducts(
+        getCurrentUser().companyId,
+        page
+      );
       products = prods;
     } else {
       const { data: prods } = await getProductsByDescription(
@@ -49,6 +52,8 @@ class Products extends Component {
       products: products.results,
       totalProducts: products.count
     });
+
+    this.forceUpdate();
   }
 
   handleDelete = async product => {
@@ -80,9 +85,11 @@ class Products extends Component {
     }
   };
 
-  handlePageChange = page => {
+  handlePageChange = async page => {
     this.setState({ currentPage: page });
-    sessionStorage["currentPage"] = page;
+    sessionStorage["currentPage"] = parseInt(page);
+    await this.populateProducts("", parseInt(page));
+    this.forceUpdate();
   };
 
   handleSearch = query => {
@@ -109,11 +116,12 @@ class Products extends Component {
     //     m.description.toLowerCase().includes(searchQuery.toLocaleLowerCase())
     //   );
 
-    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+    //const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-    const products = paginate(sorted, currentPage, pageSize);
+    //const products = paginate(sorted, currentPage, pageSize);
 
-    return { totalCount: filtered.length, products };
+    //return { totalCount: filtered.length, products };
+    return { totalCount: 2930, allProducts };
   };
 
   render() {
@@ -144,7 +152,7 @@ class Products extends Component {
               placeholder="Buscar..."
             />
             <ProductsTable
-              products={products}
+              products={this.state.products}
               user={user}
               sortColumn={sortColumn}
               onDelete={this.handleDelete}
@@ -155,7 +163,11 @@ class Products extends Component {
               <Pagination
                 itemsCount={totalCount}
                 pageSize={pageSize}
-                currentPage={currentPage}
+                currentPage={
+                  sessionStorage["currentPage"]
+                    ? sessionStorage["currentPage"]
+                    : 1
+                } //{currentPage}
                 onPageChange={this.handlePageChange}
               />
               <p className="text-muted ml-3 mt-2">

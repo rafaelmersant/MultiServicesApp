@@ -7,7 +7,11 @@ import { getCompanies } from "../../services/companyService";
 import { getProductsCategories } from "../../services/productCategoryService";
 import { getProduct, saveProduct } from "../../services/productService";
 import { getCurrentUser } from "../../services/authService";
-import { getProductsStocks } from "../../services/inventoryService";
+import {
+  getProductsStocks,
+  updateProductStock,
+  saveProductTracking
+} from "../../services/inventoryService";
 import CategoryModal from "../modals/categoryModal";
 
 class ProductForm extends Form {
@@ -27,6 +31,7 @@ class ProductForm extends Form {
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
     },
+    quantity: 0,
     itbis: false,
     companies: [],
     categories: [],
@@ -55,6 +60,23 @@ class ProductForm extends Form {
     creationDate: Joi.string()
   };
 
+  async updateInventory(productId, quantity) {
+    const inventory = {
+      header_id: 1,
+      id: 0,
+      product_id: productId,
+      typeTracking: "E",
+      concept: "INVE",
+      quantity: quantity,
+      company_id: getCurrentUser().companyId,
+      createdUser: getCurrentUser().email,
+      creationDate: new Date().toISOString()
+    };
+
+    await saveProductTracking(inventory);
+    await updateProductStock(inventory);
+  }
+
   async populateCompanies() {
     const { data: companies } = await getCompanies();
     this.setState({ companies });
@@ -78,6 +100,7 @@ class ProductForm extends Form {
 
       this.setState({
         data: this.mapToViewModel(product.results),
+        itbis: product.results[0].itbis > 0,
         action: "Editar Producto"
       });
     } catch (ex) {
@@ -109,8 +132,8 @@ class ProductForm extends Form {
     const { data } = { ...this.state };
 
     if (!this.state.itbis) {
-      if (data.price.length > 0)
-        data.itbis = Math.round(parseFloat(data.price * 0.18) * 100) / 100;
+      if (data.cost > 0)
+        data.itbis = Math.round(parseFloat(data.cost * 0.18) * 100) / 100;
     } else {
       data.itbis = 0;
     }
@@ -118,9 +141,9 @@ class ProductForm extends Form {
     this.setState({ data, itbis: !this.state.itbis });
   };
 
-  handleChangePrice = ({ currentTarget: input }) => {
+  handleChangeCost = ({ currentTarget: input }) => {
     const data = { ...this.state.data };
-    data.price = input.value;
+    data.cost = input.value;
 
     if (this.state.itbis) {
       if (input.value.length > 0)
@@ -130,6 +153,10 @@ class ProductForm extends Form {
     }
 
     this.setState({ data });
+  };
+
+  handleChangeQuantity = ({ currentTarget: input }) => {
+    this.setState({ quantity: input.value });
   };
 
   async componentDidMount() {
@@ -162,6 +189,8 @@ class ProductForm extends Form {
 
   doSubmit = async () => {
     const { data: customer } = await saveProduct(this.state.data);
+
+    await this.updateInventory(this.state.data.id, this.state.quantity);
 
     if (!this.props.popUp) this.props.history.push("/products");
     else this.props.closeMe(customer);
@@ -208,17 +237,18 @@ class ProductForm extends Form {
 
             <div className="row">
               <div className={_customCol}>
-                {this.renderInput("cost", "Costo")}
-              </div>
-              {/* <div className="col-2">{this.renderInput("price", "Precio")}</div> */}
-              <div className={_customCol}>
                 <Input
                   type="text"
-                  name="available"
-                  value={this.state.data.price}
-                  label="Precio"
-                  onChange={this.handleChangePrice}
+                  name="cost"
+                  value={this.state.data.cost}
+                  label="Costo"
+                  onChange={this.handleChangeCost}
                 />
+                {/* {this.renderInput("cost", "Costo")} */}
+              </div>
+
+              <div className={_customCol}>
+                {this.renderInput("price", "Precio")}
               </div>
               <div
                 className="col-1"
@@ -260,6 +290,7 @@ class ProductForm extends Form {
                   this.state.categories
                 )}
               </div>
+
               {!popUp && (
                 <div className="col-1 ml-0 pl-0">
                   <button
@@ -278,6 +309,15 @@ class ProductForm extends Form {
                   ></button>
                 </div>
               )}
+              <div className="col-5">
+                <Input
+                  type="text"
+                  name="quantity"
+                  value={this.state.quantity}
+                  label="Cantidad para inventario"
+                  onChange={this.handleChangeQuantity}
+                />
+              </div>
             </div>
 
             {false &&
