@@ -60,6 +60,12 @@ export function getProductsStocksByCompany(companyId) {
   return http.get(`${apiEndpointProdStock}/?company=${companyId}`);
 }
 
+export function getProviderInInventory(companyId, providerId) {
+  return http.get(
+    `${apiEndpointProdTrackingHeader}/?company=${companyId}&provider_id=${providerId}`
+  );
+}
+
 export function saveProductTrackingHeader(entry) {
   if (entry.id) {
     const body = { ...entry };

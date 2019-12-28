@@ -9,6 +9,7 @@ import { getProviders, deleteProvider } from "../services/providerService";
 // import { getCustomerInInvoice } from "../services/invoiceServices";
 import { getCurrentUser } from "../services/authService";
 import ProvidersTable from "./tables/providersTable";
+import { getProviderInInventory } from "../services/inventoryService";
 
 class Providers extends Component {
   state = {
@@ -27,14 +28,16 @@ class Providers extends Component {
   }
 
   handleDelete = async provider => {
-    // const { data: found } = await getCustomerInInvoice(
-    //   getCurrentUser().companyId,
-    //   customer.id
-    // );
-    // if (found.length) {
-    //   toast.error("No puede eliminar un cliente que tiene factura creada.");
-    //   return false;
-    // }
+    const { data: found } = await getProviderInInventory(
+      getCurrentUser().companyId,
+      provider.id
+    );
+    if (found.length) {
+      toast.error(
+        "No puede eliminar un proveedor que tiene entradas en inventario."
+      );
+      return false;
+    }
 
     const answer = window.confirm(
       "Esta seguro de eliminar este proveedor? \nNo podrá deshacer esta acción"
