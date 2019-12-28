@@ -104,7 +104,7 @@ class ProviderForm extends Form {
       this.state.data.firstName.toUpperCase()
     );
 
-    if (_provider.length > 0) {
+    if (_provider.length > 0 && this.state.data.id === 0) {
       toast.error("Este proveedor ya existe!");
       return false;
     }

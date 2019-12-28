@@ -205,7 +205,7 @@ class ProductForm extends Form {
       descrp
     );
 
-    if (_product.results.length > 0) {
+    if (_product.results.length > 0 && this.state.data.id === 0) {
       toast.error("Este producto ya existe!");
       return false;
     }

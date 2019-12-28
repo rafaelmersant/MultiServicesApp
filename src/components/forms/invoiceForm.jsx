@@ -722,19 +722,21 @@ class InvoiceForm extends Form {
                     "Opcional"
                   )}
                 </div>
-                <div className="col mt-4">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    id="chkPaid"
-                    checked={this.state.data.paid}
-                    onChange={this.handleChangePaid}
-                    disabled={this.state.data.id && this.state.data.paid}
-                  />
-                  <label className="form-check-label" htmlFor="chkPaid">
-                    Pagada
-                  </label>
-                </div>
+                {this.state.data.id > 0 && (
+                  <div className="col mt-4">
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="chkPaid"
+                      checked={this.state.data.paid}
+                      onChange={this.handleChangePaid}
+                      disabled={this.state.data.id && this.state.data.paid}
+                    />
+                    <label className="form-check-label" htmlFor="chkPaid">
+                      Pagada
+                    </label>
+                  </div>
+                )}
               </div>
 
               <div className="row mr-0 ml-0 pr-0 pl-0">

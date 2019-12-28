@@ -78,7 +78,7 @@ class ProductCategoryForm extends Form {
       this.state.data.description.toUpperCase()
     );
 
-    if (_category.length > 0) {
+    if (_category.length > 0 && this.state.data.id === 0) {
       toast.error("Esta categoria ya existe!");
       return false;
     }
