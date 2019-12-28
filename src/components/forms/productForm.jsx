@@ -61,20 +61,22 @@ class ProductForm extends Form {
   };
 
   async updateInventory(productId, quantity) {
-    const inventory = {
-      header_id: 1,
-      id: 0,
-      product_id: productId,
-      typeTracking: "E",
-      concept: "INVE",
-      quantity: quantity,
-      company_id: getCurrentUser().companyId,
-      createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
-    };
+    if (productId > 0) {
+      const inventory = {
+        header_id: 1,
+        id: 0,
+        product_id: productId,
+        typeTracking: "E",
+        concept: "INVE",
+        quantity: quantity,
+        company_id: getCurrentUser().companyId,
+        createdUser: getCurrentUser().email,
+        creationDate: new Date().toISOString()
+      };
 
-    await saveProductTracking(inventory);
-    await updateProductStock(inventory);
+      await saveProductTracking(inventory);
+      await updateProductStock(inventory);
+    }
   }
 
   async populateCompanies() {
@@ -190,7 +192,8 @@ class ProductForm extends Form {
   doSubmit = async () => {
     const { data: customer } = await saveProduct(this.state.data);
 
-    await this.updateInventory(this.state.data.id, this.state.quantity);
+    if (this.state.quantity > 0)
+      await this.updateInventory(this.state.data.id, this.state.quantity);
 
     if (!this.props.popUp) this.props.history.push("/products");
     else this.props.closeMe(customer);
