@@ -1,8 +1,13 @@
 import React from "react";
 import Joi from "joi-browser";
+import { toast } from "react-toastify";
 import Form from "../common/form";
 import { getCompanies } from "../../services/companyService";
-import { getCustomer, saveCustomer } from "../../services/customerService";
+import {
+  getCustomer,
+  saveCustomer,
+  getCustomerByFirstLastName
+} from "../../services/customerService";
 import { getCurrentUser } from "../../services/authService";
 
 class CustomerForm extends Form {
@@ -109,7 +114,22 @@ class CustomerForm extends Form {
   }
 
   doSubmit = async () => {
-    const { data: customer } = await saveCustomer(this.state.data);
+    const { data: _customer } = await getCustomerByFirstLastName(
+      getCurrentUser().companyId,
+      this.state.data.firstName.toUpperCase(),
+      this.state.data.lastName.toUpperCase()
+    );
+
+    if (_customer.length > 0) {
+      toast.error("Este cliente ya existe!");
+      return false;
+    }
+
+    const { data } = { ...this.state };
+    data.firstName = data.firstName.toUpperCase();
+    data.lastName = data.lastName.toUpperCase();
+
+    const { data: customer } = await saveCustomer(data);
 
     if (!this.props.popUp) this.props.history.push("/customers");
     else this.props.closeMe(customer);

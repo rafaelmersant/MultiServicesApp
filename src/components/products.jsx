@@ -33,6 +33,10 @@ class Products extends Component {
 
   async populateProducts(query, page) {
     let products = [];
+    const descrp = query
+      .toUpperCase()
+      .split(" ")
+      .join("%20");
 
     if (query === "") {
       const { data: prods } = await getProducts(
@@ -43,7 +47,7 @@ class Products extends Component {
     } else {
       const { data: prods } = await getProductsByDescription(
         getCurrentUser().companyId,
-        query
+        descrp
       );
       products = prods;
     }

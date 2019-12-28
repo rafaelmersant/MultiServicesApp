@@ -68,7 +68,7 @@ class PrintInvoice extends Component {
               </span>
             )}
 
-            {invoiceHeader[0].customer.identification.length && (
+            {invoiceHeader[0].customer.identification.length > 0 && (
               <span className="font-receipt font-receipt-small d-block">
                 Cédula/RNC: {invoiceHeader[0].customer.identification}
               </span>

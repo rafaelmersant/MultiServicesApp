@@ -25,6 +25,12 @@ export function getProductsByDescription(companyId, description) {
   );
 }
 
+export function getProductByExactDescription(companyId, description) {
+  return http.get(
+    `${apiEndpoint}/?company=${companyId}&description=${description}`
+  );
+}
+
 export function getProduct(productId) {
   return http.get(`${apiEndpoint}/?id=${productId}`);
 }

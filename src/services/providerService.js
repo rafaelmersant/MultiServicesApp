@@ -25,6 +25,12 @@ export function getProviderByName(companyId, searchText) {
   return http.get(`${apiEndpoint}/`);
 }
 
+export function getProviderByFirstName(companyId, firstName) {
+  return http.get(
+    `${apiEndpoint}/?company_id=${companyId}&firstName=${firstName}`
+  );
+}
+
 export function getProvider(providerId) {
   return http.get(`${apiEndpoint}/?id=${providerId}`);
 }

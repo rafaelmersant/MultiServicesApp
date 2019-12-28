@@ -1,8 +1,13 @@
 import React from "react";
 import Joi from "joi-browser";
+import { toast } from "react-toastify";
 import Form from "../common/form";
 import { getCompanies } from "../../services/companyService";
-import { getProvider, saveProvider } from "../../services/providerService";
+import {
+  getProvider,
+  saveProvider,
+  getProviderByFirstName
+} from "../../services/providerService";
 import { getCurrentUser } from "../../services/authService";
 
 class ProviderForm extends Form {
@@ -94,7 +99,19 @@ class ProviderForm extends Form {
   }
 
   doSubmit = async () => {
-    const { data: provider } = await saveProvider(this.state.data);
+    const { data: _provider } = await getProviderByFirstName(
+      getCurrentUser().companyId,
+      this.state.data.firstName.toUpperCase()
+    );
+
+    if (_provider.length > 0) {
+      toast.error("Este proveedor ya existe!");
+      return false;
+    }
+
+    const { data } = { ...this.state };
+    data.firstName = data.firstName.toUpperCase();
+    const { data: provider } = await saveProvider(data);
 
     if (!this.props.popUp) this.props.history.push("/providers");
     else this.props.closeMe(provider);

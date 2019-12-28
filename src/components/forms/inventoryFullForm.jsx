@@ -245,11 +245,13 @@ class InventoryFullForm extends Form {
       const { data: header } = await saveProductTrackingHeader(this.state.data);
       if (this.state.showDetail) toast.success("Los cambios fueron guardados!");
 
-      this.setState({
-        header,
-        showDetail: true,
-        buttonAction: "Guardar cambios"
-      });
+      window.location = `/inventoryFull/${header.id}`;
+
+      // this.setState({
+      //   header,
+      //   showDetail: true,
+      //   buttonAction: "Guardar cambios"
+      // });
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");

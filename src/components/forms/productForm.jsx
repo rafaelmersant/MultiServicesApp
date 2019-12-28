@@ -1,11 +1,16 @@
 import React from "react";
 import Joi from "joi-browser";
+import { toast } from "react-toastify";
 import Form from "../common/form";
 import Input from "../common/input";
 import { formatNumber } from "../../utils/custom";
 import { getCompanies } from "../../services/companyService";
 import { getProductsCategories } from "../../services/productCategoryService";
-import { getProduct, saveProduct } from "../../services/productService";
+import {
+  getProduct,
+  saveProduct,
+  getProductByExactDescription
+} from "../../services/productService";
 import { getCurrentUser } from "../../services/authService";
 import {
   getProductsStocks,
@@ -44,6 +49,7 @@ class ProductForm extends Form {
     id: Joi.number(),
     description: Joi.string()
       .required()
+      .max(100)
       .label("Descripción"),
     descriptionLong: Joi.optional(),
     price: Joi.number()
@@ -190,13 +196,29 @@ class ProductForm extends Form {
   }
 
   doSubmit = async () => {
-    const { data: customer } = await saveProduct(this.state.data);
+    const descrp = this.state.data.description
+      .toUpperCase()
+      .split(" ")
+      .join("%20");
+    const { data: _product } = await getProductByExactDescription(
+      getCurrentUser().companyId,
+      descrp
+    );
+
+    if (_product.results.length > 0) {
+      toast.error("Este producto ya existe!");
+      return false;
+    }
+
+    const { data } = { ...this.state };
+    data.description = data.description.toUpperCase();
+    const { data: product } = await saveProduct(data);
 
     if (this.state.quantity > 0)
       await this.updateInventory(this.state.data.id, this.state.quantity);
 
     if (!this.props.popUp) this.props.history.push("/products");
-    else this.props.closeMe(customer);
+    else this.props.closeMe(product);
   };
 
   render() {

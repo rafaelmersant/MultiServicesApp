@@ -1,5 +1,6 @@
 import React from "react";
 import Joi from "joi-browser";
+import { toast } from "react-toastify";
 import Form from "../common/form";
 import { getCompanies } from "../../services/companyService";
 import {
@@ -8,7 +9,6 @@ import {
   getProductsCategoriesByDescrp
 } from "../../services/productCategoryService";
 import { getCurrentUser } from "../../services/authService";
-import { toast } from "react-toastify";
 
 class ProductCategoryForm extends Form {
   state = {

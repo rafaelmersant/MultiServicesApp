@@ -22,6 +22,12 @@ export function getCustomersByName(companyId, searchText) {
   return http.get(`${apiEndpoint}/`);
 }
 
+export function getCustomerByFirstLastName(companyId, firstName, lastName) {
+  return http.get(
+    `${apiEndpoint}/?company_id=${companyId}&firstName=${firstName}&lastName=${lastName}`
+  );
+}
+
 export function getCustomer(customerId) {
   return http.get(`${apiEndpoint}/?id=${customerId}`);
 }

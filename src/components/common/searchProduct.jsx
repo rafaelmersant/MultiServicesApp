@@ -10,11 +10,16 @@ class SearchProduct extends Component {
   };
 
   handleChange = async ({ currentTarget: input }) => {
+    const descrp = input.value
+      .toUpperCase()
+      .split(" ")
+      .join("%20");
+
     this.setState({ searchProductInput: input.value });
 
     let { data: products } = await getProductsByDescription(
       this.props.companyId,
-      input.value
+      descrp
     );
     products = products.results;
 
