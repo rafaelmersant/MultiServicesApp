@@ -16,6 +16,10 @@ export function getProductsCategories(companyId) {
   return http.get(`${apiEndpoint}/`);
 }
 
+export function getProductsCategoriesByDescrp(companyId, descrp) {
+  return http.get(`${apiEndpoint}/?company=${companyId}&description=${descrp}`);
+}
+
 export function getProductCategory(categoryId) {
   return http.get(`${apiEndpoint}/?id=${categoryId}`);
 }

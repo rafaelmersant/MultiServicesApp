@@ -4,9 +4,11 @@ import Form from "../common/form";
 import { getCompanies } from "../../services/companyService";
 import {
   getProductCategory,
-  saveProductCategory
+  saveProductCategory,
+  getProductsCategoriesByDescrp
 } from "../../services/productCategoryService";
 import { getCurrentUser } from "../../services/authService";
+import { toast } from "react-toastify";
 
 class ProductCategoryForm extends Form {
   state = {
@@ -71,8 +73,20 @@ class ProductCategoryForm extends Form {
   }
 
   doSubmit = async () => {
-    console.log(this.state.data);
-    const { data: category } = await saveProductCategory(this.state.data);
+    const { data: _category } = await getProductsCategoriesByDescrp(
+      getCurrentUser().companyId,
+      this.state.data.description.toUpperCase()
+    );
+
+    if (_category.length > 0) {
+      toast.error("Esta categoria ya existe!");
+      return false;
+    }
+
+    const { data } = { ...this.state };
+    data.description = data.description.toUpperCase();
+
+    const { data: category } = await saveProductCategory(data);
 
     if (!this.props.popUp) this.props.history.push("/productsCategories");
     else this.props.closeMe(category);
