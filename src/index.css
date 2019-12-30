@@ -23,12 +23,11 @@ code {
 }
 
 .font-receipt {
-  font-family: Arial;
-  /* font-family: Arial, Helvetica, sans-serif */
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .font-receipt-small {
-  font-size: 17px;
+  font-size: 16px;
 }
 
 .font-receipt-medium {

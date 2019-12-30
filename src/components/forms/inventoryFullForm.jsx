@@ -32,6 +32,8 @@ class InventoryFullForm extends Form {
       totalAmount: 0,
       itbis: 0,
       cost: "",
+      reference: "",
+      paid: false,
       docDate: new Date().toISOString(),
       creationDate: new Date().toISOString(),
       serverDate: new Date().toISOString(),
@@ -77,6 +79,8 @@ class InventoryFullForm extends Form {
     totalAmount: Joi.optional(),
     itbis: Joi.optional(),
     cost: Joi.optional(),
+    reference: Joi.optional(),
+    paid: Joi.optional(),
     docDate: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
@@ -167,6 +171,7 @@ class InventoryFullForm extends Form {
   }
 
   mapToViewModel(header) {
+    console.log(header);
     return {
       id: header[0].id,
       provider_id: header[0].provider.id,
@@ -175,6 +180,8 @@ class InventoryFullForm extends Form {
       itbis: header[0].itbis ? header[0].itbis : 0,
       cost: header[0].cost ? header[0].cost : 0,
       docDate: header[0].docDate,
+      paid: header[0].paid,
+      reference: header[0].reference ? header[0].reference : "",
       creationDate: header[0].creationDate,
       serverDate: header[0].serverDate,
       company_id: header[0].company.id,
@@ -288,6 +295,12 @@ class InventoryFullForm extends Form {
     this.setState({ inventory });
   };
 
+  handleChangePaid = async () => {
+    const { data } = { ...this.state };
+    data.paid = !data.paid;
+    this.setState({ data });
+  };
+
   handleDelete = async detail => {
     const answer = window.confirm(
       "Esta seguro de eliminar este producto? \nNo podrá deshacer esta acción"
@@ -336,7 +349,23 @@ class InventoryFullForm extends Form {
                       this.state.providers
                     )}
                   </div>
-                  <div className="col">{this.renderInput("ncf", "NCF")}</div>
+                  <div className="col-3">{this.renderInput("ncf", "NCF")}</div>
+                  <div
+                    className="col-3"
+                    style={{ marginTop: "35px", paddingLeft: "30px" }}
+                  >
+                    <input
+                      type="checkbox"
+                      className="form-check-input"
+                      id="chkPaid"
+                      checked={this.state.data.paid}
+                      onChange={this.handleChangePaid}
+                      //disabled={this.state.data.id && this.state.data.paid}
+                    />
+                    <label className="form-check-label" htmlFor="chkPaid">
+                      Pagada
+                    </label>
+                  </div>
                 </div>
 
                 <div className="row">
@@ -346,6 +375,11 @@ class InventoryFullForm extends Form {
                   <div className="col">
                     {this.renderInput("itbis", "ITBIS")}
                   </div>
+
+                  <div className="col-3">
+                    {this.renderInput("reference", "Factura/Referencia")}
+                  </div>
+
                   <div className="col">
                     <label htmlFor="docDate">Fecha Documento</label>
                     <DatePicker
@@ -355,6 +389,7 @@ class InventoryFullForm extends Form {
                     />
                   </div>
                 </div>
+
                 {this.renderButton(this.state.buttonAction)}
               </div>
             </div>
