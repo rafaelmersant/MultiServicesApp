@@ -171,7 +171,6 @@ class InventoryFullForm extends Form {
   }
 
   mapToViewModel(header) {
-    console.log(header);
     return {
       id: header[0].id,
       provider_id: header[0].provider.id,
@@ -328,7 +327,7 @@ class InventoryFullForm extends Form {
   render() {
     return (
       <React.Fragment>
-        <div class="pull-right w-50">
+        <div className="pull-right w-50">
           <button className="btn btn-warning mb-3" onClick={this.newEntry}>
             Nueva Entrada
           </button>
