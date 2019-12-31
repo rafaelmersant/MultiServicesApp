@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Table from "../common/table";
-import auth from "../../services/authService";
 
 class ProductCategoriesTable extends Component {
   columns = [
@@ -31,14 +30,14 @@ class ProductCategoriesTable extends Component {
     )
   };
 
-  constructor() {
-    super();
-    // const user = auth.getCurrentUser().email;
-    // const role = auth.getCurrentUser().role;
+  // constructor() {
+  //   super();
+  // const user = auth.getCurrentUser().email;
+  // const role = auth.getCurrentUser().role;
 
-    // if (user && (role === "Admin" || role === "Owner"))
-    //   this.columns.push(this.deleteColumn);
-  }
+  // if (user && (role === "Admin" || role === "Owner"))
+  //   this.columns.push(this.deleteColumn);
+  // }
 
   render() {
     const { categories, sortColumn, onSort } = this.props;

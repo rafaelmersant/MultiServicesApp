@@ -32,7 +32,23 @@ class ProductTrackingHeaderTable extends Component {
         </div>
       )
     },
-    { path: "ncf", label: "NCF" }
+    { path: "ncf", label: "NCF" },
+    { path: "reference", label: "Factura" },
+    {
+      path: "paid",
+      label: "Estatus",
+      align: "text-center",
+      content: entry => (
+        <div className="text-center">
+          <span>
+            {entry.paid
+              .toString()
+              .replace(true, "Pagada")
+              .replace(false, "Pendiente")}
+          </span>
+        </div>
+      )
+    }
   ];
 
   render() {

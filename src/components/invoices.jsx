@@ -9,8 +9,7 @@ import { getCurrentUser } from "../services/authService";
 import {
   getInvoicesHeader,
   deleteInvoiceHeader,
-  getInvoiceDetail,
-  deleteInvoiceDetail
+  getInvoiceDetail
 } from "../services/invoiceServices";
 import InvoicesTable from "./tables/invoicesTable";
 import {

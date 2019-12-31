@@ -102,8 +102,12 @@ export function deleteTrackingHeader(trackingId) {
   return http.delete(productsTrackingHeaderUrl(trackingId));
 }
 
-export function deleteTracking(trackingId) {
-  return http.delete(productsTrackingUrl(trackingId));
+export async function deleteTracking(entry) {
+  await updateProductStock({
+    quantity: entry.quantity,
+    product_id: entry.product.id
+  });
+  return http.delete(productsTrackingUrl(entry.id));
 }
 
 export function deleteStock(stockId) {

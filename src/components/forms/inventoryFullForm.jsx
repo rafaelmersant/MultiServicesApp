@@ -301,6 +301,10 @@ class InventoryFullForm extends Form {
     this.setState({ data });
   };
 
+  newEntry = () => {
+    window.location = `/inventoryFull/new`;
+  };
+
   handleDelete = async detail => {
     const answer = window.confirm(
       "Esta seguro de eliminar este producto? \nNo podrá deshacer esta acción"
@@ -311,7 +315,7 @@ class InventoryFullForm extends Form {
       this.setState({ details });
 
       try {
-        await deleteTracking(detail.id);
+        await deleteTracking(detail);
       } catch (ex) {
         if (ex.response && ex.response.status === 404)
           toast.error("Este producto ya fue eliminado");
@@ -324,6 +328,12 @@ class InventoryFullForm extends Form {
   render() {
     return (
       <React.Fragment>
+        <div class="pull-right w-50">
+          <button className="btn btn-warning mb-3" onClick={this.newEntry}>
+            Nueva Entrada
+          </button>
+        </div>
+
         <div className="container pull-left col-lg-7 col-md-11 col-sm-11 ml-3 shadow p-3 mb-5 bg-white rounded">
           <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
 
@@ -490,12 +500,10 @@ class InventoryFullForm extends Form {
           )}
         </div>
 
-        <div>
-          <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 mb-5">
-            <NavLink className="btn btn-secondary mt-4" to="/inventoriesFull">
-              {"<-"} Ir al listado
-            </NavLink>
-          </div>
+        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 mb-5">
+          <NavLink className="btn btn-secondary" to="/inventoriesFull">
+            {"<-"} Ir al listado
+          </NavLink>
         </div>
       </React.Fragment>
     );
