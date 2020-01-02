@@ -116,11 +116,15 @@ export function deleteStock(stockId) {
 
 export async function updateProductStock(inventory) {
   const { data: productStock } = await getProductsStocks(inventory.product_id);
+  const quantity =
+    inventory.typeTracking === "E"
+      ? parseFloat(inventory.quantity)
+      : parseFloat(inventory.quantity) * -1;
 
   const stock = {
     id: "",
     product_id: inventory.product_id,
-    quantityAvailable: inventory.quantity ? inventory.quantity : 0,
+    quantityAvailable: quantity,
     quantityHold: 0,
     company_id: getCurrentUser().companyId,
     lastUpdated: new Date().toISOString(),
@@ -128,11 +132,6 @@ export async function updateProductStock(inventory) {
   };
 
   if (productStock.length) {
-    const quantity =
-      inventory.typeTracking === "E"
-        ? parseFloat(inventory.quantity)
-        : parseFloat(inventory.quantity) * -1;
-
     const quantityAvailable = parseFloat(productStock[0].quantityAvailable);
     const newQuantity = Math.round((quantityAvailable + quantity) * 100) / 100;
 

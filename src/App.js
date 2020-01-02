@@ -34,6 +34,7 @@ import ProtectedRoute from "./components/common/protectedRoute";
 import auth from "./services/authService";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+import ExportStockToExcel from "./components/reports/exportStockToExcel";
 
 class App extends Component {
   state = {
@@ -68,6 +69,10 @@ class App extends Component {
             <ProtectedRoute
               path="/inventoriesFull"
               component={InventoriesFull}
+            />
+            <ProtectedRoute
+              path="/inventory/report/excel"
+              component={ExportStockToExcel}
             />
             <ProtectedRoute
               path="/inventory/report"

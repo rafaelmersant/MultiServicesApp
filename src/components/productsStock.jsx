@@ -6,12 +6,13 @@ import { paginate } from "../utils/paginate";
 import ProductStockTable from "./tables/productStockTable";
 import { getProductsStocksByCompany } from "../services/inventoryService";
 import { getCurrentUser } from "../services/authService";
+import ExportStockToExcel from "./reports/exportStockToExcel";
 
 class ProductsStock extends Component {
   state = {
     products: [],
     currentPage: 1,
-    pageSize: 4000,
+    pageSize: 8000,
     searchQuery: "",
     sortColumn: { path: "creationDate", order: "desc" }
   };
@@ -23,6 +24,7 @@ class ProductsStock extends Component {
   async getProducts() {
     const companyId = getCurrentUser().companyId;
     const { data: products } = await getProductsStocksByCompany(companyId);
+
     this.setState({ products });
   }
 
@@ -73,6 +75,10 @@ class ProductsStock extends Component {
         <div className="row">
           <div className="col margin-top-msg">
             <h2 className="pull-right text-info">Reporte de Inventario</h2>
+            <ExportStockToExcel
+              data={this.state.products}
+              sheetName="Inventario"
+            />
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}

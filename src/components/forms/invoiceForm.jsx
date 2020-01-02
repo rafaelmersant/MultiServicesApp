@@ -353,7 +353,7 @@ class InvoiceForm extends Form {
       toast.success(`Cantidad disponible: ${formatNumber(available)}`);
     } else {
       toast.error(`No tiene disponible en inventario`);
-      return false;
+      //return false; //Uncomment this line for blocking the sales without stock
     }
 
     this.updateLine(product);
