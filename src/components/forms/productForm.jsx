@@ -215,7 +215,7 @@ class ProductForm extends Form {
     const { data: product } = await saveProduct(data);
 
     if (this.state.quantity > 0)
-      await this.updateInventory(this.state.data.id, this.state.quantity);
+      await this.updateInventory(product.id, this.state.quantity);
 
     if (!this.props.popUp) this.props.history.push("/products");
     else this.props.closeMe(product);

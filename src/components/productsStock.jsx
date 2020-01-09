@@ -40,6 +40,13 @@ class ProductsStock extends Component {
     this.setState({ sortColumn });
   };
 
+  mapToExcelView = data => {
+    const result = data.map(item => ({
+      label: "Producto",
+      value: data.product.description
+    }));
+  };
+
   getPagedData = () => {
     const {
       pageSize,
