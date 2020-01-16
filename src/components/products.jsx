@@ -4,6 +4,7 @@ import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
+import Loading from "./common/loading";
 import { paginate } from "../utils/paginate";
 import {
   getProducts,
@@ -16,6 +17,7 @@ import ProductsTable from "./tables/productsTable";
 
 class Products extends Component {
   state = {
+    loading: true,
     products: [],
     currentPage: 1,
     pageSize: 10,
@@ -54,7 +56,8 @@ class Products extends Component {
 
     this.setState({
       products: products.results,
-      totalProducts: products.count
+      totalProducts: products.count,
+      loading: false
     });
 
     this.forceUpdate();
@@ -154,31 +157,42 @@ class Products extends Component {
               onChange={this.handleSearch}
               placeholder="Buscar..."
             />
-            <ProductsTable
-              products={this.state.products}
-              user={user}
-              sortColumn={sortColumn}
-              onDelete={this.handleDelete}
-              onSort={this.handleSort}
-            />
 
-            <div className="row">
-              <Pagination
-                itemsCount={totalCount}
-                pageSize={pageSize}
-                currentPage={
-                  sessionStorage["currentPage"]
-                    ? sessionStorage["currentPage"]
-                    : 1
-                } //{currentPage}
-                onPageChange={this.handlePageChange}
+            {this.state.loading && (
+              <div className="d-flex justify-content-center mb-3">
+                <Loading />
+              </div>
+            )}
+
+            {!this.state.loading && (
+              <ProductsTable
+                products={this.state.products}
+                user={user}
+                sortColumn={sortColumn}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort}
               />
-              <p className="text-muted ml-3 mt-2">
-                <em>
-                  Mostrando {totalCount} productos de {totalProducts}
-                </em>
-              </p>
-            </div>
+            )}
+
+            {!this.state.loading && (
+              <div className="row">
+                <Pagination
+                  itemsCount={totalCount}
+                  pageSize={pageSize}
+                  currentPage={
+                    sessionStorage["currentPage"]
+                      ? sessionStorage["currentPage"]
+                      : 1
+                  } //{currentPage}
+                  onPageChange={this.handlePageChange}
+                />
+                <p className="text-muted ml-3 mt-2">
+                  <em>
+                    Mostrando {totalCount} productos de {totalProducts}
+                  </em>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

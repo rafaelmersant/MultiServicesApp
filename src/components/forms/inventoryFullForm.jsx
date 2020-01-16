@@ -133,7 +133,7 @@ class InventoryFullForm extends Form {
   };
 
   async populateProviders() {
-    const { data: providers } = await getProviders();
+    const { data: providers } = await getProviders(getCurrentUser().companyId);
     this.setState({ providers });
   }
 

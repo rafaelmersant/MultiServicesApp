@@ -4,6 +4,7 @@ import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
+import Loading from "./common/loading";
 import { paginate } from "../utils/paginate";
 import { getProviders, deleteProvider } from "../services/providerService";
 // import { getCustomerInInvoice } from "../services/invoiceServices";
@@ -13,6 +14,7 @@ import { getProviderInInventory } from "../services/inventoryService";
 
 class Providers extends Component {
   state = {
+    loading: true,
     providers: [],
     currentPage: 1,
     pageSize: 10,
@@ -24,7 +26,7 @@ class Providers extends Component {
     const companyId = getCurrentUser().companyId;
     const { data: providers } = await getProviders(companyId);
 
-    this.setState({ providers });
+    this.setState({ providers, loading: false });
   }
 
   handleDelete = async provider => {
@@ -112,25 +114,36 @@ class Providers extends Component {
               onChange={this.handleSearch}
               placeholder="Buscar..."
             />
-            <ProvidersTable
-              providers={providers}
-              user={user}
-              sortColumn={sortColumn}
-              onDelete={this.handleDelete}
-              onSort={this.handleSort}
-            />
 
-            <div className="row">
-              <Pagination
-                itemsCount={totalCount}
-                pageSize={pageSize}
-                currentPage={currentPage}
-                onPageChange={this.handlePageChange}
+            {this.state.loading && (
+              <div className="d-flex justify-content-center mb-3">
+                <Loading />
+              </div>
+            )}
+
+            {!this.state.loading && (
+              <ProvidersTable
+                providers={providers}
+                user={user}
+                sortColumn={sortColumn}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort}
               />
-              <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} proveedores</em>
-              </p>
-            </div>
+            )}
+
+            {!this.state.loading && (
+              <div className="row">
+                <Pagination
+                  itemsCount={totalCount}
+                  pageSize={pageSize}
+                  currentPage={currentPage}
+                  onPageChange={this.handlePageChange}
+                />
+                <p className="text-muted ml-3 mt-2">
+                  <em>Mostrando {totalCount} proveedores</em>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

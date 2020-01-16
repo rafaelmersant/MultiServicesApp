@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
+import Loading from "./common/loading";
 import { paginate } from "../utils/paginate";
 import { getCurrentUser } from "../services/authService";
 import {
@@ -19,6 +20,7 @@ import {
 
 class Invoices extends Component {
   state = {
+    loading: true,
     invoices: [],
     currentPage: 1,
     pageSize: 10,
@@ -33,7 +35,7 @@ class Invoices extends Component {
   async populateInvoices() {
     const companyId = getCurrentUser().companyId;
     const { data: invoices } = await getInvoicesHeader(companyId);
-    this.setState({ invoices });
+    this.setState({ invoices, loading: false });
   }
 
   async updateInventory(productId, quantity) {
@@ -144,25 +146,35 @@ class Invoices extends Component {
               placeholder="Buscar factura..."
             />
 
-            <InvoicesTable
-              invoices={invoices}
-              user={user}
-              sortColumn={sortColumn}
-              onDelete={this.handleDelete}
-              onSort={this.handleSort}
-            />
+            {this.state.loading && (
+              <div className="d-flex justify-content-center mb-3">
+                <Loading />
+              </div>
+            )}
 
-            <div className="row">
-              <Pagination
-                itemsCount={totalCount}
-                pageSize={pageSize}
-                currentPage={currentPage}
-                onPageChange={this.handlePageChange}
+            {!this.state.loading && (
+              <InvoicesTable
+                invoices={invoices}
+                user={user}
+                sortColumn={sortColumn}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort}
               />
-              <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} facturas</em>
-              </p>
-            </div>
+            )}
+
+            {!this.state.loading && (
+              <div className="row">
+                <Pagination
+                  itemsCount={totalCount}
+                  pageSize={pageSize}
+                  currentPage={currentPage}
+                  onPageChange={this.handlePageChange}
+                />
+                <p className="text-muted ml-3 mt-2">
+                  <em>Mostrando {totalCount} facturas</em>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

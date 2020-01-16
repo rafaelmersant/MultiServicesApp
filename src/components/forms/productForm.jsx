@@ -37,7 +37,7 @@ class ProductForm extends Form {
       creationDate: new Date().toISOString()
     },
     quantity: 0,
-    itbis: false,
+    itbis: true,
     companies: [],
     categories: [],
     errors: {},
@@ -108,7 +108,7 @@ class ProductForm extends Form {
 
       this.setState({
         data: this.mapToViewModel(product.results),
-        itbis: product.results[0].itbis > 0,
+        itbis: true, //product.results[0].itbis > 0,
         action: "Editar Producto"
       });
     } catch (ex) {
@@ -269,7 +269,6 @@ class ProductForm extends Form {
                   label="Costo"
                   onChange={this.handleChangeCost}
                 />
-                {/* {this.renderInput("cost", "Costo")} */}
               </div>
 
               <div className={_customCol}>
@@ -291,7 +290,6 @@ class ProductForm extends Form {
                   checked={this.state.itbis}
                   onChange={this.handleChangeITBIS}
                 />
-                {/* <label className="form-check-label" htmlFor="chkITBIS"></label> */}
               </div>
               <div className={_customCol}>
                 {this.renderInput("itbis", "ITBIS", "text", "disabled")}
@@ -306,6 +304,16 @@ class ProductForm extends Form {
                 />
               </div>
             </div>
+
+            {/* <div className="row">
+              <div className="col">{this.renderInput("itbis", "Precio/C")}</div>
+              <div className="col">{this.renderInput("itbis", "Desc")}</div>
+              <div className="col">Costo</div>
+              <div className="col">ITBIS</div>
+              <div className="col">Precio Costo</div>
+              <div className="col">%</div>
+              <div className="col">Precio Venta</div>
+            </div> */}
 
             <div className="row">
               <div className="col-5">

@@ -3,6 +3,7 @@ import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
+import Loading from "./common/loading";
 import { paginate } from "../utils/paginate";
 import ProductTrackingTable from "./tables/productTrackingTable";
 import { getProductsTrackings } from "../services/inventoryService";
@@ -10,6 +11,7 @@ import { getCurrentUser } from "../services/authService";
 
 class Inventories extends Component {
   state = {
+    loading: true,
     prodTrackings: [],
     currentPage: 1,
     pageSize: 10,
@@ -28,7 +30,7 @@ class Inventories extends Component {
       companyId,
       invoiceRecords
     );
-    this.setState({ prodTrackings });
+    this.setState({ prodTrackings, loading: false });
   }
 
   handlePageChange = page => {
@@ -89,47 +91,59 @@ class Inventories extends Component {
 
             <NewButton label="Ajuste de Inventario" to="/inventory/new" />
 
-            <div className="row">
-              <div className="col">
-                <SearchBox
-                  value={searchQuery}
-                  onChange={this.handleSearch}
-                  placeholder="Buscar producto..."
-                />
-              </div>
-              <div className="col mt-4">
-                <input
-                  type="checkbox"
-                  className="form-check-input"
-                  id="invoiceTracking"
-                  value={this.state.invoiceRecords}
-                  onChange={this.handleOnChangeInvoiceRecords}
-                />
-                <label className="form-check-label" htmlFor="invoiceTracking">
-                  Mostrar Movimientos de Facturas
-                </label>
-              </div>
-            </div>
+            {!this.state.loading && (
+              <div className="row">
+                <div className="col">
+                  <SearchBox
+                    value={searchQuery}
+                    onChange={this.handleSearch}
+                    placeholder="Buscar producto..."
+                  />
+                </div>
 
-            <ProductTrackingTable
-              prodTrackings={prodTrackings}
-              user={user}
-              sortColumn={sortColumn}
-              onDelete={this.handleDelete}
-              onSort={this.handleSort}
-            />
+                <div className="col mt-4">
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="invoiceTracking"
+                    value={this.state.invoiceRecords}
+                    onChange={this.handleOnChangeInvoiceRecords}
+                  />
+                  <label className="form-check-label" htmlFor="invoiceTracking">
+                    Mostrar Movimientos de Facturas
+                  </label>
+                </div>
+              </div>
+            )}
 
-            <div className="row">
-              <Pagination
-                itemsCount={totalCount}
-                pageSize={pageSize}
-                currentPage={currentPage}
-                onPageChange={this.handlePageChange}
+            {this.state.loading && (
+              <div className="d-flex justify-content-center mb-3">
+                <Loading />
+              </div>
+            )}
+            {!this.state.loading && (
+              <ProductTrackingTable
+                prodTrackings={prodTrackings}
+                user={user}
+                sortColumn={sortColumn}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort}
               />
-              <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} registros</em>
-              </p>
-            </div>
+            )}
+
+            {!this.state.loading && (
+              <div className="row">
+                <Pagination
+                  itemsCount={totalCount}
+                  pageSize={pageSize}
+                  currentPage={currentPage}
+                  onPageChange={this.handlePageChange}
+                />
+                <p className="text-muted ml-3 mt-2">
+                  <em>Mostrando {totalCount} registros</em>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>

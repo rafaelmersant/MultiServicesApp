@@ -3,6 +3,7 @@ import _ from "lodash";
 import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
+import Loading from "./common/loading";
 import { paginate } from "../utils/paginate";
 import ProductTrackingHeaderTable from "./tables/productTrackingHeaderTable";
 import { getProductsTrackingsHeader } from "../services/inventoryService";
@@ -10,6 +11,7 @@ import { getCurrentUser } from "../services/authService";
 
 class InventoriesFull extends Component {
   state = {
+    loading: true,
     prodTrackingsHeader: [],
     currentPage: 1,
     pageSize: 10,
@@ -26,7 +28,7 @@ class InventoriesFull extends Component {
     const { data: prodTrackingsHeader } = await getProductsTrackingsHeader(
       companyId
     );
-    this.setState({ prodTrackingsHeader });
+    this.setState({ prodTrackingsHeader, loading: false });
   }
 
   handlePageChange = page => {
@@ -86,25 +88,35 @@ class InventoriesFull extends Component {
               placeholder="Buscar proveedor..."
             />
 
-            <ProductTrackingHeaderTable
-              prodTrackingsHeader={prodTrackingsHeader}
-              user={user}
-              sortColumn={sortColumn}
-              onDelete={this.handleDelete}
-              onSort={this.handleSort}
-            />
+            {this.state.loading && (
+              <div className="d-flex justify-content-center mb-3">
+                <Loading />
+              </div>
+            )}
 
-            <div className="row">
-              <Pagination
-                itemsCount={totalCount}
-                pageSize={pageSize}
-                currentPage={currentPage}
-                onPageChange={this.handlePageChange}
+            {!this.state.loading && (
+              <ProductTrackingHeaderTable
+                prodTrackingsHeader={prodTrackingsHeader}
+                user={user}
+                sortColumn={sortColumn}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort}
               />
-              <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} registros</em>
-              </p>
-            </div>
+            )}
+
+            {!this.state.loading && (
+              <div className="row">
+                <Pagination
+                  itemsCount={totalCount}
+                  pageSize={pageSize}
+                  currentPage={currentPage}
+                  onPageChange={this.handlePageChange}
+                />
+                <p className="text-muted ml-3 mt-2">
+                  <em>Mostrando {totalCount} registros</em>
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
