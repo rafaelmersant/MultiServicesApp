@@ -411,7 +411,7 @@ class InvoiceForm extends Form {
 
       line.itbis = line.itbis * line.quantity;
       line.discount = line.discount * line.quantity;
-      line.total = line.total + line.itbis - line.discount;
+      line.total = line.total - line.discount; //line.itbis
 
       if (this.state.line.product_id) details.push(line);
 

@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import Form from "../common/form";
 import Input from "../common/input";
 import { formatNumber } from "../../utils/custom";
+import PriceCalculation from "../common/priceCalculation";
 import { getCompanies } from "../../services/companyService";
 import { getProductsCategories } from "../../services/productCategoryService";
 import {
@@ -37,7 +38,7 @@ class ProductForm extends Form {
       creationDate: new Date().toISOString()
     },
     quantity: 0,
-    itbis: true,
+    itbis: false,
     companies: [],
     categories: [],
     errors: {},
@@ -108,7 +109,7 @@ class ProductForm extends Form {
 
       this.setState({
         data: this.mapToViewModel(product.results),
-        itbis: true, //product.results[0].itbis > 0,
+        itbis: product.results[0].itbis > 0,
         action: "Editar Producto"
       });
     } catch (ex) {
@@ -165,6 +166,15 @@ class ProductForm extends Form {
 
   handleChangeQuantity = ({ currentTarget: input }) => {
     this.setState({ quantity: input.value });
+  };
+
+  handleChangeCalculation = e => {
+    const data = { ...this.state.data };
+    data.cost = e.cost;
+    data.price = e.priceSales;
+    data.itbis = e.itbis > 0 ? e.itbis : 0;
+
+    this.setState({ data, itbis: e.itbis > 0 });
   };
 
   async componentDidMount() {
@@ -260,6 +270,8 @@ class ProductForm extends Form {
               <div className="col">{this.renderInput("model", "Modelo")}</div>
             </div>
 
+            <PriceCalculation onChange={this.handleChangeCalculation} />
+
             <div className="row">
               <div className={_customCol}>
                 <Input
@@ -304,16 +316,6 @@ class ProductForm extends Form {
                 />
               </div>
             </div>
-
-            {/* <div className="row">
-              <div className="col">{this.renderInput("itbis", "Precio/C")}</div>
-              <div className="col">{this.renderInput("itbis", "Desc")}</div>
-              <div className="col">Costo</div>
-              <div className="col">ITBIS</div>
-              <div className="col">Precio Costo</div>
-              <div className="col">%</div>
-              <div className="col">Precio Venta</div>
-            </div> */}
 
             <div className="row">
               <div className="col-5">

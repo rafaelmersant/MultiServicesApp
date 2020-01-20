@@ -28,9 +28,9 @@ class Products extends Component {
 
   async componentDidMount() {
     if (sessionStorage["currentPage"] > 1)
-      this.setState({ currentPage: sessionStorage["currentPage"] });
+      this.setState({ currentPage: parseInt(sessionStorage["currentPage"]) });
 
-    await this.populateProducts("", sessionStorage["currentPage"]);
+    await this.populateProducts("", parseInt(sessionStorage["currentPage"]));
   }
 
   async populateProducts(query, page) {
@@ -181,7 +181,7 @@ class Products extends Component {
                   pageSize={pageSize}
                   currentPage={
                     sessionStorage["currentPage"]
-                      ? sessionStorage["currentPage"]
+                      ? parseInt(sessionStorage["currentPage"])
                       : 1
                   } //{currentPage}
                   onPageChange={this.handlePageChange}

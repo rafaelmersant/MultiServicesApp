@@ -17,7 +17,7 @@ const Pagination = props => {
           <li
             style={{ display: "inline-block" }}
             key={page}
-            className={page == currentPage ? "page-item active" : "page-item"}
+            className={page === currentPage ? "page-item active" : "page-item"}
           >
             <button className="page-link" onClick={() => onPageChange(page)}>
               {page}
