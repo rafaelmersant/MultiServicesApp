@@ -20,6 +20,7 @@ import {
   deleteTracking
 } from "../../services/inventoryService";
 import ProductsInvTable from "../tables/productsInvTable";
+import PriceCalculation from "../common/priceCalculation";
 
 class InventoryFullForm extends Form {
   _isMounted = false;
@@ -324,6 +325,14 @@ class InventoryFullForm extends Form {
     }
   };
 
+  handleChangeCalculation = e => {
+    const inventory = { ...this.state.inventory };
+    inventory.cost = e.cost;
+    inventory.price = e.priceSales;
+
+    this.setState({ inventory });
+  };
+
   render() {
     return (
       <React.Fragment>
@@ -406,6 +415,8 @@ class InventoryFullForm extends Form {
 
           {this.state.showDetail && (
             <div className="detail">
+              <PriceCalculation onChange={this.handleChangeCalculation} />
+
               <div className="col pb-3 bg-light">
                 <div className="row">
                   <table style={{ width: "95%" }} className="ml-3">
