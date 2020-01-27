@@ -415,9 +415,9 @@ class InventoryFullForm extends Form {
 
           {this.state.showDetail && (
             <div className="detail">
-              <PriceCalculation onChange={this.handleChangeCalculation} />
-
               <div className="col pb-3 bg-light">
+                <PriceCalculation onChange={this.handleChangeCalculation} />
+
                 <div className="row">
                   <table style={{ width: "95%" }} className="ml-3">
                     <thead>
