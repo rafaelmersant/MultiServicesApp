@@ -17,7 +17,9 @@ class PriceCalculation extends Component {
 
   calculatePrice = () => {
     const data = { ...this.state.data };
-    const cost = data.priceC1 - data.discount;
+    const discount =
+      Math.round((data.discount / data.priceC1) * 100 * 100) / 100;
+    const cost = data.priceC1 - discount;
     data.cost = cost;
 
     if (this.state.itbis) {
@@ -87,7 +89,7 @@ class PriceCalculation extends Component {
             type="text"
             name="discount"
             value={this.state.data.discount}
-            label="Desc."
+            label="% Desc."
             autocomplete="off"
             onChange={this.handleChangeInput}
           />
