@@ -21,8 +21,8 @@ class PriceCalculation extends Component {
     data.cost = cost;
 
     if (this.state.itbis) {
-      data.itbis = cost * 0.18;
-      data.priceC2 = cost * 1.18;
+      data.itbis = Math.round(cost * 0.18 * 100) / 100;
+      data.priceC2 = Math.round(cost * 1.18 * 100) / 100;
     } else {
       data.priceC2 = cost;
     }

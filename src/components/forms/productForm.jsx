@@ -265,9 +265,16 @@ class ProductForm extends Form {
             </div> */}
             <div className="row">
               <div className="col">
-                {this.renderInput("measure", "Unidad de Medida")}
+                {this.renderInput(
+                  "measure",
+                  "Unidad de Medida",
+                  "text",
+                  "disabled"
+                )}
               </div>
-              <div className="col">{this.renderInput("model", "Modelo")}</div>
+              <div className="col">
+                {this.renderInput("model", "Modelo", "text", "disabled")}
+              </div>
             </div>
 
             <PriceCalculation onChange={this.handleChangeCalculation} />
