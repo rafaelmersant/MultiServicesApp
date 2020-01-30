@@ -18,7 +18,7 @@ class PriceCalculation extends Component {
   calculatePrice = () => {
     const data = { ...this.state.data };
     const discount =
-      Math.round((data.discount / data.priceC1) * 100 * 100) / 100;
+      Math.round((data.discount / 100) * data.priceC1 * 100) / 100;
     const cost = data.priceC1 - discount;
     data.cost = cost;
 
