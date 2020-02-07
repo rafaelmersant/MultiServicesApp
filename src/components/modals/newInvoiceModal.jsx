@@ -38,7 +38,9 @@ class NewInvoiceModal extends Component {
           data-dismiss="modal"
           aria-label="Close"
         >
-          <span aria-hidden="true">&times;</span>
+          <span aria-hidden="true" style={{ display: "none" }}>
+            &times;
+          </span>
         </button>
       </div>
     );

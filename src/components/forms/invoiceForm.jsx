@@ -17,7 +17,7 @@ import es from "date-fns/locale/es";
 import PrintInvoice from "../reports/printInvoice";
 import { getCurrentUser } from "../../services/authService";
 import { getUserByEmail } from "../../services/userService";
-import { getProducts } from "../../services/productService";
+import { getProducts, getProduct } from "../../services/productService";
 import { getNextNCF, saveEntry } from "../../services/ncfService";
 import {
   saveInvoiceHeader,
@@ -79,7 +79,8 @@ class InvoiceForm extends Form {
     },
     paymentMethods: [
       { id: "CASH", name: "Efectivo" },
-      { id: "CREDIT", name: "Tarjeta de Credito" }
+      { id: "CARD", name: "Tarjeta de Credito" },
+      { id: "CREDIT", name: "Crédito" }
     ],
     typeDoc: [
       { id: "0", name: "No usar" },
@@ -186,9 +187,9 @@ class InvoiceForm extends Form {
     data.subtotal = 0;
 
     this.state.details.forEach(item => {
-      data.itbis += parseFloat(item.itbis);
-      data.discount += parseFloat(item.discount);
-      data.subtotal += parseFloat(item.total);
+      data.itbis += Math.round(parseFloat(item.itbis) * 100) / 100;
+      data.discount += Math.round(parseFloat(item.discount) * 100) / 100;
+      data.subtotal += Math.round(parseFloat(item.total) * 100) / 100;
     });
 
     this.setState({ data });
@@ -274,6 +275,8 @@ class InvoiceForm extends Form {
         sessionStorage["newInvoice"] = null;
       }
     } catch (ex) {
+      sessionStorage["newInvoice"] = null;
+
       if (ex.response && ex.response.status === 404)
         return this.props.history.replace("/not-found");
     }
@@ -313,9 +316,12 @@ class InvoiceForm extends Form {
         itbis: item.itbis,
         discount: item.discount,
         total:
-          parseFloat(item.price) * parseFloat(item.quantity) +
-          parseFloat(item.itbis) -
-          parseFloat(item.discount)
+          Math.round(
+            (parseFloat(item.price) * parseFloat(item.quantity) +
+              parseFloat(item.itbis) -
+              parseFloat(item.discount)) *
+              100
+          ) / 100
       });
     });
 
@@ -409,9 +415,9 @@ class InvoiceForm extends Form {
       const details = [...this.state.details];
       const line = { ...this.state.line };
 
-      line.itbis = line.itbis * line.quantity;
-      line.discount = line.discount * line.quantity;
-      line.total = line.total - line.discount; //line.itbis
+      line.itbis = Math.round(line.itbis * line.quantity * 100) / 100;
+      line.discount = Math.round(line.discount * line.quantity * 100) / 100;
+      line.total = Math.round((line.total - line.discount) * 100) / 100; //line.itbis
 
       if (this.state.line.product_id) details.push(line);
 
@@ -426,9 +432,9 @@ class InvoiceForm extends Form {
     }, 150);
   };
 
-  handleDeleteDetail = detail => {
+  handleDeleteDetail = (detail, soft = false) => {
     const detailsToDelete = [...this.state.detailsToDelete];
-    detailsToDelete.push(detail);
+    if (!soft) detailsToDelete.push(detail);
 
     const details = this.state.details.filter(
       d => d.product_id !== detail.product_id
@@ -441,21 +447,25 @@ class InvoiceForm extends Form {
     });
   };
 
-  handleEditDetail = detail => {
-    const line = { ...detail };
+  handleEditDetail = async detail => {
+    const handler = e => {
+      e.preventDefault();
+    };
+    handler(window.event);
 
-    const currentProduct = this.state.products.filter(
-      prod => prod.id === detail.product_id
-    );
+    const line = { ...detail };
+    const { data: product } = await getProduct(detail.product_id);
+
+    if (line.discount > 0) line.discount = line.discount / line.quantity;
 
     this.setState({
       line,
-      currentProduct: currentProduct[0],
+      currentProduct: product.results[0],
       hideSearchProduct: true,
       searchProductText: line.product
     });
 
-    this.handleDeleteDetail(detail);
+    this.handleDeleteDetail(detail, true);
   };
 
   handleChangePaid = async () => {
@@ -538,21 +548,26 @@ class InvoiceForm extends Form {
       getCurrentUser().companyId
     );
 
-    const nextNCF =
-      entry.length && entry[0].current + 1 <= entry[0].end
-        ? entry[0].current + 1
-        : 0;
+    if (entry.length) {
+      const nextNCF =
+        entry.length && entry[0].current + 1 <= entry[0].end
+          ? entry[0].current + 1
+          : 0;
 
-    const data = { ...this.state.data };
-    const sec = `00000000${nextNCF}`.substr(`00000000${nextNCF}`.length - 8, 8);
-    data.ncf = `${entry[0].typeDoc}${sec}`;
-    this.setState({ data });
+      const data = { ...this.state.data };
+      const sec = `00000000${nextNCF}`.substr(
+        `00000000${nextNCF}`.length - 8,
+        8
+      );
+      data.ncf = `${entry[0].typeDoc}${sec}`;
+      this.setState({ data });
 
-    const _entry = { ...entry[0] };
-    _entry.current += 1;
-    _entry.company_id = getCurrentUser().companyId;
+      const _entry = { ...entry[0] };
+      _entry.current += 1;
+      _entry.company_id = getCurrentUser().companyId;
 
-    await saveEntry(_entry);
+      await saveEntry(_entry);
+    }
   }
 
   isInvoiceEditable = () => {
@@ -587,7 +602,7 @@ class InvoiceForm extends Form {
       if (this.state.data.typeDoc !== "0") this.getNextNCF();
 
       setTimeout(async () => {
-        await this.refreshNextInvoiceSequence();
+        if (!this.state.data.id) await this.refreshNextInvoiceSequence();
         const { data: invoiceHeader } = await saveInvoiceHeader(
           this.state.data
         );

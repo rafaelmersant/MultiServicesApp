@@ -79,7 +79,7 @@ class PriceCalculation extends Component {
             name="priceC1"
             value={this.state.data.priceC1}
             label="Costo Bruto"
-            autocomplete="off"
+            autoComplete="off"
             onChange={this.handleChangeInput}
           />
         </div>
@@ -90,7 +90,7 @@ class PriceCalculation extends Component {
             name="discount"
             value={this.state.data.discount}
             label="% Desc."
-            autocomplete="off"
+            autoComplete="off"
             onChange={this.handleChangeInput}
           />
         </div>
@@ -145,7 +145,7 @@ class PriceCalculation extends Component {
             name="percentage"
             value={this.state.data.percentage}
             label="Porcentaje %"
-            autocomplete="off"
+            autoComplete="off"
             onChange={this.handleChangeInput}
           />
         </div>
