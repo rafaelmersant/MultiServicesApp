@@ -268,7 +268,7 @@ class ProductForm extends Form {
                 {this.renderInput("measure", "Almacen")}
               </div>
               <div className="col">
-                {this.renderInput("model", "Tramero/Nivel")}
+                {this.renderInput("model", "Tramo/Nivel")}
               </div>
             </div>
 
