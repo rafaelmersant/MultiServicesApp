@@ -128,7 +128,7 @@ class Products extends Component {
     //const products = paginate(sorted, currentPage, pageSize);
 
     //return { totalCount: filtered.length, products };
-    return { totalCount: 2930, allProducts };
+    return { totalCount: this.state.totalProducts, allProducts };
   };
 
   render() {
