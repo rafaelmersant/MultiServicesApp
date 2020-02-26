@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import { toast } from "react-toastify";
 import _ from "lodash";
-import Pagination from "./common/pagination";
+import Pagination from "react-js-pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
-import { paginate } from "../utils/paginate";
 import {
   getProducts,
   deleteProduct,
@@ -96,7 +95,6 @@ class Products extends Component {
     this.setState({ currentPage: page });
     sessionStorage["currentPage"] = parseInt(page);
     await this.populateProducts("", parseInt(page));
-    this.forceUpdate();
   };
 
   handleSearch = query => {
@@ -128,17 +126,11 @@ class Products extends Component {
     //const products = paginate(sorted, currentPage, pageSize);
 
     //return { totalCount: filtered.length, products };
-    return { totalCount: this.state.totalProducts, allProducts };
+    return { totalCount: this.state.products.length, allProducts };
   };
 
   render() {
-    const {
-      pageSize,
-      currentPage,
-      sortColumn,
-      searchQuery,
-      totalProducts
-    } = this.state;
+    const { sortColumn, searchQuery, totalProducts } = this.state;
     const user = getCurrentUser();
 
     const { totalCount, products } = this.getPagedData();
@@ -151,13 +143,11 @@ class Products extends Component {
             {user && (user.role === "Admin" || user.role === "Owner") && (
               <NewButton label="Nuevo Producto" to="/product/new" />
             )}
-
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}
               placeholder="Buscar..."
             />
-
             {this.state.loading && (
               <div className="d-flex justify-content-center mb-3">
                 <Loading />
@@ -173,19 +163,19 @@ class Products extends Component {
                 onSort={this.handleSort}
               />
             )}
-
             {!this.state.loading && (
               <div className="row">
-                <Pagination
-                  itemsCount={totalCount}
-                  pageSize={pageSize}
-                  currentPage={
-                    sessionStorage["currentPage"]
-                      ? parseInt(sessionStorage["currentPage"])
-                      : 1
-                  } //{currentPage}
-                  onPageChange={this.handlePageChange}
-                />
+                <div>
+                  <Pagination
+                    activePage={this.state.currentPage}
+                    itemsCountPerPage={this.state.pageSize}
+                    totalItemsCount={totalProducts}
+                    pageRangeDisplayed={5}
+                    onChange={this.handlePageChange.bind(this)}
+                    itemClass="page-item"
+                    linkClass="page-link"
+                  />
+                </div>
                 <p className="text-muted ml-3 mt-2">
                   <em>
                     Mostrando {totalCount} productos de {totalProducts}

@@ -96,6 +96,7 @@ class InvoiceForm extends Form {
       creationDate: new Date().toISOString(),
       createdUser: getCurrentUser().email
     },
+    itbisAmount: 0.18,
     createdUserName: "",
     action: "Nueva Factura",
     hideSearchProduct: false,
@@ -157,6 +158,7 @@ class InvoiceForm extends Form {
 
   updateLine = product => {
     const line = { ...this.state.line };
+    const { itbisAmount: _itbis } = { ...this.state };
 
     const discount = isNaN(parseFloat(line.discount))
       ? 0
@@ -164,9 +166,9 @@ class InvoiceForm extends Form {
 
     const quantity = Math.round(parseFloat(line.quantity) * 100) / 100;
     const price = Math.round(parseFloat(product.price) * 100) / 100;
-    const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
-    const total = Math.round(price * quantity * 100) / 100;
-    //const subtotal = Math.round((total + itbis - discount) * 100) / 100;
+    const itbis =
+      Math.round(parseFloat((price - discount) * _itbis) * 100) / 100;
+    const total = Math.round((price - discount + itbis) * quantity * 100) / 100;
 
     line.quantity = quantity;
     line.product_id = product.id;
@@ -305,6 +307,7 @@ class InvoiceForm extends Form {
   mapToViewInvoiceDetail(invoiceDetail) {
     let details = [];
     invoiceDetail.forEach(item => {
+      console.log(item);
       details.push({
         id: item.id,
         invoice_id: item.invoice.id,
@@ -317,9 +320,9 @@ class InvoiceForm extends Form {
         discount: item.discount,
         total:
           Math.round(
-            (parseFloat(item.price) * parseFloat(item.quantity) +
-              parseFloat(item.itbis) -
-              parseFloat(item.discount)) *
+            (parseFloat(item.price) * parseFloat(item.quantity) -
+              parseFloat(item.discount) +
+              parseFloat(item.itbis)) *
               100
           ) / 100
       });
@@ -417,7 +420,7 @@ class InvoiceForm extends Form {
 
       line.itbis = Math.round(line.itbis * line.quantity * 100) / 100;
       line.discount = Math.round(line.discount * line.quantity * 100) / 100;
-      line.total = Math.round((line.total - line.discount) * 100) / 100; //line.itbis
+      line.total = Math.round(line.total * 100) / 100;
 
       if (this.state.line.product_id) details.push(line);
 
