@@ -96,12 +96,9 @@ class Products extends Component {
     this.setState({ currentPage: page });
     sessionStorage["currentPage"] = parseInt(page);
 
-    if (this.state.searchQuery) {
-      console.log(this.state.searchQuery);
+    if (this.state.searchQuery)
       await this.populateProducts(this.state.searchQuery, parseInt(page));
-    }
-
-    //else await this.populateProducts("", parseInt(page));
+    else await this.populateProducts("", parseInt(page));
   };
 
   handleSearch = query => {
@@ -118,7 +115,6 @@ class Products extends Component {
       pageSize,
       currentPage,
       sortColumn,
-      //searchQuery,
       products: allProducts
     } = this.state;
 
