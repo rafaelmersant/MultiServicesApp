@@ -16,9 +16,11 @@ export function getProducts(companyId, currentPage) {
   return http.get(`${apiEndpoint}/?company=${companyId}&ordering=description`);
 }
 
-export function getProductsByDescription(companyId, description) {
+export function getProductsByDescription(companyId, description, currentPage) {
+  const page = currentPage ? currentPage : 1;
+
   return http.get(
-    `${apiEndpoint}/?company=${companyId}&search=${description}&ordering=description`
+    `${apiEndpoint}/?company=${companyId}&search=${description}&ordering=description&page=${page}`
   );
 }
 

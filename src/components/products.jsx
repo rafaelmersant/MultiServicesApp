@@ -48,7 +48,8 @@ class Products extends Component {
     } else {
       const { data: prods } = await getProductsByDescription(
         getCurrentUser().companyId,
-        descrp
+        descrp,
+        page
       );
       products = prods;
     }
@@ -94,7 +95,13 @@ class Products extends Component {
   handlePageChange = async page => {
     this.setState({ currentPage: page });
     sessionStorage["currentPage"] = parseInt(page);
-    await this.populateProducts("", parseInt(page));
+
+    if (this.state.searchQuery) {
+      console.log(this.state.searchQuery);
+      await this.populateProducts(this.state.searchQuery, parseInt(page));
+    }
+
+    //else await this.populateProducts("", parseInt(page));
   };
 
   handleSearch = query => {

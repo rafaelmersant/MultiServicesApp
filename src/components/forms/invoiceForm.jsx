@@ -307,7 +307,6 @@ class InvoiceForm extends Form {
   mapToViewInvoiceDetail(invoiceDetail) {
     let details = [];
     invoiceDetail.forEach(item => {
-      console.log(item);
       details.push({
         id: item.id,
         invoice_id: item.invoice.id,
