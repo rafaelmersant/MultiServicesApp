@@ -184,23 +184,19 @@ class PrintInvoice extends Component {
                 </td>
               </tr>
               <tr key="f2">
-                <td>
+                <td colSpan="2">
                   <span className="font-receipt font-receipt-medium">
                     SUBTOTAL
                   </span>
                 </td>
                 <td className="text-right">
                   <span className="font-receipt font-receipt-medium">
-                    {formatNumber(itbisTotal)}
-                  </span>
-                </td>
-                <td className="text-right">
-                  <span className="font-receipt font-receipt-medium">
-                    {formatNumber(valorTotal + discountTotal)}
+                    {formatNumber(valorTotal)}
                   </span>
                 </td>
               </tr>
-              <tr key="f3">
+
+              <tr key="f4">
                 <td colSpan="2">
                   <span className="font-receipt font-receipt-medium">
                     DESCUENTO
@@ -212,7 +208,21 @@ class PrintInvoice extends Component {
                   </span>
                 </td>
               </tr>
-              <tr key="f4">
+
+              <tr key="f3">
+                <td colSpan="2">
+                  <span className="font-receipt font-receipt-medium">
+                    ITBIS
+                  </span>
+                </td>
+                <td className="text-right">
+                  <span className="font-receipt font-receipt-medium">
+                    {formatNumber(itbisTotal)}
+                  </span>
+                </td>
+              </tr>
+
+              <tr key="f5">
                 <td colSpan="2">
                   <span className="font-receipt font-receipt-big">
                     <b>TOTAL A PAGAR</b>
@@ -220,7 +230,9 @@ class PrintInvoice extends Component {
                 </td>
                 <td className="text-right">
                   <span className="font-receipt font-receipt-big">
-                    <b>{formatNumber(valorTotal)}</b>
+                    <b>
+                      {formatNumber(valorTotal + itbisTotal - discountTotal)}
+                    </b>
                   </span>
                 </td>
               </tr>
