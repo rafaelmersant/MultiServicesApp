@@ -26,10 +26,10 @@ class Products extends Component {
   };
 
   async componentDidMount() {
-    if (sessionStorage["currentPage"] > 1)
-      this.setState({ currentPage: parseInt(sessionStorage["currentPage"]) });
+    const currentPage = parseInt(sessionStorage["currentPage"] ?? 0);
+    if (currentPage > 1) this.setState({ currentPage: currentPage });
 
-    await this.populateProducts("", parseInt(sessionStorage["currentPage"]));
+    await this.populateProducts("", currentPage);
   }
 
   async populateProducts(query, page) {
@@ -118,7 +118,6 @@ class Products extends Component {
       products: allProducts
     } = this.state;
 
-    let filtered = allProducts;
     // if (searchQuery)
     //   filtered = allProducts.filter(m =>
     //     m.description.toLowerCase().includes(searchQuery.toLocaleLowerCase())

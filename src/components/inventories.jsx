@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import _ from "lodash";
-import Pagination from "./common/pagination";
+import Pagination from "react-js-pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
-import { paginate } from "../utils/paginate";
 import ProductTrackingTable from "./tables/productTrackingTable";
 import { getProductsTrackings } from "../services/inventoryService";
 import { getCurrentUser } from "../services/authService";
@@ -14,27 +13,52 @@ class Inventories extends Component {
     loading: true,
     prodTrackings: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 20,
     searchQuery: "",
+    totalEntries: 0,
+    productSelected: 0,
     invoiceRecords: false,
     sortColumn: { path: "creationDate", order: "desc" }
   };
 
   async componentDidMount() {
-    this.getInventoryRecords(this.state.invoiceRecords);
+    const currentPage = parseFloat(sessionStorage["currentPage"] ?? 0);
+    if (currentPage > 1) this.setState({ currentPage: currentPage });
+
+    await this.getInventoryRecords(0, currentPage, this.state.invoiceRecords);
   }
 
-  async getInventoryRecords(invoiceRecords) {
+  async getInventoryRecords(productId, page, invoiceRecords) {
+    const product = productId === 0 ? "" : productId;
     const companyId = getCurrentUser().companyId;
     const { data: prodTrackings } = await getProductsTrackings(
       companyId,
+      product,
+      page,
       invoiceRecords
     );
-    this.setState({ prodTrackings, loading: false });
+    this.setState({
+      prodTrackings: prodTrackings.results,
+      totalEntries: prodTrackings.count,
+      loading: false
+    });
   }
+
+  fetchData = async page => {
+    if (this.state.productSelected)
+      await this.getInventoryRecords(
+        this.state.productSelected,
+        parseInt(page),
+        this.state.invoiceRecords
+      );
+    else await this.getInventoryRecords(0, page, this.state.invoiceRecords);
+  };
 
   handlePageChange = page => {
     this.setState({ currentPage: page });
+    sessionStorage["currentPage"] = parseInt(page);
+
+    this.fetchData(page);
   };
 
   handleSearch = query => {
@@ -49,7 +73,7 @@ class Inventories extends Component {
     this.setState({ invoiceRecords: !this.state.invoiceRecords });
 
     setTimeout(() => {
-      this.getInventoryRecords(this.state.invoiceRecords);
+      this.fetchData(this.state.page);
     }, 100);
   };
 
@@ -62,23 +86,32 @@ class Inventories extends Component {
       prodTrackings: allProdTrackings
     } = this.state;
 
-    let filtered = allProdTrackings;
-    if (searchQuery)
-      filtered = allProdTrackings.filter(m =>
-        `${m.product.description.toLowerCase()}`.startsWith(
-          searchQuery.toLocaleLowerCase()
-        )
-      );
+    // let filtered = allProdTrackings;
+    // if (searchQuery)
+    //   filtered = allProdTrackings.filter(m =>
+    //     `${m.product.description.toLowerCase()}`.startsWith(
+    //       searchQuery.toLocaleLowerCase()
+    //     )
+    //   );
 
-    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+    // const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-    const prodTrackings = paginate(sorted, currentPage, pageSize);
+    // const prodTrackings = paginate(sorted, currentPage, pageSize);
 
-    return { totalCount: filtered.length, prodTrackings };
+    return {
+      totalCount: this.state.prodTrackings.length,
+      prodTrackings: allProdTrackings
+    };
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
+    const {
+      pageSize,
+      currentPage,
+      sortColumn,
+      searchQuery,
+      totalEntries
+    } = this.state;
     const { user } = this.props;
 
     const { totalCount, prodTrackings } = this.getPagedData();
@@ -133,14 +166,27 @@ class Inventories extends Component {
 
             {!this.state.loading && (
               <div className="row">
-                <Pagination
+                <div>
+                  <Pagination
+                    activePage={currentPage}
+                    itemsCountPerPage={pageSize}
+                    totalItemsCount={totalEntries}
+                    pageRangeDisplayed={5}
+                    onChange={this.handlePageChange.bind(this)}
+                    itemClass="page-item"
+                    linkClass="page-link"
+                  />
+                </div>
+                {/* <Pagination
                   itemsCount={totalCount}
                   pageSize={pageSize}
                   currentPage={currentPage}
                   onPageChange={this.handlePageChange}
-                />
+                /> */}
                 <p className="text-muted ml-3 mt-2">
-                  <em>Mostrando {totalCount} registros</em>
+                  <em>
+                    Mostrando {totalCount} registros de {totalEntries}
+                  </em>
                 </p>
               </div>
             )}

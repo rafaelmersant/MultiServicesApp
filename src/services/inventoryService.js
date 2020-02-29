@@ -26,12 +26,19 @@ export function getProductsTrackingsHeaderById(id) {
   return http.get(`${apiEndpointProdTrackingHeader}/?id=${id}`);
 }
 
-export function getProductsTrackings(companyId, invoicesRecords) {
+export function getProductsTrackings(
+  companyId,
+  productId,
+  page,
+  invoicesRecords
+) {
   if (invoicesRecords) {
-    return http.get(`${apiEndpointProdTracking}/?company=${companyId}`);
+    return http.get(
+      `${apiEndpointProdTracking}/?company=${companyId}&product=${productId}&page=${page}`
+    );
   } else {
     return http.get(
-      `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE`
+      `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE&product=${productId}&page=${page}`
     );
   }
 }
