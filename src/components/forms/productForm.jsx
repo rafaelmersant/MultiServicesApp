@@ -263,7 +263,7 @@ class ProductForm extends Form {
                 {this.renderInput("descriptionLong", "Descripción Larga")}
               </div>
             </div> */}
-            <div className="row">
+            <div className="row mb-2">
               <div className="col">
                 {this.renderInput("measure", "Almacen")}
               </div>
@@ -274,7 +274,7 @@ class ProductForm extends Form {
 
             <PriceCalculation onChange={this.handleChangeCalculation} />
 
-            <div className="row">
+            <div className="row mt-3">
               <div className={_customCol}>
                 <Input
                   type="text"
@@ -282,11 +282,12 @@ class ProductForm extends Form {
                   value={this.state.data.cost}
                   label="Costo"
                   onChange={this.handleChangeCost}
+                  disabled="disabled"
                 />
               </div>
 
               <div className={_customCol}>
-                {this.renderInput("price", "Precio")}
+                {this.renderInput("price", "Precio", "text", "disabled")}
               </div>
               <div
                 className="col-1"

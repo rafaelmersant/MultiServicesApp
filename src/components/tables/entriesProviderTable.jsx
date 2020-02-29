@@ -9,9 +9,7 @@ class EntriesProviderTable extends Component {
     {
       path: "provider.name",
       label: "Proveedor",
-      content: item => (
-        <Link to={`/provider/${item.provider.id}`}>{item.provider.name}</Link>
-      )
+      content: item => <span>{item.provider.name}</span>
     },
     {
       path: "totalAmount",

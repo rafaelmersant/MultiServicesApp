@@ -416,8 +416,6 @@ class InventoryFullForm extends Form {
           {this.state.showDetail && (
             <div className="detail">
               <div className="col pb-3 bg-light">
-                <PriceCalculation onChange={this.handleChangeCalculation} />
-
                 <div className="row">
                   <table style={{ width: "95%" }} className="ml-3">
                     <thead>
@@ -433,16 +431,7 @@ class InventoryFullForm extends Form {
                             label="Producto"
                           />
                         </td>
-                        {/* <td>
-                        <Select
-                          name="typeTracking"
-                          value={this.state.inventory.typeTracking}
-                          label="Tipo"
-                          options={this.state.typeTrackings}
-                          onChange={this.handleChangeInput}
-                          error={null}
-                        />
-                      </td> */}
+
                         <td>
                           <Input
                             type="text"
@@ -475,8 +464,10 @@ class InventoryFullForm extends Form {
                   </table>
                 </div>
 
+                <PriceCalculation onChange={this.handleChangeCalculation} />
+
                 <button
-                  className="btn btn-success pl-5 pr-5"
+                  className="btn btn-success pl-5 pr-5 mt-3"
                   onClick={this.attachNewProduct}
                   disabled={
                     !this.state.inventory.product_id ||

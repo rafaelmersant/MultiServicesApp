@@ -6,6 +6,7 @@ import { paginate } from "../utils/paginate";
 import EntriesProviderTable from "./tables/entriesProviderTable";
 import { getProductsTrackingsHeader } from "../services/inventoryService";
 import { getCurrentUser } from "../services/authService";
+import ExportEntriesProviderToExcel from "./reports/exportEntriesProviderToExcel";
 
 class EntriesProviders extends Component {
   state = {
@@ -62,6 +63,18 @@ class EntriesProviders extends Component {
     return { totalCount: filtered.length, entries };
   };
 
+  mapToExcelView = data => {
+    let result = [];
+
+    data.forEach(item => {
+      result.push({
+        id: item.id
+      });
+    });
+
+    return result;
+  };
+
   render() {
     const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
     const { user } = this.props;
@@ -73,6 +86,12 @@ class EntriesProviders extends Component {
         <div className="row">
           <div className="col margin-top-msg">
             <h2 className="pull-right text-info">Entradas por Proveedor</h2>
+
+            <ExportEntriesProviderToExcel
+              data={this.mapToExcelView(this.state.entries)}
+              sheetName="EntradaProveedores"
+            />
+
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}

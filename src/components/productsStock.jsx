@@ -94,10 +94,12 @@ class ProductsStock extends Component {
         <div className="row">
           <div className="col margin-top-msg">
             <h2 className="pull-right text-info">Reporte de Inventario</h2>
+
             <ExportStockToExcel
               data={this.mapToExcelView(this.state.products)}
               sheetName="Inventario"
             />
+
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}
