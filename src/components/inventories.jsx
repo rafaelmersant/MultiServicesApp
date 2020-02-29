@@ -78,13 +78,7 @@ class Inventories extends Component {
   };
 
   getPagedData = () => {
-    const {
-      pageSize,
-      currentPage,
-      sortColumn,
-      searchQuery,
-      prodTrackings: allProdTrackings
-    } = this.state;
+    const { prodTrackings: allProdTrackings } = this.state;
 
     // let filtered = allProdTrackings;
     // if (searchQuery)
