@@ -18,6 +18,7 @@ import {
   saveProductTracking,
   updateProductStock
 } from "../services/inventoryService";
+import SearchInvoiceBlock from "./common/searchInvoiceBlock";
 
 class Invoices extends Component {
   state = {
@@ -138,26 +139,8 @@ class Invoices extends Component {
                 <h4>Busqueda</h4>
               </div>
             </div>
-            <div className="row">
-              <div className="col">
-                <SearchBox
-                  value={searchQuery}
-                  onChange={this.handleSearch}
-                  placeholder="Factura No."
-                />
-              </div>
-              <div className="col">
-                <SearchCustomer
-                  onSelect={this.handleSelectCustomer}
-                  onFocus={() => this.handleFocusCustomer(false)}
-                  onBlur={() => this.handleFocusCustomer(true)}
-                  hide={this.state.hideSearchCustomer}
-                  value={this.state.searchCustomerText}
-                  companyId={getCurrentUser().companyId}
-                  label=""
-                />
-              </div>
-            </div>
+
+            <SearchInvoiceBlock />
 
             {this.state.loading && (
               <div className="d-flex justify-content-center mb-3">
