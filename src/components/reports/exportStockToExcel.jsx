@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import ReactExport from "react-export-excel";
 
-class ExportStockToExcel extends React.Component {
+class ExportStockToExcel extends Component {
   render() {
     const { sheetName, data } = this.props;
 

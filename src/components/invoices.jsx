@@ -5,6 +5,7 @@ import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
+import SearchCustomer from "./common/searchCustomer";
 import { paginate } from "../utils/paginate";
 import { getCurrentUser } from "../services/authService";
 import {
@@ -24,7 +25,6 @@ class Invoices extends Component {
     invoices: [],
     currentPage: 1,
     pageSize: 10,
-    searchQuery: "",
     sortColumn: { path: "creationDate", order: "desc" }
   };
 
@@ -57,10 +57,6 @@ class Invoices extends Component {
 
   handlePageChange = page => {
     this.setState({ currentPage: page });
-  };
-
-  handleSearch = query => {
-    this.setState({ searchQuery: query, currentPage: 1 });
   };
 
   handleSort = sortColumn => {
@@ -109,17 +105,10 @@ class Invoices extends Component {
       pageSize,
       currentPage,
       sortColumn,
-      searchQuery,
       invoices: allInvoices
     } = this.state;
 
     let filtered = allInvoices;
-    if (searchQuery)
-      filtered = allInvoices.filter(m =>
-        `${m.sequence.toLowerCase()}`.startsWith(
-          searchQuery.toLocaleLowerCase()
-        )
-      );
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
@@ -137,14 +126,38 @@ class Invoices extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <NewButton label="Nueva Factura" to="/invoice/new" />
+          </div>
+        </div>
 
-            <SearchBox
-              value={searchQuery}
-              onChange={this.handleSearch}
-              placeholder="Buscar factura..."
-            />
+        <div className="row">
+          <div className="col margin-top-msg">
+            <div className="row">
+              <div className="col">
+                <h4>Busqueda</h4>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col">
+                <SearchBox
+                  value={searchQuery}
+                  onChange={this.handleSearch}
+                  placeholder="Factura No."
+                />
+              </div>
+              <div className="col">
+                <SearchCustomer
+                  onSelect={this.handleSelectCustomer}
+                  onFocus={() => this.handleFocusCustomer(false)}
+                  onBlur={() => this.handleFocusCustomer(true)}
+                  hide={this.state.hideSearchCustomer}
+                  value={this.state.searchCustomerText}
+                  companyId={getCurrentUser().companyId}
+                  label=""
+                />
+              </div>
+            </div>
 
             {this.state.loading && (
               <div className="d-flex justify-content-center mb-3">

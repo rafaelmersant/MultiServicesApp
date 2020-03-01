@@ -111,28 +111,28 @@ class Products extends Component {
   };
 
   getPagedData = () => {
-    const {
-      pageSize,
-      currentPage,
-      sortColumn,
-      products: allProducts
-    } = this.state;
+    const { products: allProducts, sortColumn } = this.state;
 
-    // if (searchQuery)
-    //   filtered = allProducts.filter(m =>
-    //     m.description.toLowerCase().includes(searchQuery.toLocaleLowerCase())
-    //   );
+    const sorted = _.orderBy(
+      allProducts,
+      [sortColumn.path],
+      [sortColumn.order]
+    );
 
-    //const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
-
-    //const products = paginate(sorted, currentPage, pageSize);
-
-    //return { totalCount: filtered.length, products };
-    return { totalCount: this.state.products.length, allProducts };
+    return {
+      totalCount: this.state.products.length,
+      products: sorted
+    };
   };
 
   render() {
-    const { sortColumn, searchQuery, totalProducts } = this.state;
+    const {
+      sortColumn,
+      searchQuery,
+      totalProducts,
+      pageSize,
+      currentPage
+    } = this.state;
     const user = getCurrentUser();
 
     const { totalCount, products } = this.getPagedData();
@@ -158,7 +158,7 @@ class Products extends Component {
 
             {!this.state.loading && (
               <ProductsTable
-                products={this.state.products}
+                products={products}
                 user={user}
                 sortColumn={sortColumn}
                 onDelete={this.handleDelete}
@@ -169,8 +169,8 @@ class Products extends Component {
               <div className="row">
                 <div>
                   <Pagination
-                    activePage={this.state.currentPage}
-                    itemsCountPerPage={this.state.pageSize}
+                    activePage={currentPage}
+                    itemsCountPerPage={pageSize}
                     totalItemsCount={totalProducts}
                     pageRangeDisplayed={5}
                     onChange={this.handlePageChange.bind(this)}

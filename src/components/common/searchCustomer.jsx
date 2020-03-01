@@ -42,14 +42,13 @@ class SearchCustomer extends Component {
   }
 
   render() {
-    const { onSelect, onFocus, onBlur, hide } = this.props;
+    const { onSelect, onFocus, onBlur, hide, label = "" } = this.props;
     const { customers } = this.state;
 
     return (
       <div>
         <Input
           type="text"
-          label="Cliente"
           id="searchCustomerId"
           name="query"
           className="form-control my-3"
@@ -59,6 +58,7 @@ class SearchCustomer extends Component {
           onFocus={onFocus}
           onBlur={onBlur}
           value={this.state.searchCustomerInput}
+          label={label}
         />
 
         {customers && !hide && (

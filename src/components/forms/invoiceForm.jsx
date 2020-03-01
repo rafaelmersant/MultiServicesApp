@@ -96,7 +96,6 @@ class InvoiceForm extends Form {
       creationDate: new Date().toISOString(),
       createdUser: getCurrentUser().email
     },
-    itbisAmount: 0.18,
     createdUserName: "",
     action: "Nueva Factura",
     hideSearchProduct: false,
@@ -158,7 +157,6 @@ class InvoiceForm extends Form {
 
   updateLine = product => {
     const line = { ...this.state.line };
-    const { itbisAmount: _itbis } = { ...this.state };
 
     const discount = isNaN(parseFloat(line.discount))
       ? 0
@@ -167,9 +165,7 @@ class InvoiceForm extends Form {
     const quantity = Math.round(parseFloat(line.quantity) * 100) / 100;
     const price = Math.round(parseFloat(product.price) * 100) / 100;
     const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
-    //Math.round(parseFloat((price - discount) * _itbis) * 100) / 100;
     const total = Math.round(price * quantity * 100) / 100;
-    //const total = Math.round((price - discount + itbis) * quantity * 100) / 100;
 
     line.quantity = quantity;
     line.product_id = product.id;
@@ -322,13 +318,6 @@ class InvoiceForm extends Form {
           Math.round(parseFloat(item.price) * parseFloat(item.quantity) * 100) /
           100
       });
-
-      // Math.round(
-      //   (parseFloat(item.price) * parseFloat(item.quantity) -
-      //     parseFloat(item.discount) +
-      //     parseFloat(item.itbis)) *
-      //     100
-      // ) / 100
     });
 
     return details;
@@ -695,6 +684,7 @@ class InvoiceForm extends Form {
                     hide={this.state.hideSearchCustomer}
                     value={this.state.searchCustomerText}
                     companyId={getCurrentUser().companyId}
+                    label="Cliente"
                   />
                 </div>
 

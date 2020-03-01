@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import { formatNumber } from "../../utils/custom";
 import Table from "../common/table";
 

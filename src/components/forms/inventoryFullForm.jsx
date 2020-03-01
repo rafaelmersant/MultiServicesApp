@@ -89,13 +89,6 @@ class InventoryFullForm extends Form {
     serverDate: Joi.string()
   };
 
-  // async getProductStock(productId) {
-  //   const { data: stock } = await getProductsStocks(productId);
-
-  //   if (stock.length)
-  //     this.setState({ availableStock: stock[0].quantityAvailable });
-  // }
-
   handleSelectProduct = async product => {
     const handler = e => {
       e.preventDefault();
@@ -111,8 +104,6 @@ class InventoryFullForm extends Form {
     inventory.product_id = product.id;
     inventory.price = product.price;
     inventory.cost = product.cost;
-
-    // this.getProductStock(product.id);
 
     this.setState({
       inventory,
@@ -142,7 +133,8 @@ class InventoryFullForm extends Form {
     const { data: details } = await getProductsTrackingsByHeader(
       this.state.header.id
     );
-    this.setState({ details });
+
+    this.setState({ details: details.results });
   }
 
   async populateHeader() {
@@ -253,12 +245,6 @@ class InventoryFullForm extends Form {
       if (this.state.showDetail) toast.success("Los cambios fueron guardados!");
 
       window.location = `/inventoryFull/${header.id}`;
-
-      // this.setState({
-      //   header,
-      //   showDetail: true,
-      //   buttonAction: "Guardar cambios"
-      // });
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");
@@ -378,7 +364,6 @@ class InventoryFullForm extends Form {
                       id="chkPaid"
                       checked={this.state.data.paid}
                       onChange={this.handleChangePaid}
-                      //disabled={this.state.data.id && this.state.data.paid}
                     />
                     <label className="form-check-label" htmlFor="chkPaid">
                       Pagada

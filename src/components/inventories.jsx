@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import _ from "lodash";
 import Pagination from "react-js-pagination";
-import SearchBox from "./common/searchBox";
+import SearchProduct from "./common/searchProduct";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
 import ProductTrackingTable from "./tables/productTrackingTable";
 import { getProductsTrackings } from "../services/inventoryService";
 import { getCurrentUser } from "../services/authService";
+import { toast } from "react-toastify";
 
 class Inventories extends Component {
   state = {
@@ -14,9 +15,10 @@ class Inventories extends Component {
     prodTrackings: [],
     currentPage: 1,
     pageSize: 20,
-    searchQuery: "",
     totalEntries: 0,
     productSelected: 0,
+    searchProductText: "",
+    hideSearchProduct: true,
     invoiceRecords: false,
     sortColumn: { path: "creationDate", order: "desc" }
   };
@@ -28,7 +30,7 @@ class Inventories extends Component {
     await this.getInventoryRecords(0, currentPage, this.state.invoiceRecords);
   }
 
-  async getInventoryRecords(productId, page, invoiceRecords) {
+  getInventoryRecords = async (productId, page, invoiceRecords) => {
     const product = productId === 0 ? "" : productId;
     const companyId = getCurrentUser().companyId;
     const { data: prodTrackings } = await getProductsTrackings(
@@ -37,18 +39,23 @@ class Inventories extends Component {
       page,
       invoiceRecords
     );
+
     this.setState({
       prodTrackings: prodTrackings.results,
       totalEntries: prodTrackings.count,
-      loading: false
+      loading: false,
+      productSelected: productId,
+      searchProductText: productId === 0 ? "" : this.state.searchProductText
     });
-  }
+
+    if (productId === 0) this.handleFocusProduct(true);
+  };
 
   fetchData = async page => {
     if (this.state.productSelected)
       await this.getInventoryRecords(
         this.state.productSelected,
-        parseInt(page),
+        page,
         this.state.invoiceRecords
       );
     else await this.getInventoryRecords(0, page, this.state.invoiceRecords);
@@ -61,51 +68,62 @@ class Inventories extends Component {
     this.fetchData(page);
   };
 
-  handleSearch = query => {
-    this.setState({ searchQuery: query, currentPage: 1 });
-  };
-
   handleSort = sortColumn => {
     this.setState({ sortColumn });
   };
 
   handleOnChangeInvoiceRecords = event => {
     this.setState({ invoiceRecords: !this.state.invoiceRecords });
+    this.handlePageChange(1);
 
     setTimeout(() => {
-      this.fetchData(this.state.page);
+      this.fetchData(1);
     }, 100);
   };
 
+  handleSelectProduct = async product => {
+    const handler = e => {
+      e.preventDefault();
+    };
+    handler(window.event);
+
+    if (product.id === 0) {
+      toast.error("Lo sentimos, no puede crear un nuevo producto desde aqui.");
+      return false;
+    }
+
+    this.setState({
+      productSelected: product.id,
+      searchProductText: product.description,
+      hideSearchProduct: true
+    });
+
+    this.getInventoryRecords(product.id, 1, this.state.invoiceRecords);
+  };
+
+  handleFocusProduct = value => {
+    setTimeout(() => {
+      this.setState({ hideSearchProduct: value });
+    }, 200);
+  };
+
   getPagedData = () => {
-    const { prodTrackings: allProdTrackings } = this.state;
+    const { prodTrackings: allProdTrackings, sortColumn } = this.state;
 
-    // let filtered = allProdTrackings;
-    // if (searchQuery)
-    //   filtered = allProdTrackings.filter(m =>
-    //     `${m.product.description.toLowerCase()}`.startsWith(
-    //       searchQuery.toLocaleLowerCase()
-    //     )
-    //   );
-
-    // const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
-
-    // const prodTrackings = paginate(sorted, currentPage, pageSize);
+    const sorted = _.orderBy(
+      allProdTrackings,
+      [sortColumn.path],
+      [sortColumn.order]
+    );
 
     return {
       totalCount: this.state.prodTrackings.length,
-      prodTrackings: allProdTrackings
+      prodTrackings: sorted
     };
   };
 
   render() {
-    const {
-      pageSize,
-      currentPage,
-      sortColumn,
-      searchQuery,
-      totalEntries
-    } = this.state;
+    const { pageSize, currentPage, sortColumn, totalEntries } = this.state;
     const { user } = this.props;
 
     const { totalCount, prodTrackings } = this.getPagedData();
@@ -121,11 +139,30 @@ class Inventories extends Component {
             {!this.state.loading && (
               <div className="row">
                 <div className="col">
-                  <SearchBox
-                    value={searchQuery}
-                    onChange={this.handleSearch}
-                    placeholder="Buscar producto..."
+                  <SearchProduct
+                    onSelect={this.handleSelectProduct}
+                    onFocus={() => this.handleFocusProduct(false)}
+                    onBlur={() => this.handleFocusProduct(true)}
+                    hide={this.state.hideSearchProduct}
+                    companyId={getCurrentUser().companyId}
+                    value={this.state.searchProductText}
                   />
+                </div>
+                <div className="col-1">
+                  <a
+                    title="Limpiar filtro de producto"
+                    onClick={() =>
+                      this.getInventoryRecords(0, 1, this.state.invoiceRecords)
+                    }
+                    className="fa fa-ban"
+                    style={{
+                      color: "green",
+                      fontSize: "2.2em",
+                      marginTop: "24px",
+                      marginLeft: "-10px",
+                      cursor: "pointer"
+                    }}
+                  ></a>
                 </div>
 
                 <div className="col mt-4">
@@ -171,12 +208,7 @@ class Inventories extends Component {
                     linkClass="page-link"
                   />
                 </div>
-                {/* <Pagination
-                  itemsCount={totalCount}
-                  pageSize={pageSize}
-                  currentPage={currentPage}
-                  onPageChange={this.handlePageChange}
-                /> */}
+
                 <p className="text-muted ml-3 mt-2">
                   <em>
                     Mostrando {totalCount} registros de {totalEntries}
