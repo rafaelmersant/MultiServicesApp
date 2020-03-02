@@ -32,6 +32,10 @@ class Products extends Component {
     await this.populateProducts("", currentPage);
   }
 
+  componentWillMount() {
+    sessionStorage["currentPage"] = 1;
+  }
+
   async populateProducts(query, page) {
     let products = [];
     const descrp = query

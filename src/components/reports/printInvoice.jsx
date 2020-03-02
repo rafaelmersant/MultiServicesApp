@@ -191,7 +191,7 @@ class PrintInvoice extends Component {
                 </td>
                 <td className="text-right">
                   <span className="font-receipt font-receipt-medium">
-                    {formatNumber(valorTotal)}
+                    {formatNumber(valorTotal - itbisTotal)}
                   </span>
                 </td>
               </tr>
@@ -230,9 +230,7 @@ class PrintInvoice extends Component {
                 </td>
                 <td className="text-right">
                   <span className="font-receipt font-receipt-big">
-                    <b>
-                      {formatNumber(valorTotal + itbisTotal - discountTotal)}
-                    </b>
+                    <b>{formatNumber(valorTotal - discountTotal)}</b>
                   </span>
                 </td>
               </tr>

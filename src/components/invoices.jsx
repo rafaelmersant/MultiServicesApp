@@ -2,10 +2,8 @@ import React, { Component } from "react";
 import _ from "lodash";
 import { toast } from "react-toastify";
 import Pagination from "./common/pagination";
-import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
-import SearchCustomer from "./common/searchCustomer";
 import { paginate } from "../utils/paginate";
 import { getCurrentUser } from "../services/authService";
 import {
@@ -133,17 +131,17 @@ class Invoices extends Component {
         </div>
 
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <div className="row">
               <div className="col">
-                <h4>Busqueda</h4>
+                <h5>Busqueda</h5>
               </div>
             </div>
 
             <SearchInvoiceBlock />
 
             {this.state.loading && (
-              <div className="d-flex justify-content-center mb-3">
+              <div className="d-flex justify-content-center">
                 <Loading />
               </div>
             )}

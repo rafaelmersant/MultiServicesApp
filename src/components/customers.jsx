@@ -28,6 +28,10 @@ class Customers extends Component {
     this.setState({ customers, loading: false });
   }
 
+  componentWillMount() {
+    sessionStorage["currentPage"] = 1;
+  }
+
   handleDelete = async customer => {
     const { data: found } = await getCustomerInInvoice(
       getCurrentUser().companyId,

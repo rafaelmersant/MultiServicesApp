@@ -29,6 +29,10 @@ class ProductsCategories extends Component {
     this.setState({ categories });
   }
 
+  componentWillMount() {
+    sessionStorage["currentPage"] = 1;
+  }
+
   handleDelete = async category => {
     const { data: found } = await getCategoryInProduct(
       getCurrentUser().companyId,

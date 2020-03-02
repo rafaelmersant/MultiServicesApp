@@ -30,6 +30,10 @@ class Inventories extends Component {
     await this.getInventoryRecords(0, currentPage, this.state.invoiceRecords);
   }
 
+  componentWillMount() {
+    sessionStorage["currentPage"] = 1;
+  }
+
   getInventoryRecords = async (productId, page, invoiceRecords) => {
     const product = productId === 0 ? "" : productId;
     const companyId = getCurrentUser().companyId;
@@ -148,22 +152,28 @@ class Inventories extends Component {
                     value={this.state.searchProductText}
                   />
                 </div>
-                <div className="col-1">
-                  <a
-                    title="Limpiar filtro de producto"
-                    onClick={() =>
-                      this.getInventoryRecords(0, 1, this.state.invoiceRecords)
-                    }
-                    className="fa fa-ban"
-                    style={{
-                      color: "green",
-                      fontSize: "2.2em",
-                      marginTop: "24px",
-                      marginLeft: "-10px",
-                      cursor: "pointer"
-                    }}
-                  ></a>
-                </div>
+                {this.state.productSelected > 0 && (
+                  <div className="col-1">
+                    <a
+                      title="Limpiar filtro de producto"
+                      onClick={() =>
+                        this.getInventoryRecords(
+                          0,
+                          1,
+                          this.state.invoiceRecords
+                        )
+                      }
+                      className="fa fa-ban"
+                      style={{
+                        color: "green",
+                        fontSize: "2.2em",
+                        marginTop: "24px",
+                        marginLeft: "-10px",
+                        cursor: "pointer"
+                      }}
+                    ></a>
+                  </div>
+                )}
 
                 <div className="col mt-4">
                   <input

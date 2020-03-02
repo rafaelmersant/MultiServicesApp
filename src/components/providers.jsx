@@ -29,6 +29,10 @@ class Providers extends Component {
     this.setState({ providers, loading: false });
   }
 
+  componentWillMount() {
+    sessionStorage["currentPage"] = 1;
+  }
+
   handleDelete = async provider => {
     const { data: found } = await getProviderInInventory(
       getCurrentUser().companyId,
