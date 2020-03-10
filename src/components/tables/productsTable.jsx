@@ -23,6 +23,13 @@ class ProductsTable extends Component {
       }
     },
     {
+      path: "quantity",
+      label: "Cantidad",
+      content: item => (
+        <div className="text-right">{formatNumber(item.quantity ?? 0)}</div>
+      )
+    },
+    {
       path: "price",
       label: "Precio",
       content: item => (
