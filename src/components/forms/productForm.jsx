@@ -350,9 +350,7 @@ class ProductForm extends Form {
                   ></button>
                 </div>
               )}
-              <div className="col-2">
-                {this.renderInput("minimumStock", "Mínimo en Inventario")}
-              </div>
+
               <div className="col-3">
                 <Input
                   type="text"
@@ -361,6 +359,9 @@ class ProductForm extends Form {
                   label="Cantidad para inventario"
                   onChange={this.handleChangeQuantity}
                 />
+              </div>
+              <div className="col-2">
+                {this.renderInput("minimumStock", "Mínimo en Inv.")}
               </div>
             </div>
 
