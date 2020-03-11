@@ -33,6 +33,7 @@ class ProductForm extends Form {
       model: "",
       category_id: "",
       barcode: "",
+      minimumStock: 0,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString()
@@ -62,6 +63,7 @@ class ProductForm extends Form {
     model: Joi.optional(),
     category_id: Joi.number().label("Categoria"),
     barcode: Joi.optional(),
+    minimumStock: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
     creationDate: Joi.string()
@@ -197,6 +199,7 @@ class ProductForm extends Form {
       model: product[0].model ? product[0].model : "",
       category_id: product[0].category.id,
       barcode: product[0].barcode ? product[0].barcode : "",
+      minimumStock: product[0].minimumStock ? product[0].minimumStock : "",
       company_id: product[0].company.id,
       createdUser: product[0].createdUser
         ? product[0].createdUser
@@ -347,7 +350,10 @@ class ProductForm extends Form {
                   ></button>
                 </div>
               )}
-              <div className="col-5">
+              <div className="col-2">
+                {this.renderInput("minimumStock", "Mínimo en Inventario")}
+              </div>
+              <div className="col-3">
                 <Input
                   type="text"
                   name="quantity"
