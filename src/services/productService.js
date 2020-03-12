@@ -7,20 +7,33 @@ function productUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getProducts(companyId, currentPage) {
+export function getProducts(companyId, currentPage, sortColumn, sortOrder) {
+  const order = sortOrder === "desc" ? "-" : "";
+  console.log(
+    `${apiEndpoint}/?company=${companyId}&ordering=${order}${sortColumn}&page=${currentPage}`
+  );
   if (currentPage)
     return http.get(
-      `${apiEndpoint}/?company=${companyId}&ordering=description&page=${currentPage}`
+      `${apiEndpoint}/?company=${companyId}&ordering=${order}${sortColumn}&page=${currentPage}`
     );
 
-  return http.get(`${apiEndpoint}/?company=${companyId}&ordering=description`);
+  return http.get(
+    `${apiEndpoint}/?company=${companyId}&ordering=${order}${sortColumn}`
+  );
 }
 
-export function getProductsByDescription(companyId, description, currentPage) {
+export function getProductsByDescription(
+  companyId,
+  description,
+  currentPage,
+  sortColumn,
+  sortOrder
+) {
+  const order = sortOrder === "desc" ? "-" : "";
   const page = currentPage ? currentPage : 1;
 
   return http.get(
-    `${apiEndpoint}/?company=${companyId}&search=${description}&ordering=description&page=${page}`
+    `${apiEndpoint}/?company=${companyId}&search=${description}&ordering=${order}${sortColumn}&page=${page}`
   );
 }
 

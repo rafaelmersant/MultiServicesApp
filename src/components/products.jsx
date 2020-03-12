@@ -22,17 +22,22 @@ class Products extends Component {
     pageSize: 10,
     searchQuery: "",
     totalProducts: 0,
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "description", order: "asc" }
   };
 
   async componentDidMount() {
     const currentPage = parseInt(sessionStorage["currentPage"] ?? 0);
     if (currentPage > 1) this.setState({ currentPage: currentPage });
 
-    await this.populateProducts("", currentPage);
+    await this.populateProducts(
+      "",
+      currentPage,
+      this.state.sortColumn.path,
+      this.state.sortColumn.order
+    );
   }
 
-  async populateProducts(query, page) {
+  async populateProducts(query, page, sortColumn, sortOrder) {
     let products = [];
     const descrp = query
       .toUpperCase()
@@ -42,14 +47,18 @@ class Products extends Component {
     if (query === "") {
       const { data: prods } = await getProducts(
         getCurrentUser().companyId,
-        page
+        page,
+        sortColumn,
+        sortOrder
       );
       products = prods;
     } else {
       const { data: prods } = await getProductsByDescription(
         getCurrentUser().companyId,
         descrp,
-        page
+        page,
+        sortColumn,
+        sortOrder
       );
       products = prods;
     }
@@ -106,27 +115,20 @@ class Products extends Component {
     this.populateProducts(query);
   };
 
-  handleSort = sortColumn => {
+  handleSort = async sortColumn => {
     this.setState({ sortColumn });
-  };
 
-  getPagedData = () => {
-    const { products: allProducts, sortColumn } = this.state;
-
-    const sorted = _.orderBy(
-      allProducts,
-      [sortColumn.path],
-      [sortColumn.order]
+    await this.populateProducts(
+      this.state.searchQuery,
+      this.state.currentPage,
+      sortColumn.path,
+      sortColumn.order
     );
-
-    return {
-      totalCount: this.state.products.length,
-      products: sorted
-    };
   };
 
   render() {
     const {
+      products,
       sortColumn,
       searchQuery,
       totalProducts,
@@ -134,8 +136,6 @@ class Products extends Component {
       currentPage
     } = this.state;
     const user = getCurrentUser();
-
-    const { totalCount, products } = this.getPagedData();
 
     return (
       <div className="container">
@@ -180,7 +180,7 @@ class Products extends Component {
                 </div>
                 <p className="text-muted ml-3 mt-2">
                   <em>
-                    Mostrando {totalCount} productos de {totalProducts}
+                    Mostrando {products.length} productos de {totalProducts}
                   </em>
                 </p>
               </div>
