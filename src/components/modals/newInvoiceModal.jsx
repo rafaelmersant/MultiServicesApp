@@ -22,7 +22,7 @@ class NewInvoiceModal extends Component {
           <div className="modal-content">
             <div className="center">
               <button
-                className="btn btn-warning w-100 pb-5 pt-5"
+                className="btn btn-success w-100 pb-5 pt-5"
                 onClick={this.handleClosePopUp}
               >
                 <h1>Nueva Factura</h1>

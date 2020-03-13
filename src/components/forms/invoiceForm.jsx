@@ -879,7 +879,7 @@ class InvoiceForm extends Form {
           </NavLink>
 
           <button
-            className="btn btn-warning mb-3 pull-right"
+            className="btn btn-success mb-3 pull-right"
             onClick={this.newInvoice}
           >
             Nueva Factura

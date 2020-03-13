@@ -9,16 +9,16 @@ function productUrl(id) {
 
 export function getProducts(companyId, currentPage, sortColumn, sortOrder) {
   const order = sortOrder === "desc" ? "-" : "";
-  console.log(
-    `${apiEndpoint}/?company=${companyId}&ordering=${order}${sortColumn}&page=${currentPage}`
-  );
+  const sort = sortColumn ? sortColumn : "description";
+  const page = currentPage ? currentPage : 1;
+
   if (currentPage)
     return http.get(
-      `${apiEndpoint}/?company=${companyId}&ordering=${order}${sortColumn}&page=${currentPage}`
+      `${apiEndpoint}/?company=${companyId}&ordering=${order}${sort}&page=${page}`
     );
 
   return http.get(
-    `${apiEndpoint}/?company=${companyId}&ordering=${order}${sortColumn}`
+    `${apiEndpoint}/?company=${companyId}&ordering=${order}${sort}`
   );
 }
 
@@ -30,10 +30,11 @@ export function getProductsByDescription(
   sortOrder
 ) {
   const order = sortOrder === "desc" ? "-" : "";
+  const sort = sortColumn ? sortColumn : "description";
   const page = currentPage ? currentPage : 1;
 
   return http.get(
-    `${apiEndpoint}/?company=${companyId}&search=${description}&ordering=${order}${sortColumn}&page=${page}`
+    `${apiEndpoint}/?company=${companyId}&search=${description}&ordering=${order}${sort}&page=${page}`
   );
 }
 

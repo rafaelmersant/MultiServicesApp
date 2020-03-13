@@ -323,7 +323,7 @@ class InventoryFullForm extends Form {
     return (
       <React.Fragment>
         <div className="pull-right w-50">
-          <button className="btn btn-warning mb-3" onClick={this.newEntry}>
+          <button className="btn btn-success mb-3" onClick={this.newEntry}>
             Nueva Entrada
           </button>
         </div>

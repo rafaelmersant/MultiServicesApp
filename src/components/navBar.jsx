@@ -12,8 +12,8 @@ const NavBar = ({ user }) => {
         </span> */}
 
         <img
-          width="170px"
-          src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
+          width="100px"
+          src={process.env.PUBLIC_URL + "/images/fanith.png"}
           alt="FERRINMAS"
         />
       </NavLink>
