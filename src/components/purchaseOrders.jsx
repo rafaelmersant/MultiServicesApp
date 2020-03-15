@@ -2,93 +2,77 @@ import React, { Component } from "react";
 import { toast } from "react-toastify";
 import Pagination from "react-js-pagination";
 import SearchBox from "./common/searchBox";
-import NewButton from "./common/newButton";
 import Loading from "./common/loading";
-import {
-  getProducts,
-  deleteProduct,
-  getProductsByDescription
-} from "../services/productService";
+import PurchaseOrdersTable from "./tables/purchaseOrdersTable";
 import { getCurrentUser } from "../services/authService";
-import { getProductInInvoice } from "../services/invoiceServices";
-import ProductsTable from "./tables/productsTable";
+import {
+  getPurchaseOrder,
+  savePurchaseOrder
+} from "../services/productService";
 
-class Products extends Component {
+class PurchaseOrders extends Component {
   state = {
     loading: true,
-    products: [],
+    orders: [],
     currentPage: 1,
     pageSize: 10,
     searchQuery: "",
-    totalProducts: 0,
-    sortColumn: { path: "description", order: "asc" }
+    totalOrders: 0,
+    sortColumn: { path: "creationDate", order: "desc" }
   };
 
   async componentDidMount() {
     const currentPage = parseInt(sessionStorage["currentPage"] ?? 0);
     if (currentPage > 1) this.setState({ currentPage: currentPage });
 
-    await this.populateProducts("", currentPage, this.state.sortColumn);
+    await this.populateOrders("", currentPage, this.state.sortColumn);
   }
 
-  async populateProducts(query, page, sortColumn) {
-    let products = [];
-    const descrp = query
+  async populateOrders(query, page, sortColumn) {
+    const product = query
       .toUpperCase()
       .split(" ")
       .join("%20");
 
-    if (query === "") {
-      const { data: prods } = await getProducts(
-        getCurrentUser().companyId,
-        page,
-        sortColumn
-      );
-      products = prods;
-    } else {
-      const { data: prods } = await getProductsByDescription(
-        getCurrentUser().companyId,
-        descrp,
-        page,
-        sortColumn
-      );
-      products = prods;
-    }
+    const { data: orders } = await getPurchaseOrder(
+      getCurrentUser().companyId,
+      page,
+      product,
+      sortColumn
+    );
 
     this.setState({
-      products: products.results,
-      totalProducts: products.count,
+      orders: orders.results,
+      totalOrders: orders.count,
       loading: false
     });
-
-    this.forceUpdate();
   }
 
-  handleDelete = async product => {
-    const { data: found } = await getProductInInvoice(
-      getCurrentUser().companyId,
-      product.id
-    );
-    if (found.length) {
-      toast.error("No puede eliminar un producto que se ha facturado.");
-      return false;
-    }
-
+  handleMarkAsComplete = async item => {
     const answer = window.confirm(
-      "Esta seguro de eliminar este producto? \nNo podrá deshacer esta acción"
+      "Esta seguro que desea marcar como completado?"
     );
     if (answer) {
-      const originalProducts = this.state.products;
-      const products = this.state.products.filter(m => m.id !== product.id);
-      this.setState({ products });
-
       try {
-        await deleteProduct(product.id);
+        const _item = {
+          id: item.id,
+          product_id: item.product.id,
+          quantity: item.quantity,
+          company_id: item.company.id,
+          creationDate: new Date(item.creationDate),
+          pending: false
+        };
+
+        await savePurchaseOrder(_item);
+
+        await this.populateOrders(
+          this.state.searchQuery,
+          this.state.currentPage,
+          this.state.sortColumn
+        );
       } catch (ex) {
         if (ex.response && ex.response.status === 404)
-          toast.error("Este producto ya fue eliminado");
-
-        this.setState({ products: originalProducts });
+          toast.error("Esta orden ya fue marcada como completada.");
       }
     }
   };
@@ -98,19 +82,23 @@ class Products extends Component {
     sessionStorage["currentPage"] = parseInt(page);
 
     if (this.state.searchQuery)
-      await this.populateProducts(this.state.searchQuery, parseInt(page));
-    else await this.populateProducts("", parseInt(page));
+      await this.populateOrders(
+        this.state.searchQuery,
+        parseInt(page),
+        this.state.sortColumn
+      );
+    else await this.populateOrders("", parseInt(page), this.sortColumn);
   };
 
   handleSearch = query => {
     this.setState({ searchQuery: query, currentPage: 1 });
-    this.populateProducts(query, this.state.currentPage, this.state.sortColumn);
+    this.populateOrders(query);
   };
 
   handleSort = async sortColumn => {
     this.setState({ sortColumn });
 
-    await this.populateProducts(
+    await this.populateOrders(
       this.state.searchQuery,
       this.state.currentPage,
       sortColumn
@@ -119,10 +107,10 @@ class Products extends Component {
 
   render() {
     const {
-      products,
+      orders,
       sortColumn,
       searchQuery,
-      totalProducts,
+      totalOrders,
       pageSize,
       currentPage
     } = this.state;
@@ -132,10 +120,8 @@ class Products extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <h5 className="pull-left text-info mt-2">Listado de Productos</h5>
-            {user && (user.role === "Admin" || user.role === "Owner") && (
-              <NewButton label="Nuevo Producto" to="/product/new" />
-            )}
+            <h5 className="pull-left text-info mt-2">Ordenes de Compra</h5>
+
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}
@@ -148,11 +134,11 @@ class Products extends Component {
             )}
 
             {!this.state.loading && (
-              <ProductsTable
-                products={products}
+              <PurchaseOrdersTable
+                orders={orders}
                 user={user}
                 sortColumn={sortColumn}
-                onDelete={this.handleDelete}
+                onMarkAsComplete={this.handleMarkAsComplete}
                 onSort={this.handleSort}
               />
             )}
@@ -162,7 +148,7 @@ class Products extends Component {
                   <Pagination
                     activePage={currentPage}
                     itemsCountPerPage={pageSize}
-                    totalItemsCount={totalProducts}
+                    totalItemsCount={totalOrders}
                     pageRangeDisplayed={5}
                     onChange={this.handlePageChange.bind(this)}
                     itemClass="page-item"
@@ -171,7 +157,7 @@ class Products extends Component {
                 </div>
                 <p className="text-muted ml-3 mt-2">
                   <em>
-                    Mostrando {products.length} productos de {totalProducts}
+                    Mostrando {orders.length} ordenes de {totalOrders}
                   </em>
                 </p>
               </div>
@@ -183,4 +169,4 @@ class Products extends Component {
   }
 }
 
-export default Products;
+export default PurchaseOrders;

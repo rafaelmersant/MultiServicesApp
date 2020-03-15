@@ -2,23 +2,25 @@ import http from "./httpService";
 import { apiUrl } from "../config.json";
 
 const apiEndpoint = `${apiUrl}/products`;
+const apiEndpointPurchaseOrder = `${apiUrl}/purchaseOrders`;
 
 function productUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getProducts(companyId, currentPage, sortColumn, sortOrder) {
-  const order = sortOrder === "desc" ? "-" : "";
-  const sort = sortColumn ? sortColumn : "description";
+export function getProducts(companyId, currentPage, sortColumn) {
+  const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+  const column =
+    sortColumn && sortColumn.path ? sortColumn.path : "description";
   const page = currentPage ? currentPage : 1;
 
   if (currentPage)
     return http.get(
-      `${apiEndpoint}/?company=${companyId}&ordering=${order}${sort}&page=${page}`
+      `${apiEndpoint}/?company=${companyId}&ordering=${order}${column}&page=${page}`
     );
 
   return http.get(
-    `${apiEndpoint}/?company=${companyId}&ordering=${order}${sort}`
+    `${apiEndpoint}/?company=${companyId}&ordering=${order}${column}`
   );
 }
 
@@ -26,15 +28,15 @@ export function getProductsByDescription(
   companyId,
   description,
   currentPage,
-  sortColumn,
-  sortOrder
+  sortColumn
 ) {
-  const order = sortOrder === "desc" ? "-" : "";
-  const sort = sortColumn ? sortColumn : "description";
+  const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+  const column =
+    sortColumn && sortColumn.path ? sortColumn.path : "description";
   const page = currentPage ? currentPage : 1;
 
   return http.get(
-    `${apiEndpoint}/?company=${companyId}&search=${description}&ordering=${order}${sort}&page=${page}`
+    `${apiEndpoint}/?company=${companyId}&search=${description}&ordering=${order}${column}&page=${page}`
   );
 }
 
@@ -66,4 +68,43 @@ export function saveProduct(product) {
 
 export function deleteProduct(productId) {
   return http.delete(productUrl(productId));
+}
+
+//Purchase Order
+export function getPurchaseOrder(
+  companyId,
+  currentPage,
+  product,
+  sortColumn,
+  pending = true
+) {
+  const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+  const column =
+    sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
+  const page = currentPage ? currentPage : 1;
+
+  if (product)
+    return http.get(
+      `${apiEndpointPurchaseOrder}/?search=${product}&company=${companyId}&pending=${pending}&ordering=${order}${column}&page=${page}`
+    );
+
+  return http.get(
+    `${apiEndpointPurchaseOrder}/?company=${companyId}&pending=${pending}&ordering=${order}${column}&page=${page}`
+  );
+}
+
+export function getPurchaseOrderByProduct(companyId, productId) {
+  return http.get(
+    `${apiEndpointPurchaseOrder}/?product=${productId}&company=${companyId}&pending=true`
+  );
+}
+
+export function savePurchaseOrder(order) {
+  if (order.id) {
+    const body = { ...order };
+    delete body.id;
+    return http.put(`${apiEndpointPurchaseOrder}/${order.id}`, body);
+  }
+
+  return http.post(`${apiEndpointPurchaseOrder}/`, order);
 }

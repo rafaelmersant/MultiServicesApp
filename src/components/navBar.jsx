@@ -136,6 +136,12 @@ const NavBar = ({ user }) => {
                   >
                     Entradas por Proveedor
                   </NavLink>
+                  <NavLink
+                    className="dropdown-item"
+                    to="/reports/purchaseOrders"
+                  >
+                    Ordenes de Compra
+                  </NavLink>
                 </div>
               </li>
             </React.Fragment>

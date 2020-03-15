@@ -1,6 +1,7 @@
 import http from "./httpService";
 import { getCurrentUser } from "./authService";
 import { apiUrl } from "../config.json";
+import { getPurchaseOrderByProduct, savePurchaseOrder } from "./productService";
 
 const apiEndpointProdTrackingHeader = `${apiUrl}/productsTrackingsHeader`;
 const apiEndpointProdTracking = `${apiUrl}/productsTrackings`;
@@ -84,7 +85,7 @@ export function saveProductTrackingHeader(entry) {
 
 export function saveProductTracking(entry) {
   const tracking = { ...entry };
-  console.log("tracking", tracking);
+
   if (tracking.typeTracking === "S") tracking.quantity = tracking.quantity * -1;
 
   if (entry.id) {
@@ -144,6 +145,23 @@ export async function updateProductStock(inventory) {
 
     stock.id = productStock[0].id;
     stock.quantityAvailable = newQuantity;
+
+    if (productStock[0].product.minimumStock > newQuantity) {
+      const { data: order } = await getPurchaseOrderByProduct(
+        productStock[0].product.company.id,
+        productStock[0].product.id
+      );
+
+      if (!order.count) {
+        await savePurchaseOrder({
+          id: 0,
+          product_id: productStock[0].product.id,
+          quantity: newQuantity,
+          company_id: getCurrentUser().companyId,
+          creationDate: new Date().toISOString()
+        });
+      }
+    }
 
     console.log("Updating Stock START...");
     console.log("Tracking possible issue");

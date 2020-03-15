@@ -117,7 +117,7 @@ class Invoices extends Component {
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
+    const { pageSize, currentPage, sortColumn } = this.state;
     const { user } = this.props;
 
     const { totalCount, invoices } = this.getPagedData();

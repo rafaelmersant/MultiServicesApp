@@ -111,6 +111,10 @@ class Inventories extends Component {
     }, 200);
   };
 
+  handleCleanProduct = () => {
+    this.getInventoryRecords(0, 1, this.state.invoiceRecords);
+  };
+
   getPagedData = () => {
     const { prodTrackings: allProdTrackings, sortColumn } = this.state;
 
@@ -154,15 +158,9 @@ class Inventories extends Component {
                 </div>
                 {this.state.productSelected > 0 && (
                   <div className="col-1">
-                    <a
+                    <span
                       title="Limpiar filtro de producto"
-                      onClick={() =>
-                        this.getInventoryRecords(
-                          0,
-                          1,
-                          this.state.invoiceRecords
-                        )
-                      }
+                      onClick={this.handleCleanProduct}
                       className="fa fa-ban"
                       style={{
                         color: "green",
@@ -171,7 +169,7 @@ class Inventories extends Component {
                         marginLeft: "-10px",
                         cursor: "pointer"
                       }}
-                    ></a>
+                    ></span>
                   </div>
                 )}
 
