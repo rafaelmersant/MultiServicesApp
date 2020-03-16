@@ -35,7 +35,7 @@ class Invoices extends Component {
     await this.populateInvoices();
   }
 
-  async populateInvoices(_sortColumn) {
+  async populateInvoices(_sortColumn, _currentPage) {
     const companyId = getCurrentUser().companyId;
     const { invoiceNo, customerId, paymentMethod } = {
       ...this.state.searchParams
@@ -43,12 +43,14 @@ class Invoices extends Component {
     const { currentPage, sortColumn } = { ...this.state };
 
     _sortColumn = _sortColumn ? _sortColumn : sortColumn;
+    _currentPage = _currentPage ? _currentPage : currentPage;
+
     const { data: invoices } = await getInvoicesHeader(
       companyId,
       invoiceNo,
       customerId,
       paymentMethod,
-      currentPage,
+      _currentPage,
       _sortColumn
     );
 
@@ -80,7 +82,7 @@ class Invoices extends Component {
     this.setState({ currentPage: page });
     sessionStorage["currentPage"] = parseInt(page);
 
-    await this.populateInvoices();
+    await this.populateInvoices(null, page);
   };
 
   handleSort = async sortColumn => {
