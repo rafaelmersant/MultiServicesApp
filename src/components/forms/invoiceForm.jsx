@@ -236,10 +236,11 @@ class InvoiceForm extends Form {
       const sequence = this.props.match.params.id;
       if (sequence === "new") return;
 
-      const { data: invoiceHeader } = await getInvoiceHeader(
+      const { data: invoice } = await getInvoiceHeader(
         getCurrentUser().companyId,
         sequence
       );
+      const invoiceHeader = invoice.results;
 
       const { data: invoiceDetail } = await getInvoiceDetail(
         invoiceHeader[0].id
@@ -265,13 +266,13 @@ class InvoiceForm extends Form {
       this.forceUpdate();
 
       if (sessionStorage["printInvoice"] === "y") {
-        this.printButton.click();
         sessionStorage["printInvoice"] = "";
+        this.printButton.click();
       }
 
       if (sessionStorage["newInvoice"] === "y") {
-        this.raiseNewInvoiceModal.click();
         sessionStorage["newInvoice"] = null;
+        this.raiseNewInvoiceModal.click();
       }
     } catch (ex) {
       sessionStorage["newInvoice"] = null;

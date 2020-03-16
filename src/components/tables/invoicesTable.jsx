@@ -90,8 +90,7 @@ class InvoicesTable extends Component {
     const user = auth.getCurrentUser().email;
     const role = auth.getCurrentUser().role;
 
-    if (user && (role === "Admin" || role === "Owner"))
-      this.columns.push(this.deleteColumn);
+    if (user && role === "ALLOW") this.columns.push(this.deleteColumn);
   }
 
   render() {
