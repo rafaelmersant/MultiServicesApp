@@ -38,30 +38,35 @@ class Products extends Component {
       .split(" ")
       .join("%20");
 
-    if (query === "") {
-      const { data: prods } = await getProducts(
-        getCurrentUser().companyId,
-        page,
-        sortColumn
-      );
-      products = prods;
-    } else {
-      const { data: prods } = await getProductsByDescription(
-        getCurrentUser().companyId,
-        descrp,
-        page,
-        sortColumn
-      );
-      products = prods;
+    try {
+      if (query === "") {
+        const { data: prods } = await getProducts(
+          getCurrentUser().companyId,
+          page,
+          sortColumn
+        );
+        products = prods;
+      } else {
+        const { data: prods } = await getProductsByDescription(
+          getCurrentUser().companyId,
+          descrp,
+          page,
+          sortColumn
+        );
+        products = prods;
+      }
+
+      this.setState({
+        products: products.results,
+        totalProducts: products.count,
+        loading: false
+      });
+
+      this.forceUpdate();
+    } catch (ex) {
+      sessionStorage["currentPage"] = 1;
+      console.log(ex);
     }
-
-    this.setState({
-      products: products.results,
-      totalProducts: products.count,
-      loading: false
-    });
-
-    this.forceUpdate();
   }
 
   handleDelete = async product => {
@@ -131,7 +136,7 @@ class Products extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h5 className="pull-left text-info mt-2">Listado de Productos</h5>
             {user && (user.role === "Admin" || user.role === "Owner") && (
               <NewButton label="Nuevo Producto" to="/product/new" />

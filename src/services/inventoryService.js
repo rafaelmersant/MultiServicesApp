@@ -19,8 +19,20 @@ function productsStockUrl(id) {
   return `${apiEndpointProdStock}/${id}`;
 }
 
-export function getProductsTrackingsHeader(companyId) {
-  return http.get(`${apiEndpointProdTrackingHeader}/?company=${companyId}`);
+export function getProductsTrackingsHeader(
+  companyId,
+  currentPage,
+  sortColumn,
+  providerName
+) {
+  const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+  const column =
+    sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
+  const page = currentPage ? currentPage : 1;
+
+  return http.get(
+    `${apiEndpointProdTrackingHeader}/?company=${companyId}&ordering=${order}${column}&page=${page}&provider_name=${providerName}`
+  );
 }
 
 export function getProductsTrackingsHeaderById(id) {
@@ -30,16 +42,22 @@ export function getProductsTrackingsHeaderById(id) {
 export function getProductsTrackings(
   companyId,
   productId,
-  page,
+  currentPage,
+  sortColumn,
   invoicesRecords
 ) {
+  const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+  const column =
+    sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
+  const page = currentPage ? currentPage : 1;
+
   if (invoicesRecords) {
     return http.get(
-      `${apiEndpointProdTracking}/?company=${companyId}&product=${productId}&page=${page}`
+      `${apiEndpointProdTracking}/?company=${companyId}&product=${productId}&ordering=${order}${column}&page=${page}`
     );
   } else {
     return http.get(
-      `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE&product=${productId}&page=${page}`
+      `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE&product=${productId}&ordering=${order}${column}&page=${page}`
     );
   }
 }

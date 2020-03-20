@@ -81,28 +81,31 @@ const NavBar = ({ user }) => {
                 </NavLink>
               </li>
 
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/productsCategories">
-                  | Categorias
+              <li className="nav-item dropdown">
+                <NavLink
+                  className="clickable text-secondary nav-link dropdown-toggle"
+                  id="navbarDropdown"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  to=""
+                >
+                  | Mantenimiento
                 </NavLink>
-              </li>
-
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/customers">
-                  | Clientes
-                </NavLink>
-              </li>
-
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/providers">
-                  | Proveedores
-                </NavLink>
-              </li>
-
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/ncf">
-                  | NCF
-                </NavLink>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <NavLink className="dropdown-item" to="/productsCategories">
+                    Categorias
+                  </NavLink>
+                  <NavLink className="dropdown-item" to="/customers">
+                    Clientes
+                  </NavLink>
+                  <NavLink className="dropdown-item" to="/providers">
+                    Proveedores
+                  </NavLink>
+                  <NavLink className="dropdown-item" to="/ncf">
+                    NCF
+                  </NavLink>
+                </div>
               </li>
 
               <li className="nav-item dropdown">

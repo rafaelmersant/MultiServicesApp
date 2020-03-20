@@ -22,7 +22,21 @@ class Invoices606 extends Component {
 
   async populateInvoices() {
     const companyId = getCurrentUser().companyId;
-    const { data: invoices } = await getInvoicesHeader(companyId);
+    const invoiceNo = null;
+    const customerId = null;
+    const paymentMethod = "ALL";
+
+    let { data: invoices } = await getInvoicesHeader(
+      companyId,
+      invoiceNo,
+      customerId,
+      paymentMethod,
+      this.state.currentPage,
+      this.state.sortColumn
+    );
+
+    invoices = invoices.results;
+
     this.setState({ invoices });
   }
 
@@ -69,7 +83,7 @@ class Invoices606 extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h2 className="pull-right text-info">Reporte 606</h2>
             <SearchBox
               value={searchQuery}

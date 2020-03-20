@@ -79,7 +79,7 @@ class NCF extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h5 className="pull-left text-info mt-2">
               Registros de Secuencias NCF
             </h5>

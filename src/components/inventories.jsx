@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import _ from "lodash";
 import Pagination from "react-js-pagination";
 import SearchProduct from "./common/searchProduct";
 import NewButton from "./common/newButton";
@@ -24,23 +23,27 @@ class Inventories extends Component {
   };
 
   async componentDidMount() {
-    const currentPage = parseFloat(sessionStorage["currentPage"] ?? 0);
-    if (currentPage > 1) this.setState({ currentPage: currentPage });
+    const { productSelected: product, invoiceRecords, sortColumn } = {
+      ...this.state
+    };
 
-    await this.getInventoryRecords(0, currentPage, this.state.invoiceRecords);
+    await this.getInventoryRecords(
+      product,
+      this.state.currentPage,
+      sortColumn,
+      invoiceRecords
+    );
   }
 
-  componentWillMount() {
-    sessionStorage["currentPage"] = 1;
-  }
-
-  getInventoryRecords = async (productId, page, invoiceRecords) => {
+  getInventoryRecords = async (productId, page, sortColumn, invoiceRecords) => {
     const product = productId === 0 ? "" : productId;
     const companyId = getCurrentUser().companyId;
+
     const { data: prodTrackings } = await getProductsTrackings(
       companyId,
       product,
       page,
+      sortColumn,
       invoiceRecords
     );
 
@@ -55,33 +58,42 @@ class Inventories extends Component {
     if (productId === 0) this.handleFocusProduct(true);
   };
 
-  fetchData = async page => {
-    if (this.state.productSelected)
-      await this.getInventoryRecords(
-        this.state.productSelected,
-        page,
-        this.state.invoiceRecords
-      );
-    else await this.getInventoryRecords(0, page, this.state.invoiceRecords);
-  };
-
-  handlePageChange = page => {
+  handlePageChange = async page => {
     this.setState({ currentPage: page });
-    sessionStorage["currentPage"] = parseInt(page);
 
-    this.fetchData(page);
+    const { productSelected: product, sortColumn, invoiceRecords } = {
+      ...this.state
+    };
+
+    await this.getInventoryRecords(product, page, sortColumn, invoiceRecords);
   };
 
-  handleSort = sortColumn => {
+  handleSort = async sortColumn => {
     this.setState({ sortColumn });
+
+    const { productSelected: product, currentPage: page, invoiceRecords } = {
+      ...this.state
+    };
+
+    await this.getInventoryRecords(product, page, sortColumn, invoiceRecords);
   };
 
-  handleOnChangeInvoiceRecords = event => {
-    this.setState({ invoiceRecords: !this.state.invoiceRecords });
-    this.handlePageChange(1);
+  handleOnChangeInvoiceRecords = async () => {
+    const invoiceRecords = !this.state.invoiceRecords;
+    const { productSelected: product, sortColumn } = {
+      ...this.state
+    };
+    const currentPage = 1;
 
-    setTimeout(() => {
-      this.fetchData(1);
+    setTimeout(async () => {
+      await this.getInventoryRecords(
+        product,
+        currentPage,
+        sortColumn,
+        invoiceRecords
+      );
+
+      this.setState({ invoiceRecords });
     }, 100);
   };
 
@@ -90,6 +102,10 @@ class Inventories extends Component {
       e.preventDefault();
     };
     handler(window.event);
+
+    const { currentPage: page, sortColumn, invoiceRecords } = {
+      ...this.state
+    };
 
     if (product.id === 0) {
       toast.error("Lo sentimos, no puede crear un nuevo producto desde aqui.");
@@ -102,7 +118,12 @@ class Inventories extends Component {
       hideSearchProduct: true
     });
 
-    this.getInventoryRecords(product.id, 1, this.state.invoiceRecords);
+    await this.getInventoryRecords(
+      product.id,
+      page,
+      sortColumn,
+      invoiceRecords
+    );
   };
 
   handleFocusProduct = value => {
@@ -111,42 +132,39 @@ class Inventories extends Component {
     }, 200);
   };
 
-  handleCleanProduct = () => {
-    this.getInventoryRecords(0, 1, this.state.invoiceRecords);
-  };
+  handleCleanProduct = async () => {
+    const productId = 0;
+    const currentPage = 1;
 
-  getPagedData = () => {
-    const { prodTrackings: allProdTrackings, sortColumn } = this.state;
-
-    const sorted = _.orderBy(
-      allProdTrackings,
-      [sortColumn.path],
-      [sortColumn.order]
+    await this.getInventoryRecords(
+      productId,
+      currentPage,
+      this.state.sortColumn,
+      this.state.invoiceRecords
     );
-
-    return {
-      totalCount: this.state.prodTrackings.length,
-      prodTrackings: sorted
-    };
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn, totalEntries } = this.state;
-    const { user } = this.props;
-
-    const { totalCount, prodTrackings } = this.getPagedData();
+    const {
+      prodTrackings,
+      sortColumn,
+      totalEntries,
+      pageSize,
+      currentPage
+    } = this.state;
+    const user = getCurrentUser();
 
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h5 className="text-info mt-2">Movimientos de Inventario</h5>
 
             <NewButton label="Ajuste de Inventario" to="/inventory/new" />
 
             {!this.state.loading && (
               <div className="row">
-                <div className="col">
+                <div className="col-7">
                   <SearchProduct
                     onSelect={this.handleSelectProduct}
                     onFocus={() => this.handleFocusProduct(false)}
@@ -157,23 +175,26 @@ class Inventories extends Component {
                   />
                 </div>
                 {this.state.productSelected > 0 && (
-                  <div className="col-1">
+                  <div
+                    style={{
+                      marginTop: "32px"
+                    }}
+                  >
                     <span
-                      title="Limpiar filtro de producto"
-                      onClick={this.handleCleanProduct}
-                      className="fa fa-ban"
+                      className="fa fa-trash text-danger"
                       style={{
-                        color: "green",
-                        fontSize: "2.2em",
-                        marginTop: "24px",
-                        marginLeft: "-10px",
+                        fontSize: "24px",
+                        position: "absolute",
+                        marginLeft: "-39px",
                         cursor: "pointer"
                       }}
+                      title="Limpiar filtro de producto"
+                      onClick={this.handleCleanProduct}
                     ></span>
                   </div>
                 )}
 
-                <div className="col mt-4">
+                <div className="ml-4 mt-4">
                   <input
                     type="checkbox"
                     className="form-check-input"
@@ -219,7 +240,7 @@ class Inventories extends Component {
 
                 <p className="text-muted ml-3 mt-2">
                   <em>
-                    Mostrando {totalCount} registros de {totalEntries}
+                    Mostrando {prodTrackings.length} registros de {totalEntries}
                   </em>
                 </p>
               </div>

@@ -5,7 +5,7 @@ import { formatNumber } from "../../utils/custom";
 
 class ProductTrackingTable extends Component {
   columns = [
-    { path: "creationDate", label: "Fecha (m/d/a)" },
+    { path: "creationDate", label: "Fecha (mm/dd/aaaa)" },
     {
       path: "product.description",
       label: "Producto",

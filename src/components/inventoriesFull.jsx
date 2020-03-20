@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import _ from "lodash";
-import Pagination from "./common/pagination";
+import Pagination from "react-js-pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
-import { paginate } from "../utils/paginate";
 import ProductTrackingHeaderTable from "./tables/productTrackingHeaderTable";
 import { getProductsTrackingsHeader } from "../services/inventoryService";
 import { getCurrentUser } from "../services/authService";
@@ -15,68 +13,80 @@ class InventoriesFull extends Component {
     prodTrackingsHeader: [],
     currentPage: 1,
     pageSize: 10,
+    totalEntries: 0,
     searchQuery: "",
     sortColumn: { path: "creationDate", order: "desc" }
   };
 
   async componentDidMount() {
-    this.getInventoryRecords();
-  }
-
-  async getInventoryRecords() {
-    const companyId = getCurrentUser().companyId;
-    const { data: prodTrackingsHeader } = await getProductsTrackingsHeader(
-      companyId
+    this.getInventoryRecords(
+      this.currentPage,
+      this.state.sortColumn,
+      this.state.searchQuery
     );
-    this.setState({ prodTrackingsHeader, loading: false });
   }
 
-  handlePageChange = page => {
-    this.setState({ currentPage: page });
-  };
-
-  handleSearch = query => {
-    this.setState({ searchQuery: query, currentPage: 1 });
-  };
-
-  handleSort = sortColumn => {
-    this.setState({ sortColumn });
-  };
-
-  getPagedData = () => {
-    const {
-      pageSize,
+  async getInventoryRecords(currentPage, sortColumn, query) {
+    const companyId = getCurrentUser().companyId;
+    const { data: entries } = await getProductsTrackingsHeader(
+      companyId,
       currentPage,
       sortColumn,
-      searchQuery,
-      prodTrackingsHeader: allProdTrackingsHeader
-    } = this.state;
+      query
+    );
 
-    let filtered = allProdTrackingsHeader;
-    if (searchQuery)
-      filtered = allProdTrackingsHeader.filter(m =>
-        `${m.provider.name.toLowerCase()}`.startsWith(
-          searchQuery.toLocaleLowerCase()
-        )
-      );
+    this.setState({
+      prodTrackingsHeader: entries.results,
+      totalEntries: entries.count,
+      loading: false
+    });
+  }
 
-    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+  handlePageChange = async page => {
+    this.setState({ currentPage: page });
 
-    const prodTrackingsHeader = paginate(sorted, currentPage, pageSize);
+    await this.getInventoryRecords(
+      page,
+      this.state.sortColumn,
+      this.state.searchQuery
+    );
+  };
 
-    return { totalCount: filtered.length, prodTrackingsHeader };
+  handleSearch = async query => {
+    this.setState({ searchQuery: query, currentPage: 1 });
+
+    await this.getInventoryRecords(
+      this.state.page,
+      this.state.sortColumn,
+      query
+    );
+  };
+
+  handleSort = async sortColumn => {
+    this.setState({ sortColumn });
+
+    await this.getInventoryRecords(
+      this.state.currentPage,
+      sortColumn,
+      this.state.searchQuery
+    );
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
-    const { user } = this.props;
-
-    const { totalCount, prodTrackingsHeader } = this.getPagedData();
+    const {
+      prodTrackingsHeader,
+      sortColumn,
+      totalEntries,
+      pageSize,
+      currentPage,
+      searchQuery
+    } = this.state;
+    const user = getCurrentUser();
 
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h5 className="pull-left text-info mt-2">
               Entradas de Inventario por Proveedor
             </h5>
@@ -107,13 +117,19 @@ class InventoriesFull extends Component {
             {!this.state.loading && (
               <div className="row">
                 <Pagination
-                  itemsCount={totalCount}
-                  pageSize={pageSize}
-                  currentPage={currentPage}
-                  onPageChange={this.handlePageChange}
+                  activePage={currentPage}
+                  itemsCountPerPage={pageSize}
+                  totalItemsCount={totalEntries}
+                  pageRangeDisplayed={5}
+                  onChange={this.handlePageChange.bind(this)}
+                  itemClass="page-item"
+                  linkClass="page-link"
                 />
                 <p className="text-muted ml-3 mt-2">
-                  <em>Mostrando {totalCount} registros</em>
+                  <em>
+                    Mostrando {prodTrackingsHeader.length} registros de{" "}
+                    {totalEntries}
+                  </em>
                 </p>
               </div>
             )}

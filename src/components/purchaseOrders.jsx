@@ -22,13 +22,16 @@ class PurchaseOrders extends Component {
   };
 
   async componentDidMount() {
-    const currentPage = parseInt(sessionStorage["currentPage"] ?? 0);
-    if (currentPage > 1) this.setState({ currentPage: currentPage });
-
-    await this.populateOrders("", currentPage, this.state.sortColumn);
+    await this.populateOrders(
+      "",
+      this.state.currentPage,
+      this.state.sortColumn
+    );
   }
 
   async populateOrders(query, page, sortColumn) {
+    const currentPage = page ? page : 1;
+
     const product = query
       .toUpperCase()
       .split(" ")
@@ -36,7 +39,7 @@ class PurchaseOrders extends Component {
 
     const { data: orders } = await getPurchaseOrder(
       getCurrentUser().companyId,
-      page,
+      currentPage,
       product,
       sortColumn
     );
@@ -79,7 +82,6 @@ class PurchaseOrders extends Component {
 
   handlePageChange = async page => {
     this.setState({ currentPage: page });
-    sessionStorage["currentPage"] = parseInt(page);
 
     if (this.state.searchQuery)
       await this.populateOrders(
@@ -119,7 +121,7 @@ class PurchaseOrders extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h5 className="pull-left text-info mt-2">Ordenes de Compra</h5>
 
             <SearchBox

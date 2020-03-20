@@ -142,7 +142,8 @@ class InventoryFullForm extends Form {
       const headerId = this.props.match.params.id;
       if (headerId === "new") return;
 
-      const { data: header } = await getProductsTrackingsHeaderById(headerId);
+      let { data: header } = await getProductsTrackingsHeaderById(headerId);
+      header = header.results;
 
       this.setState({
         data: this.mapToViewModel(header),
