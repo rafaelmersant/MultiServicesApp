@@ -48,6 +48,12 @@ export function getInvoicesHeader(
   return http.get(urlQuery);
 }
 
+export function getInvoicesHeaderFull(companyId) {
+  let urlQuery = `${apiUrl}/invoicesHeadersFull/?company=${companyId}&ordering=-creationDate`;
+
+  return http.get(urlQuery);
+}
+
 export function getInvoiceHeader(companyId, sequence) {
   return http.get(
     `${apiEndpointHeader}/?company=${companyId}&sequence=${sequence}`

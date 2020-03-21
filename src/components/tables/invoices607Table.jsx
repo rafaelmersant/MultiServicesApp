@@ -5,13 +5,8 @@ import { formatNumber } from "../../utils/custom";
 class Invoices607Table extends Component {
   columns = [
     {
-      path: "subtotal",
-      label: "RNC/Cédula",
-      content: item => (
-        <div className="text-right">
-          <span>{item.customer.identification}</span>
-        </div>
-      )
+      path: "identification",
+      label: "RNC/Cédula"
     },
     { path: "ncf", label: "NCF" },
     {
@@ -29,7 +24,7 @@ class Invoices607Table extends Component {
 
   render() {
     const { invoices, sortColumn, onSort } = this.props;
-
+    console.log("invoices", invoices);
     return (
       <Table
         columns={this.columns}
