@@ -4,8 +4,9 @@ import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import { paginate } from "../utils/paginate";
 import { getCurrentUser } from "../services/authService";
-import { getInvoicesHeader } from "../services/invoiceServices";
+import { getInvoicesHeaderFull } from "../services/invoiceServices";
 import Invoices606Table from "./tables/invoices606Table";
+import ExportInvoices606 from "./reports/exportInvoices606";
 
 class Invoices606 extends Component {
   state = {
@@ -22,7 +23,9 @@ class Invoices606 extends Component {
 
   async populateInvoices() {
     const companyId = getCurrentUser().companyId;
-    const { data: invoices } = await getInvoicesHeader(companyId);
+
+    let { data: invoices } = await getInvoicesHeaderFull(companyId);
+
     this.setState({ invoices });
   }
 
@@ -36,6 +39,22 @@ class Invoices606 extends Component {
 
   handleSort = sortColumn => {
     this.setState({ sortColumn });
+  };
+
+  mapToExcelView = data => {
+    let result = [];
+
+    data.forEach(item => {
+      result.push({
+        creationDate: new Date(item.creationDate).toLocaleDateString(),
+        ncf: item.ncf,
+        discount: item.discount,
+        itbis: item.itbis,
+        subtotal: item.subtotal
+      });
+    });
+
+    return result;
   };
 
   getPagedData = () => {
@@ -69,8 +88,14 @@ class Invoices606 extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h2 className="pull-right text-info">Reporte 606</h2>
+
+            <ExportInvoices606
+              data={this.mapToExcelView(invoices)}
+              sheetName="Reporte606"
+            />
+
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}

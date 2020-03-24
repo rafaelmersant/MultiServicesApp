@@ -1,6 +1,7 @@
 import http from "./httpService";
 import { getCurrentUser } from "./authService";
 import { apiUrl } from "../config.json";
+import { getPurchaseOrderByProduct, savePurchaseOrder } from "./productService";
 
 const apiEndpointProdTrackingHeader = `${apiUrl}/productsTrackingsHeader`;
 const apiEndpointProdTracking = `${apiUrl}/productsTrackings`;
@@ -18,8 +19,20 @@ function productsStockUrl(id) {
   return `${apiEndpointProdStock}/${id}`;
 }
 
-export function getProductsTrackingsHeader(companyId) {
-  return http.get(`${apiEndpointProdTrackingHeader}/?company=${companyId}`);
+export function getProductsTrackingsHeader(
+  companyId,
+  currentPage,
+  sortColumn,
+  providerName
+) {
+  const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+  const column =
+    sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
+  const page = currentPage ? currentPage : 1;
+
+  return http.get(
+    `${apiEndpointProdTrackingHeader}/?company=${companyId}&ordering=${order}${column}&page=${page}&provider_name=${providerName}`
+  );
 }
 
 export function getProductsTrackingsHeaderById(id) {
@@ -29,16 +42,22 @@ export function getProductsTrackingsHeaderById(id) {
 export function getProductsTrackings(
   companyId,
   productId,
-  page,
+  currentPage,
+  sortColumn,
   invoicesRecords
 ) {
+  const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+  const column =
+    sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
+  const page = currentPage ? currentPage : 1;
+
   if (invoicesRecords) {
     return http.get(
-      `${apiEndpointProdTracking}/?company=${companyId}&product=${productId}&page=${page}`
+      `${apiEndpointProdTracking}/?company=${companyId}&product=${productId}&ordering=${order}${column}&page=${page}`
     );
   } else {
     return http.get(
-      `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE&product=${productId}&page=${page}`
+      `${apiEndpointProdTracking}/?company=${companyId}&concept=INVE&product=${productId}&ordering=${order}${column}&page=${page}`
     );
   }
 }
@@ -84,7 +103,7 @@ export function saveProductTrackingHeader(entry) {
 
 export function saveProductTracking(entry) {
   const tracking = { ...entry };
-  console.log("tracking", tracking);
+
   if (tracking.typeTracking === "S") tracking.quantity = tracking.quantity * -1;
 
   if (entry.id) {
@@ -144,6 +163,23 @@ export async function updateProductStock(inventory) {
 
     stock.id = productStock[0].id;
     stock.quantityAvailable = newQuantity;
+
+    if (productStock[0].product.minimumStock > newQuantity) {
+      const { data: order } = await getPurchaseOrderByProduct(
+        productStock[0].product.company.id,
+        productStock[0].product.id
+      );
+
+      if (!order.count) {
+        await savePurchaseOrder({
+          id: 0,
+          product_id: productStock[0].product.id,
+          quantity: newQuantity,
+          company_id: getCurrentUser().companyId,
+          creationDate: new Date().toISOString()
+        });
+      }
+    }
 
     console.log("Updating Stock START...");
     console.log("Tracking possible issue");

@@ -28,10 +28,6 @@ class Customers extends Component {
     this.setState({ customers, loading: false });
   }
 
-  componentWillMount() {
-    sessionStorage["currentPage"] = 1;
-  }
-
   handleDelete = async customer => {
     const { data: found } = await getCustomerInInvoice(
       getCurrentUser().companyId,
@@ -106,7 +102,7 @@ class Customers extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h5 className="pull-left text-info mt-2">Listado de Clientes</h5>
             <NewButton label="Nuevo Cliente" to="/customer/new" />
 

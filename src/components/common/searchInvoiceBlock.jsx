@@ -1,20 +1,20 @@
 import React, { Component } from "react";
 import { toast } from "react-toastify";
 import { getCurrentUser } from "../../services/authService";
-import SearchBox from "./searchBox";
 import SearchCustomer from "./searchCustomer";
 import Select from "./select";
+import Input from "./input";
 
 class SearchInvoiceBlock extends Component {
   state = {
     data: {
-      invoiceNo: "",
+      invoice: "",
       paymentMethod: "ALL"
     },
     paymentMethods: [
       { id: "ALL", name: "Todos" },
       { id: "CASH", name: "Efectivo" },
-      { id: "CARD", name: "Tarjeta de Credito" },
+      { id: "CARD", name: "Tarjeta de Crédito" },
       { id: "CREDIT", name: "Crédito" }
     ],
     hideSearchCustomer: false,
@@ -22,10 +22,24 @@ class SearchInvoiceBlock extends Component {
   };
 
   handleChange = async ({ currentTarget: input }) => {
-    const data = { ...this.state };
+    let { data, searchCustomerText } = { ...this.state };
+
     data[input.name] = input.value;
 
-    this.setState({ data });
+    if (input.name === "invoice") {
+      data["paymentMethod"] = "ALL";
+      searchCustomerText = "";
+
+      this.handleFocusCustomer(true);
+      this.props.onInvoiceChange(input.value);
+    }
+
+    if (input.name === "paymentMethod") {
+      data["invoice"] = "";
+      this.props.onPaymentMethodChange(input.value);
+    }
+
+    this.setState({ data, searchCustomerText });
   };
 
   handleFocusCustomer = value => {
@@ -47,26 +61,39 @@ class SearchInvoiceBlock extends Component {
 
     const data = { ...this.state.data };
     data.customer_id = customer.id;
+    data.invoice = "";
 
     this.setState({
       data,
       hideSearchCustomer: true,
       searchCustomerText: `${customer.firstName} ${customer.lastName}`
     });
+
+    this.props.onCustomerChange(customer);
+  };
+
+  handleClearCustomerSelection = () => {
+    const handler = e => {
+      e.preventDefault();
+    };
+    handler(window.event);
+
+    this.handleSelectCustomer({ id: null, firstName: "", lastName: "" });
+    this.setState({ searchCustomerText: "" });
   };
 
   render() {
-    const { onSelect, onFocus, onBlur, hide, label = "" } = this.props;
     const companyId = getCurrentUser().companyId;
 
     return (
       <div>
         <div className="row">
-          <div className="col">
-            <SearchBox
-              value={this.state.data.invoiceNo}
+          <div>
+            <Input
+              name="invoice"
+              value={this.state.data.invoice}
               onChange={this.handleChange}
-              placeholder="Digitar Número de Factura"
+              placeholder="Número de Factura"
               label="Factura No."
             />
           </div>
@@ -81,6 +108,25 @@ class SearchInvoiceBlock extends Component {
               label="Cliente"
             />
           </div>
+          {this.state.searchCustomerText && (
+            <div
+              style={{
+                marginTop: "38px"
+              }}
+            >
+              <span
+                className="fa fa-trash text-danger"
+                style={{
+                  fontSize: "24px",
+                  position: "absolute",
+                  marginLeft: "-39px",
+                  cursor: "pointer"
+                }}
+                title="Limpiar filtro de cliente"
+                onClick={this.handleClearCustomerSelection}
+              ></span>
+            </div>
+          )}
 
           <div>
             <Select

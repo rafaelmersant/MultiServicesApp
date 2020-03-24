@@ -96,7 +96,7 @@ class ProductsStock extends Component {
             <h2 className="pull-right text-info">Reporte de Inventario</h2>
 
             <ExportStockToExcel
-              data={this.mapToExcelView(this.state.products)}
+              data={this.mapToExcelView(products)}
               sheetName="Inventario"
             />
 

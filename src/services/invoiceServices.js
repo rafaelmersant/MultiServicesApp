@@ -21,8 +21,37 @@ export function getInvoiceSequence(companyId) {
   return http.get(`${apiEndpointSequence}/?company=${companyId}`);
 }
 
-export function getInvoicesHeader(companyId) {
-  return http.get(`${apiEndpointHeader}/?company=${companyId}`);
+//Get Invoices by CompanyId
+// export function getInvoicesHeader(companyId) {
+//   return http.get(`${apiEndpointHeader}/?company=${companyId}`);
+// }
+
+export function getInvoicesHeader(
+  companyId,
+  invoiceNo,
+  customerId,
+  paymentMethod,
+  currentPage,
+  sortColumn
+) {
+  const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+  const column =
+    sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
+  const page = currentPage ? currentPage : 1;
+
+  let urlQuery = `${apiEndpointHeader}/?company=${companyId}&ordering=${order}${column}&page=${page}`;
+
+  if (invoiceNo) urlQuery += `&sequence=${invoiceNo}`;
+  if (customerId) urlQuery += `&customer=${customerId}`;
+  if (paymentMethod !== "ALL") urlQuery += `&paymentMethod=${paymentMethod}`;
+
+  return http.get(urlQuery);
+}
+
+export function getInvoicesHeaderFull(companyId) {
+  let urlQuery = `${apiUrl}/invoicesHeadersFull/?company=${companyId}&ordering=-creationDate`;
+
+  return http.get(urlQuery);
 }
 
 export function getInvoiceHeader(companyId, sequence) {

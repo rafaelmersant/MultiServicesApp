@@ -14,7 +14,7 @@ class ProductTrackingHeaderTable extends Component {
         </div>
       )
     },
-    { path: "creationDate", label: "Fecha (m/d/a)" },
+    { path: "creationDate", label: "Fecha (mm/dd/aaaa)" },
     {
       path: "provider.name",
       label: "Proveedor",

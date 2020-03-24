@@ -1,22 +1,21 @@
 import React, { Component } from "react";
-import _ from "lodash";
 import { toast } from "react-toastify";
-import Pagination from "./common/pagination";
+import Pagination from "react-js-pagination";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
-import { paginate } from "../utils/paginate";
+import SearchInvoiceBlock from "./common/searchInvoiceBlock";
+import InvoicesTable from "./tables/invoicesTable";
 import { getCurrentUser } from "../services/authService";
 import {
   getInvoicesHeader,
   deleteInvoiceHeader,
   getInvoiceDetail
 } from "../services/invoiceServices";
-import InvoicesTable from "./tables/invoicesTable";
+
 import {
   saveProductTracking,
   updateProductStock
 } from "../services/inventoryService";
-import SearchInvoiceBlock from "./common/searchInvoiceBlock";
 
 class Invoices extends Component {
   state = {
@@ -24,17 +23,42 @@ class Invoices extends Component {
     invoices: [],
     currentPage: 1,
     pageSize: 10,
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
+    searchParams: {
+      paymentMethod: "ALL",
+      customerId: 0,
+      invoiceNo: 0
+    }
   };
 
   async componentDidMount() {
-    this.populateInvoices();
+    await this.populateInvoices();
   }
 
-  async populateInvoices() {
+  async populateInvoices(_sortColumn, _currentPage) {
     const companyId = getCurrentUser().companyId;
-    const { data: invoices } = await getInvoicesHeader(companyId);
-    this.setState({ invoices, loading: false });
+    const { invoiceNo, customerId, paymentMethod } = {
+      ...this.state.searchParams
+    };
+    const { currentPage, sortColumn } = { ...this.state };
+
+    _sortColumn = _sortColumn ? _sortColumn : sortColumn;
+    _currentPage = _currentPage ? _currentPage : currentPage;
+
+    const { data: invoices } = await getInvoicesHeader(
+      companyId,
+      invoiceNo,
+      customerId,
+      paymentMethod,
+      _currentPage,
+      _sortColumn
+    );
+
+    this.setState({
+      invoices: invoices.results,
+      totalInvoices: invoices.count,
+      loading: false
+    });
   }
 
   async updateInventory(productId, quantity) {
@@ -54,12 +78,17 @@ class Invoices extends Component {
     await updateProductStock(inventory);
   }
 
-  handlePageChange = page => {
+  handlePageChange = async page => {
     this.setState({ currentPage: page });
+    sessionStorage["currentPage"] = parseInt(page);
+
+    await this.populateInvoices(null, page);
   };
 
-  handleSort = sortColumn => {
+  handleSort = async sortColumn => {
     this.setState({ sortColumn });
+
+    await this.populateInvoices(sortColumn);
   };
 
   handleDelete = async invoice => {
@@ -99,28 +128,71 @@ class Invoices extends Component {
     }
   };
 
-  getPagedData = () => {
-    const {
-      pageSize,
-      currentPage,
-      sortColumn,
-      invoices: allInvoices
-    } = this.state;
+  handleInvoiceChange = async invoiceNo => {
+    const handler = e => {
+      e.preventDefault();
+    };
+    handler(window.event);
 
-    let filtered = allInvoices;
+    const { searchParams } = { ...this.state };
+    searchParams.invoiceNo = invoiceNo;
 
-    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
-
-    const invoices = paginate(sorted, currentPage, pageSize);
-
-    return { totalCount: filtered.length, invoices };
+    this.setState({ searchParams });
+    this.populateInvoices();
   };
 
-  render() {
-    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
-    const { user } = this.props;
+  handleCustomerChange = async customer => {
+    const handler = e => {
+      e.preventDefault();
+    };
+    handler(window.event);
 
-    const { totalCount, invoices } = this.getPagedData();
+    const { searchParams } = { ...this.state };
+    searchParams.customerId = customer.id;
+    searchParams.invoiceNo = "";
+
+    this.setState({ searchParams });
+    this.populateInvoices();
+  };
+
+  handlePaymentMethodChange = async paymentMethod => {
+    const handler = e => {
+      e.preventDefault();
+    };
+    handler(window.event);
+
+    const { searchParams } = { ...this.state };
+    searchParams.paymentMethod = paymentMethod;
+    searchParams.invoiceNo = "";
+
+    this.setState({ searchParams });
+    this.populateInvoices();
+  };
+
+  // getPagedData = () => {
+  //   const {
+  //     pageSize,
+  //     currentPage,
+  //     sortColumn,
+  //     invoices: allInvoices
+  //   } = this.state;
+
+  //   let filtered = allInvoices;
+  //   const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+  //   const invoices = paginate(sorted, currentPage, pageSize);
+
+  //   return { totalCount: filtered.length, invoices };
+  // };
+
+  render() {
+    const {
+      invoices,
+      sortColumn,
+      totalInvoices,
+      pageSize,
+      currentPage
+    } = this.state;
+    const user = getCurrentUser();
 
     return (
       <div className="container">
@@ -133,12 +205,16 @@ class Invoices extends Component {
         <div className="row">
           <div className="col">
             <div className="row">
-              <div className="col">
-                <h5>Busqueda</h5>
+              <div>
+                <h5 className="text-info">Búsqueda</h5>
               </div>
             </div>
 
-            <SearchInvoiceBlock />
+            <SearchInvoiceBlock
+              onInvoiceChange={this.handleInvoiceChange}
+              onCustomerChange={this.handleCustomerChange}
+              onPaymentMethodChange={this.handlePaymentMethodChange}
+            />
 
             {this.state.loading && (
               <div className="d-flex justify-content-center">
@@ -147,28 +223,51 @@ class Invoices extends Component {
             )}
 
             {!this.state.loading && (
-              <InvoicesTable
-                invoices={invoices}
-                user={user}
-                sortColumn={sortColumn}
-                onDelete={this.handleDelete}
-                onSort={this.handleSort}
-              />
+              <div className="row">
+                <InvoicesTable
+                  invoices={invoices}
+                  user={user}
+                  sortColumn={sortColumn}
+                  onDelete={this.handleDelete}
+                  onSort={this.handleSort}
+                />
+              </div>
             )}
 
             {!this.state.loading && (
               <div className="row">
+                <div>
+                  <Pagination
+                    activePage={currentPage}
+                    itemsCountPerPage={pageSize}
+                    totalItemsCount={totalInvoices}
+                    pageRangeDisplayed={5}
+                    onChange={this.handlePageChange.bind(this)}
+                    itemClass="page-item"
+                    linkClass="page-link"
+                  />
+                </div>
+                <p className="text-muted ml-3 mt-2">
+                  <em>
+                    Mostrando {invoices.length} facturas de {totalInvoices}
+                  </em>
+                </p>
+              </div>
+            )}
+
+            {/* {!this.state.loading && (
+              <div className="row">
                 <Pagination
-                  itemsCount={totalCount}
+                  itemsCount={totalInvoices}
                   pageSize={pageSize}
                   currentPage={currentPage}
                   onPageChange={this.handlePageChange}
                 />
                 <p className="text-muted ml-3 mt-2">
-                  <em>Mostrando {totalCount} facturas</em>
+                  Mostrando {invoices.length} facturas de {totalInvoices}
                 </p>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>

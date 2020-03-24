@@ -29,10 +29,6 @@ class Providers extends Component {
     this.setState({ providers, loading: false });
   }
 
-  componentWillMount() {
-    sessionStorage["currentPage"] = 1;
-  }
-
   handleDelete = async provider => {
     const { data: found } = await getProviderInInventory(
       getCurrentUser().companyId,
@@ -109,7 +105,7 @@ class Providers extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h5 className="pull-left text-info mt-2">Listado de Proveedores</h5>
             <NewButton label="Nuevo Proveedor" to="/provider/new" />
 

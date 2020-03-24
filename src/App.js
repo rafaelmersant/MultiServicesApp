@@ -29,6 +29,7 @@ import ProductCategoryForm from "./components/forms/productCategoryForm";
 import NCF from "./components/ncf";
 import NCFForm from "./components/forms/ncfForm";
 import Providers from "./components/providers";
+import PurchaseOrders from "./components/purchaseOrders";
 import ProviderForm from "./components/forms/providerForm";
 import ProtectedRoute from "./components/common/protectedRoute";
 import auth from "./services/authService";
@@ -88,6 +89,10 @@ class App extends Component {
             <ProtectedRoute
               path="/reports/entrtiesProvider"
               component={EntriesProviders}
+            />
+            <ProtectedRoute
+              path="/reports/purchaseOrders"
+              component={PurchaseOrders}
             />
 
             <ProtectedRoute path="/customers" component={Customers} />

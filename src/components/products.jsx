@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { toast } from "react-toastify";
-import _ from "lodash";
 import Pagination from "react-js-pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
@@ -29,47 +28,45 @@ class Products extends Component {
     const currentPage = parseInt(sessionStorage["currentPage"] ?? 0);
     if (currentPage > 1) this.setState({ currentPage: currentPage });
 
-    await this.populateProducts(
-      "",
-      currentPage,
-      this.state.sortColumn.path,
-      this.state.sortColumn.order
-    );
+    await this.populateProducts("", currentPage, this.state.sortColumn);
   }
 
-  async populateProducts(query, page, sortColumn, sortOrder) {
+  async populateProducts(query, page, sortColumn) {
     let products = [];
     const descrp = query
       .toUpperCase()
       .split(" ")
       .join("%20");
 
-    if (query === "") {
-      const { data: prods } = await getProducts(
-        getCurrentUser().companyId,
-        page,
-        sortColumn,
-        sortOrder
-      );
-      products = prods;
-    } else {
-      const { data: prods } = await getProductsByDescription(
-        getCurrentUser().companyId,
-        descrp,
-        page,
-        sortColumn,
-        sortOrder
-      );
-      products = prods;
+    try {
+      if (query === "") {
+        const { data: prods } = await getProducts(
+          getCurrentUser().companyId,
+          page,
+          sortColumn
+        );
+        products = prods;
+      } else {
+        const { data: prods } = await getProductsByDescription(
+          getCurrentUser().companyId,
+          descrp,
+          page,
+          sortColumn
+        );
+        products = prods;
+      }
+
+      this.setState({
+        products: products.results,
+        totalProducts: products.count,
+        loading: false
+      });
+
+      this.forceUpdate();
+    } catch (ex) {
+      sessionStorage["currentPage"] = 1;
+      console.log(ex);
     }
-
-    this.setState({
-      products: products.results,
-      totalProducts: products.count,
-      loading: false
-    });
-
-    this.forceUpdate();
   }
 
   handleDelete = async product => {
@@ -112,7 +109,7 @@ class Products extends Component {
 
   handleSearch = query => {
     this.setState({ searchQuery: query, currentPage: 1 });
-    this.populateProducts(query);
+    this.populateProducts(query, this.state.currentPage, this.state.sortColumn);
   };
 
   handleSort = async sortColumn => {
@@ -121,8 +118,7 @@ class Products extends Component {
     await this.populateProducts(
       this.state.searchQuery,
       this.state.currentPage,
-      sortColumn.path,
-      sortColumn.order
+      sortColumn
     );
   };
 
@@ -140,7 +136,7 @@ class Products extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h5 className="pull-left text-info mt-2">Listado de Productos</h5>
             {user && (user.role === "Admin" || user.role === "Owner") && (
               <NewButton label="Nuevo Producto" to="/product/new" />

@@ -23,7 +23,14 @@ class EntriesProviders extends Component {
 
   async getInventoryRecords() {
     const companyId = getCurrentUser().companyId;
-    const { data: entries } = await getProductsTrackingsHeader(companyId);
+    let { data: entries } = await getProductsTrackingsHeader(
+      companyId,
+      this.state.currentPage,
+      this.state.sortColumn,
+      ""
+    );
+    entries = entries.results;
+
     this.setState({ entries });
   }
 
@@ -84,7 +91,7 @@ class EntriesProviders extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h2 className="pull-right text-info">Entradas por Proveedor</h2>
 
             <ExportEntriesProviderToExcel

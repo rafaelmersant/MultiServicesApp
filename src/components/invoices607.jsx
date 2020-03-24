@@ -4,8 +4,9 @@ import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import { paginate } from "../utils/paginate";
 import { getCurrentUser } from "../services/authService";
-import { getInvoicesHeader } from "../services/invoiceServices";
+import { getInvoicesHeaderFull } from "../services/invoiceServices";
 import Invoices607Table from "./tables/invoices607Table";
+import ExportInvoices607 from "./reports/exportInvoices607";
 
 class Invoices607 extends Component {
   state = {
@@ -22,7 +23,11 @@ class Invoices607 extends Component {
 
   async populateInvoices() {
     const companyId = getCurrentUser().companyId;
-    const { data: invoices } = await getInvoicesHeader(companyId);
+
+    let { data: invoices } = await getInvoicesHeaderFull(companyId);
+
+    invoices = this.mapToModel(invoices);
+
     this.setState({ invoices });
   }
 
@@ -36,6 +41,26 @@ class Invoices607 extends Component {
 
   handleSort = sortColumn => {
     this.setState({ sortColumn });
+  };
+
+  mapToModel = data => {
+    let result = [];
+
+    data.forEach(item => {
+      console.log("item", item, "identification", item.customer);
+      result.push({
+        id: item.id,
+        identification:
+          item.customer && item.customer.identification
+            ? item.customer.identification
+            : "",
+        ncf: item.ncf,
+        subtotal: item.subtotal,
+        creationDate: new Date(item.creationDate)
+      });
+    });
+
+    return result;
   };
 
   getPagedData = () => {
@@ -55,7 +80,7 @@ class Invoices607 extends Component {
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-    const invoices = paginate(sorted, currentPage, pageSize);
+    let invoices = paginate(sorted, currentPage, pageSize);
 
     return { totalCount: filtered.length, invoices };
   };
@@ -69,8 +94,14 @@ class Invoices607 extends Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col margin-top-msg">
+          <div className="col">
             <h2 className="pull-right text-info">Reporte 607</h2>
+
+            <ExportInvoices607
+              data={this.mapToModel(invoices)}
+              sheetName="Reporte607"
+            />
+
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}
@@ -93,7 +124,7 @@ class Invoices607 extends Component {
                 onPageChange={this.handlePageChange}
               />
               <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} facturas</em>
+                <em>Mostrando {totalCount} registros</em>
               </p>
             </div>
           </div>

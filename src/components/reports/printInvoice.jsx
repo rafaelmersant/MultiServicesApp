@@ -21,9 +21,10 @@ class PrintInvoice extends Component {
           <div>
             <div className="text-center">
               <img
-                src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
-                //src={require("../../../public/images/FERRINMAS_small.jpg")}
-                alt="FERRINMAS"
+                width="210px"
+                src={process.env.PUBLIC_URL + "/images/fanith.png"}
+                //src={require("../../../public/images/fanith.png")}
+                alt="FANITH"
               />
             </div>
 
@@ -31,7 +32,7 @@ class PrintInvoice extends Component {
               {invoiceHeader[0].company.name.toUpperCase()}</h3>
             <span className="font-receipt d-block" style={{ marginLeft: "215px", marginTop: "-13px" }}>Ferreteria</span> */}
 
-            <div className="text-center">
+            {/* <div className="text-center">
               <span className="font-receipt">
                 {invoiceHeader[0].company.address}
               </span>
@@ -40,7 +41,7 @@ class PrintInvoice extends Component {
               <span className="font-receipt">
                 {invoiceHeader[0].company.phoneNumber}
               </span>
-            </div>
+            </div> */}
             <div className="text-center">
               <span className="font-receipt">
                 {invoiceHeader[0].company.email}
