@@ -82,6 +82,7 @@ class InventoriesFull extends Component {
       searchQuery
     } = this.state;
     const user = getCurrentUser();
+    const total = prodTrackingsHeader ? prodTrackingsHeader.length : 0;
 
     return (
       <div className="container">
@@ -127,8 +128,7 @@ class InventoriesFull extends Component {
                 />
                 <p className="text-muted ml-3 mt-2">
                   <em>
-                    Mostrando {prodTrackingsHeader.length} registros de{" "}
-                    {totalEntries}
+                    Mostrando {total} registros de {totalEntries}
                   </em>
                 </p>
               </div>

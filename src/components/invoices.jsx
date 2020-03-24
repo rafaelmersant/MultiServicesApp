@@ -193,6 +193,7 @@ class Invoices extends Component {
       currentPage
     } = this.state;
     const user = getCurrentUser();
+    const total = invoices ? invoices.length : 0;
 
     return (
       <div className="container">
@@ -249,7 +250,7 @@ class Invoices extends Component {
                 </div>
                 <p className="text-muted ml-3 mt-2">
                   <em>
-                    Mostrando {invoices.length} facturas de {totalInvoices}
+                    Mostrando {total} facturas de {totalInvoices}
                   </em>
                 </p>
               </div>
