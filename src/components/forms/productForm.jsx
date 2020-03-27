@@ -358,6 +358,7 @@ class ProductForm extends Form {
                   value={this.state.quantity}
                   label="Cantidad para inventario"
                   onChange={this.handleChangeQuantity}
+                  autoComplete="off"
                 />
               </div>
               <div className="col-2">
