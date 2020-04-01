@@ -25,6 +25,7 @@ class PurchaseOrdersTable extends Component {
     content: item => (
       <div className="text-center">
         <span
+          title="Marcar como completada"
           onClick={() => this.props.onMarkAsComplete(item)}
           className="fa fa-check"
           style={{ color: "orange", fontSize: "26px", cursor: "pointer" }}
