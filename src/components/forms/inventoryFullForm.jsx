@@ -17,7 +17,7 @@ import {
   updateProductStock,
   getProductsTrackingsByHeader,
   getProductsTrackingsHeaderById,
-  deleteTracking
+  deleteTracking,
 } from "../../services/inventoryService";
 import ProductsInvTable from "../tables/productsInvTable";
 import PriceCalculation from "../common/priceCalculation";
@@ -39,7 +39,7 @@ class InventoryFullForm extends Form {
       creationDate: new Date().toISOString(),
       serverDate: new Date().toISOString(),
       company_id: getCurrentUser().companyId,
-      createdUser: getCurrentUser().email
+      createdUser: getCurrentUser().email,
     },
     inventory: {
       header_id: 1, //Default header
@@ -51,7 +51,7 @@ class InventoryFullForm extends Form {
       cost: "",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     },
     header: {},
     providers: [],
@@ -60,7 +60,7 @@ class InventoryFullForm extends Form {
     detailsToDelete: [],
     typeTrackings: [
       { id: "E", name: "Entrada" },
-      { id: "S", name: "Salida" }
+      { id: "S", name: "Salida" },
     ],
     errors: {},
     docDate: new Date(),
@@ -70,7 +70,8 @@ class InventoryFullForm extends Form {
     availableStock: 0,
     searchProductText: "",
     showDetail: false,
-    buttonAction: "Agregar Detalle"
+    resetValues: false,
+    buttonAction: "Agregar Detalle",
   };
 
   schema = {
@@ -86,11 +87,11 @@ class InventoryFullForm extends Form {
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
     creationDate: Joi.string(),
-    serverDate: Joi.string()
+    serverDate: Joi.string(),
   };
 
-  handleSelectProduct = async product => {
-    const handler = e => {
+  handleSelectProduct = async (product) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -109,19 +110,24 @@ class InventoryFullForm extends Form {
       inventory,
       product,
       searchProductText: product.description,
-      hideSearch: true
+      hideSearch: true,
+      resetValues: true,
     });
   };
 
-  handleFocusProduct = value => {
+  handleFocusProduct = (value) => {
     setTimeout(() => {
       this.setState({ hideSearch: value });
     }, 200);
   };
 
-  handleSetNewProduct = e => {
+  handleSetNewProduct = (e) => {
     this.setState({ searchProductText: `${e.description}` });
     this.handleSelectProduct(e);
+  };
+
+  handleResetValues = (e) => {
+    this.setState({ resetValues: e });
   };
 
   async populateProviders() {
@@ -152,7 +158,7 @@ class InventoryFullForm extends Form {
         docDate: new Date(header[0].docDate),
         creationDate: new Date(header[0].creationDate),
         buttonAction: "Guardar cambios",
-        action: "Editar Entrada de Inventario"
+        action: "Editar Entrada de Inventario",
       });
 
       setTimeout(() => {
@@ -180,7 +186,7 @@ class InventoryFullForm extends Form {
       company_id: header[0].company.id,
       createdUser: header[0].createdUser
         ? header[0].createdUser
-        : getCurrentUser().email
+        : getCurrentUser().email,
     };
   }
 
@@ -194,7 +200,7 @@ class InventoryFullForm extends Form {
     this._isMounted = false;
   }
 
-  updateProduct = async inventory => {
+  updateProduct = async (inventory) => {
     const product = { ...this.state.product };
     product.price = inventory.price;
     product.cost = inventory.cost;
@@ -223,6 +229,8 @@ class InventoryFullForm extends Form {
       cleanInventory.typeTracking = "E";
 
       this.setState({ inventory: cleanInventory, searchProductText: "" });
+
+      this.setState({ resetValues: true });
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");
@@ -263,13 +271,13 @@ class InventoryFullForm extends Form {
     }
   };
 
-  handleChangeDocDate = date => {
+  handleChangeDocDate = (date) => {
     const data = { ...this.state.data };
     data.docDate = date.toISOString();
     this.setState({ data, docDate: date });
   };
 
-  handleChangeCreationDate = date => {
+  handleChangeCreationDate = (date) => {
     const data = { ...this.state.data };
     data.creationDate = date.toISOString();
     this.setState({ data, creationDate: date });
@@ -292,13 +300,13 @@ class InventoryFullForm extends Form {
     window.location = `/inventoryFull/new`;
   };
 
-  handleDelete = async detail => {
+  handleDelete = async (detail) => {
     const answer = window.confirm(
       "Esta seguro de eliminar este producto? \nNo podrá deshacer esta acción"
     );
     if (answer) {
       const originalDetail = this.state.details;
-      const details = this.state.details.filter(m => m.id !== detail.id);
+      const details = this.state.details.filter((m) => m.id !== detail.id);
       this.setState({ details });
 
       try {
@@ -312,7 +320,7 @@ class InventoryFullForm extends Form {
     }
   };
 
-  handleChangeCalculation = e => {
+  handleChangeCalculation = (e) => {
     const inventory = { ...this.state.inventory };
     inventory.cost = e.priceC2;
     inventory.price = e.priceSales;
@@ -341,7 +349,7 @@ class InventoryFullForm extends Form {
                   </label>
                   <DatePicker
                     selected={this.state.creationDate}
-                    onChange={date => this.handleChangeCreationDate(date)}
+                    onChange={(date) => this.handleChangeCreationDate(date)}
                     dateFormat="dd/MM/yyyy"
                   />
                 </div>
@@ -388,7 +396,7 @@ class InventoryFullForm extends Form {
                     <label htmlFor="docDate">Fecha Documento</label>
                     <DatePicker
                       selected={this.state.docDate}
-                      onChange={date => this.handleChangeDocDate(date)}
+                      onChange={(date) => this.handleChangeDocDate(date)}
                       dateFormat="dd/MM/yyyy"
                     />
                   </div>
@@ -450,7 +458,11 @@ class InventoryFullForm extends Form {
                   </table>
                 </div>
 
-                <PriceCalculation onChange={this.handleChangeCalculation} />
+                <PriceCalculation
+                  onChange={this.handleChangeCalculation}
+                  onResetValues={this.handleResetValues}
+                  resetValues={this.state.resetValues}
+                />
 
                 <button
                   className="btn btn-success pl-5 pr-5 mt-3"
@@ -478,7 +490,7 @@ class InventoryFullForm extends Form {
                   data-toggle="modal"
                   data-target="#productModal"
                   hidden="hidden"
-                  ref={button => (this.raiseProductModal = button)}
+                  ref={(button) => (this.raiseProductModal = button)}
                 ></button>
 
                 <ProductModal setNewProduct={this.handleSetNewProduct} />

@@ -10,9 +10,34 @@ class PriceCalculation extends Component {
       itbis: 0,
       priceC2: 0,
       percentage: 0,
-      priceSales: 0
+      priceSales: 0,
     },
-    itbis: true
+    itbis: true,
+    resetValues: false,
+  };
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (this.props.resetValues && this.props === nextProps) return false;
+    else return true;
+  }
+
+  componentDidUpdate() {
+    if (this.props.resetValues) this.resetValues();
+  }
+
+  resetValues = () => {
+    const { data } = { ...this.state };
+
+    data.priceC1 = 0;
+    data.discount = 0;
+    data.cost = 0;
+    data.itbis = 0;
+    data.priceC2 = 0;
+    data.percentage = 0;
+    data.priceSales = 0;
+
+    this.props.onResetValues(false);
+    this.setState({ data });
   };
 
   calculatePrice = () => {
@@ -49,7 +74,7 @@ class PriceCalculation extends Component {
     }, 300);
   };
 
-  handleChangeITBIS = e => {
+  handleChangeITBIS = (e) => {
     this.setState({ itbis: !this.state.itbis });
 
     setTimeout(() => {
