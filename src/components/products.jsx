@@ -7,7 +7,7 @@ import Loading from "./common/loading";
 import {
   getProducts,
   deleteProduct,
-  getProductsByDescription
+  getProductsByDescription,
 } from "../services/productService";
 import { getCurrentUser } from "../services/authService";
 import { getProductInInvoice } from "../services/invoiceServices";
@@ -21,7 +21,7 @@ class Products extends Component {
     pageSize: 10,
     searchQuery: "",
     totalProducts: 0,
-    sortColumn: { path: "description", order: "asc" }
+    sortColumn: { path: "description", order: "asc" },
   };
 
   async componentDidMount() {
@@ -33,10 +33,7 @@ class Products extends Component {
 
   async populateProducts(query, page, sortColumn) {
     let products = [];
-    const descrp = query
-      .toUpperCase()
-      .split(" ")
-      .join("%20");
+    const descrp = query.toUpperCase().split(" ").join("%20");
 
     try {
       if (query === "") {
@@ -59,7 +56,7 @@ class Products extends Component {
       this.setState({
         products: products.results,
         totalProducts: products.count,
-        loading: false
+        loading: false,
       });
 
       this.forceUpdate();
@@ -69,7 +66,7 @@ class Products extends Component {
     }
   }
 
-  handleDelete = async product => {
+  handleDelete = async (product) => {
     const { data: found } = await getProductInInvoice(
       getCurrentUser().companyId,
       product.id
@@ -84,7 +81,7 @@ class Products extends Component {
     );
     if (answer) {
       const originalProducts = this.state.products;
-      const products = this.state.products.filter(m => m.id !== product.id);
+      const products = this.state.products.filter((m) => m.id !== product.id);
       this.setState({ products });
 
       try {
@@ -98,7 +95,7 @@ class Products extends Component {
     }
   };
 
-  handlePageChange = async page => {
+  handlePageChange = async (page) => {
     this.setState({ currentPage: page });
     sessionStorage["currentPage"] = parseInt(page);
 
@@ -107,12 +104,12 @@ class Products extends Component {
     else await this.populateProducts("", parseInt(page));
   };
 
-  handleSearch = query => {
+  handleSearch = (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
     this.populateProducts(query, this.state.currentPage, this.state.sortColumn);
   };
 
-  handleSort = async sortColumn => {
+  handleSort = async (sortColumn) => {
     this.setState({ sortColumn });
 
     await this.populateProducts(
@@ -129,7 +126,7 @@ class Products extends Component {
       searchQuery,
       totalProducts,
       pageSize,
-      currentPage
+      currentPage,
     } = this.state;
     const user = getCurrentUser();
 

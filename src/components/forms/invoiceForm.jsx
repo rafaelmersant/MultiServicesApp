@@ -26,12 +26,12 @@ import {
   getInvoiceSequence,
   getInvoiceHeader,
   getInvoiceDetail,
-  deleteInvoiceDetail
+  deleteInvoiceDetail,
 } from "../../services/invoiceServices";
 import {
   saveProductTracking,
   updateProductStock,
-  getProductsStocks
+  getProductsStocks,
 } from "../../services/inventoryService";
 import InvoiceDetailTable from "../tables/invoiceDetailTable";
 import _ from "lodash";
@@ -58,7 +58,7 @@ class InvoiceForm extends Form {
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString(),
-      serverDate: new Date().toISOString()
+      serverDate: new Date().toISOString(),
     },
     invoiceDate: new Date(),
     products: [],
@@ -75,17 +75,17 @@ class InvoiceForm extends Form {
       cost: 0,
       itbis: 0,
       discount: 0,
-      total: 0
+      total: 0,
     },
     paymentMethods: [
       { id: "CASH", name: "Efectivo" },
       { id: "CARD", name: "Tarjeta de Credito" },
-      { id: "CREDIT", name: "Crédito" }
+      { id: "CREDIT", name: "Crédito" },
     ],
     typeDoc: [
       { id: "0", name: "No usar" },
       { id: "B01", name: "B01" },
-      { id: "B02", name: "B02" }
+      { id: "B02", name: "B02" },
     ],
     errors: {},
     currentProduct: {},
@@ -94,7 +94,7 @@ class InvoiceForm extends Form {
       sequence: 1,
       company_id: getCurrentUser().companyId,
       creationDate: new Date().toISOString(),
-      createdUser: getCurrentUser().email
+      createdUser: getCurrentUser().email,
     },
     createdUserName: "",
     action: "Nueva Factura",
@@ -103,7 +103,7 @@ class InvoiceForm extends Form {
     searchCustomerText: "",
     searchProductText: "",
     serializedInvoiceHeader: {},
-    serializedInvoiceDetail: []
+    serializedInvoiceDetail: [],
   };
 
   //Schema (Joi)
@@ -122,7 +122,7 @@ class InvoiceForm extends Form {
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
     creationDate: Joi.string(),
-    serverDate: Joi.string()
+    serverDate: Joi.string(),
   };
 
   async populateProducts() {
@@ -146,7 +146,7 @@ class InvoiceForm extends Form {
     this.setState({ line });
   }
 
-  availableInStock = async productId => {
+  availableInStock = async (productId) => {
     const { data: stock } = await getProductsStocks(productId);
     return stock.length ? stock[0].quantityAvailable : 0;
   };
@@ -155,7 +155,7 @@ class InvoiceForm extends Form {
     window.location = `/invoice/new`;
   };
 
-  updateLine = product => {
+  updateLine = (product) => {
     const line = { ...this.state.line };
 
     const discount = isNaN(parseFloat(line.discount))
@@ -185,7 +185,7 @@ class InvoiceForm extends Form {
     data.discount = 0;
     data.subtotal = 0;
 
-    this.state.details.forEach(item => {
+    this.state.details.forEach((item) => {
       data.itbis += Math.round(parseFloat(item.itbis) * 100) / 100;
       data.discount += Math.round(parseFloat(item.discount) * 100) / 100;
       data.subtotal += Math.round(parseFloat(item.total) * 100) / 100;
@@ -206,7 +206,7 @@ class InvoiceForm extends Form {
       quantity: entry.quantity,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     };
 
     await saveProductTracking(inventory);
@@ -260,7 +260,7 @@ class InvoiceForm extends Form {
         action: "Detalle de Factura",
         serializedInvoiceHeader: invoiceHeader,
         serializedInvoiceDetail: invoiceDetail,
-        createdUserName: createdUserData[0].name
+        createdUserName: createdUserData[0].name,
       });
 
       this.forceUpdate();
@@ -298,13 +298,13 @@ class InvoiceForm extends Form {
       createdUser: invoiceHeader[0].createdByUser
         ? invoiceHeader[0].createdByUser
         : getCurrentUser().email,
-      creationDate: invoiceHeader[0].creationDate
+      creationDate: invoiceHeader[0].creationDate,
     };
   }
 
   mapToViewInvoiceDetail(invoiceDetail) {
     let details = [];
-    invoiceDetail.forEach(item => {
+    invoiceDetail.forEach((item) => {
       details.push({
         id: item.id,
         invoice_id: item.invoice.id,
@@ -317,21 +317,21 @@ class InvoiceForm extends Form {
         discount: item.discount,
         total:
           Math.round(parseFloat(item.price) * parseFloat(item.quantity) * 100) /
-          100
+          100,
       });
     });
 
     return details;
   }
 
-  handleChangeInvoiceDate = date => {
+  handleChangeInvoiceDate = (date) => {
     const data = { ...this.state.data };
     data.creationDate = date.toISOString();
     this.setState({ data, invoiceDate: date });
   };
 
-  handleSelectProduct = async product => {
-    const handler = e => {
+  handleSelectProduct = async (product) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -341,7 +341,7 @@ class InvoiceForm extends Form {
       return false;
     }
 
-    const product_found = _.find(this.state.details, function(item) {
+    const product_found = _.find(this.state.details, function (item) {
       return item.product_id === product.id;
     });
 
@@ -363,18 +363,18 @@ class InvoiceForm extends Form {
     this.setState({
       hideSearchProduct: true,
       currentProduct: product,
-      searchProductText: product.description
+      searchProductText: product.description,
     });
   };
 
-  handleFocusProduct = value => {
+  handleFocusProduct = (value) => {
     setTimeout(() => {
       this.setState({ hideSearchProduct: value });
     }, 200);
   };
 
-  handleSelectCustomer = async customer => {
-    const handler = e => {
+  handleSelectCustomer = async (customer) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -390,18 +390,18 @@ class InvoiceForm extends Form {
     this.setState({
       data,
       hideSearchCustomer: true,
-      searchCustomerText: `${customer.firstName} ${customer.lastName}`
+      searchCustomerText: `${customer.firstName} ${customer.lastName}`,
     });
   };
 
-  handleFocusCustomer = value => {
+  handleFocusCustomer = (value) => {
     setTimeout(() => {
       this.setState({ hideSearchCustomer: value });
     }, 200);
   };
 
   handleAddDetail = () => {
-    const handler = e => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -420,7 +420,7 @@ class InvoiceForm extends Form {
       this.setState({
         details,
         currentProduct: {},
-        searchProductText: ""
+        searchProductText: "",
       });
 
       this.updateTotals();
@@ -433,7 +433,7 @@ class InvoiceForm extends Form {
     if (!soft) detailsToDelete.push(detail);
 
     const details = this.state.details.filter(
-      d => d.product_id !== detail.product_id
+      (d) => d.product_id !== detail.product_id
     );
 
     this.setState({ details, detailsToDelete });
@@ -443,8 +443,8 @@ class InvoiceForm extends Form {
     });
   };
 
-  handleEditDetail = async detail => {
-    const handler = e => {
+  handleEditDetail = async (detail) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -458,7 +458,7 @@ class InvoiceForm extends Form {
       line,
       currentProduct: product.results[0],
       hideSearchProduct: true,
-      searchProductText: line.product
+      searchProductText: line.product,
     });
 
     this.handleDeleteDetail(detail, true);
@@ -504,12 +504,12 @@ class InvoiceForm extends Form {
     }
   };
 
-  handleSetNewCustomer = e => {
+  handleSetNewCustomer = (e) => {
     this.handleSelectCustomer(e);
     this.forceUpdate();
   };
 
-  handleSetNewProduct = e => {
+  handleSetNewProduct = (e) => {
     this.setState({ searchProductText: `${e.description}` });
     this.handleSelectProduct(e);
   };
@@ -592,6 +592,13 @@ class InvoiceForm extends Form {
     this._isMounted = false;
   }
 
+  validateLine() {
+    if (!this.state.line.product_id) return true;
+    if (!parseFloat(this.state.line.quantity) > 0) return true;
+
+    if (this.state.line.quantity > 0) return false;
+  }
+
   doSubmit = async () => {
     try {
       //console.log("doSubmit - state", this.state);
@@ -599,11 +606,12 @@ class InvoiceForm extends Form {
 
       setTimeout(async () => {
         if (!this.state.data.id) await this.refreshNextInvoiceSequence();
+        console.log("invoiceHeader", this.state.data);
         const { data: invoiceHeader } = await saveInvoiceHeader(
           this.state.data
         );
 
-        this.state.details.forEach(async item => {
+        this.state.details.forEach(async (item) => {
           const detail = {
             id: item.id,
             invoice_id: invoiceHeader.id,
@@ -612,17 +620,26 @@ class InvoiceForm extends Form {
             price: item.price,
             itbis: item.itbis,
             discount: item.discount,
-            creationDate: new Date().toISOString()
+            creationDate: new Date().toISOString(),
           };
 
           await saveInvoiceDetail(detail);
           await saveInvoiceSequence(this.state.invoiceSequence);
-          await this.updateInventory(detail);
+
+          try {
+            await this.updateInventory(detail);
+          } catch (ex) {
+            console.log("Exception for updateInventory --> " + ex);
+          }
         });
 
-        this.state.detailsToDelete.forEach(async item => {
-          await deleteInvoiceDetail(item.id);
-        });
+        try {
+          this.state.detailsToDelete.forEach(async (item) => {
+            await deleteInvoiceDetail(item.id);
+          });
+        } catch (ex) {
+          console.log("Exception for deleteInvoiceDetail --> " + ex);
+        }
       }, 100);
 
       setTimeout(() => {
@@ -670,7 +687,7 @@ class InvoiceForm extends Form {
                 >
                   <DatePicker
                     selected={this.state.invoiceDate}
-                    onChange={date => this.handleChangeInvoiceDate(date)}
+                    onChange={(date) => this.handleChangeInvoiceDate(date)}
                     dateFormat="dd/MM/yyyy"
                   />
                 </div>
@@ -810,7 +827,7 @@ class InvoiceForm extends Form {
                   <button
                     className="btn btn-info"
                     onClick={this.handleAddDetail}
-                    disabled={!this.state.line.product_id}
+                    disabled={this.validateLine()}
                   >
                     Agregar
                   </button>
@@ -834,14 +851,14 @@ class InvoiceForm extends Form {
             data-toggle="modal"
             data-target="#customerModal"
             hidden="hidden"
-            ref={button => (this.raiseCustomerModal = button)}
+            ref={(button) => (this.raiseCustomerModal = button)}
           ></button>
           <button
             type="button"
             data-toggle="modal"
             data-target="#productModal"
             hidden="hidden"
-            ref={button => (this.raiseProductModal = button)}
+            ref={(button) => (this.raiseProductModal = button)}
           ></button>
 
           <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
@@ -853,7 +870,7 @@ class InvoiceForm extends Form {
               <ReactToPrint
                 trigger={() => (
                   <button
-                    ref={button => (this.printButton = button)}
+                    ref={(button) => (this.printButton = button)}
                     className="fa fa-print text-success pull-right"
                     style={{ fontSize: "30px" }}
                   ></button>
@@ -863,7 +880,7 @@ class InvoiceForm extends Form {
             )}
           <div hidden="hidden">
             <PrintInvoice
-              ref={el => (this.componentRef = el)}
+              ref={(el) => (this.componentRef = el)}
               invoiceHeader={this.state.serializedInvoiceHeader}
               invoiceDetail={this.state.serializedInvoiceDetail}
               itbisTotal={this.state.data.itbis}
@@ -892,7 +909,7 @@ class InvoiceForm extends Form {
             type="button"
             data-toggle="modal"
             data-target="#newInvoiceModal"
-            ref={button => (this.raiseNewInvoiceModal = button)}
+            ref={(button) => (this.raiseNewInvoiceModal = button)}
           ></button>
           <NewInvoiceModal />
         </div>

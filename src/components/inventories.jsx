@@ -13,18 +13,18 @@ class Inventories extends Component {
     loading: true,
     prodTrackings: [],
     currentPage: 1,
-    pageSize: 20,
+    pageSize: 50,
     totalEntries: 0,
     productSelected: 0,
     searchProductText: "",
     hideSearchProduct: true,
     invoiceRecords: false,
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
     const { productSelected: product, invoiceRecords, sortColumn } = {
-      ...this.state
+      ...this.state,
     };
 
     await this.getInventoryRecords(
@@ -52,27 +52,27 @@ class Inventories extends Component {
       totalEntries: prodTrackings.count,
       loading: false,
       productSelected: productId,
-      searchProductText: productId === 0 ? "" : this.state.searchProductText
+      searchProductText: productId === 0 ? "" : this.state.searchProductText,
     });
 
     if (productId === 0) this.handleFocusProduct(true);
   };
 
-  handlePageChange = async page => {
+  handlePageChange = async (page) => {
     this.setState({ currentPage: page });
 
     const { productSelected: product, sortColumn, invoiceRecords } = {
-      ...this.state
+      ...this.state,
     };
 
     await this.getInventoryRecords(product, page, sortColumn, invoiceRecords);
   };
 
-  handleSort = async sortColumn => {
+  handleSort = async (sortColumn) => {
     this.setState({ sortColumn });
 
     const { productSelected: product, currentPage: page, invoiceRecords } = {
-      ...this.state
+      ...this.state,
     };
 
     await this.getInventoryRecords(product, page, sortColumn, invoiceRecords);
@@ -81,7 +81,7 @@ class Inventories extends Component {
   handleOnChangeInvoiceRecords = async () => {
     const invoiceRecords = !this.state.invoiceRecords;
     const { productSelected: product, sortColumn } = {
-      ...this.state
+      ...this.state,
     };
     const currentPage = 1;
 
@@ -97,14 +97,14 @@ class Inventories extends Component {
     }, 100);
   };
 
-  handleSelectProduct = async product => {
-    const handler = e => {
+  handleSelectProduct = async (product) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
 
     const { currentPage: page, sortColumn, invoiceRecords } = {
-      ...this.state
+      ...this.state,
     };
 
     if (product.id === 0) {
@@ -115,7 +115,7 @@ class Inventories extends Component {
     this.setState({
       productSelected: product.id,
       searchProductText: product.description,
-      hideSearchProduct: true
+      hideSearchProduct: true,
     });
 
     await this.getInventoryRecords(
@@ -126,7 +126,7 @@ class Inventories extends Component {
     );
   };
 
-  handleFocusProduct = value => {
+  handleFocusProduct = (value) => {
     setTimeout(() => {
       this.setState({ hideSearchProduct: value });
     }, 200);
@@ -150,7 +150,7 @@ class Inventories extends Component {
       sortColumn,
       totalEntries,
       pageSize,
-      currentPage
+      currentPage,
     } = this.state;
     const user = getCurrentUser();
 
@@ -177,7 +177,7 @@ class Inventories extends Component {
                 {this.state.productSelected > 0 && (
                   <div
                     style={{
-                      marginTop: "32px"
+                      marginTop: "32px",
                     }}
                   >
                     <span
@@ -186,7 +186,7 @@ class Inventories extends Component {
                         fontSize: "24px",
                         position: "absolute",
                         marginLeft: "-39px",
-                        cursor: "pointer"
+                        cursor: "pointer",
                       }}
                       title="Limpiar filtro de producto"
                       onClick={this.handleCleanProduct}
