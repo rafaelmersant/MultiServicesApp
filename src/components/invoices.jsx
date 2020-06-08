@@ -9,12 +9,12 @@ import { getCurrentUser } from "../services/authService";
 import {
   getInvoicesHeader,
   deleteInvoiceHeader,
-  getInvoiceDetail
+  getInvoiceDetail,
 } from "../services/invoiceServices";
 
 import {
   saveProductTracking,
-  updateProductStock
+  updateProductStock,
 } from "../services/inventoryService";
 
 class Invoices extends Component {
@@ -27,8 +27,8 @@ class Invoices extends Component {
     searchParams: {
       paymentMethod: "ALL",
       customerId: 0,
-      invoiceNo: 0
-    }
+      invoiceNo: 0,
+    },
   };
 
   async componentDidMount() {
@@ -38,7 +38,7 @@ class Invoices extends Component {
   async populateInvoices(_sortColumn, _currentPage) {
     const companyId = getCurrentUser().companyId;
     const { invoiceNo, customerId, paymentMethod } = {
-      ...this.state.searchParams
+      ...this.state.searchParams,
     };
     const { currentPage, sortColumn } = { ...this.state };
 
@@ -57,7 +57,7 @@ class Invoices extends Component {
     this.setState({
       invoices: invoices.results,
       totalInvoices: invoices.count,
-      loading: false
+      loading: false,
     });
   }
 
@@ -71,27 +71,27 @@ class Invoices extends Component {
       quantity: quantity,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     };
     console.log("inventory", inventory);
     await saveProductTracking(inventory);
     await updateProductStock(inventory);
   }
 
-  handlePageChange = async page => {
+  handlePageChange = async (page) => {
     this.setState({ currentPage: page });
     sessionStorage["currentPage"] = parseInt(page);
 
     await this.populateInvoices(null, page);
   };
 
-  handleSort = async sortColumn => {
+  handleSort = async (sortColumn) => {
     this.setState({ sortColumn });
 
     await this.populateInvoices(sortColumn);
   };
 
-  handleDelete = async invoice => {
+  handleDelete = async (invoice) => {
     if (invoice.paid) {
       toast.error("No puede eliminar una factura pagada.");
       return false;
@@ -104,13 +104,13 @@ class Invoices extends Component {
     if (answer) {
       try {
         const invoices = this.state.invoices.filter(
-          item => item.id !== invoice.id
+          (item) => item.id !== invoice.id
         );
         this.setState({ invoices });
 
         const { data: details } = await getInvoiceDetail(invoice.id);
 
-        details.forEach(async item => {
+        details.forEach(async (item) => {
           await this.updateInventory(item.product.id, item.quantity);
           //await deleteInvoiceDetail(item.id); //deleted by default with the header
         });
@@ -128,8 +128,8 @@ class Invoices extends Component {
     }
   };
 
-  handleInvoiceChange = async invoiceNo => {
-    const handler = e => {
+  handleInvoiceChange = async (invoiceNo) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -141,8 +141,8 @@ class Invoices extends Component {
     this.populateInvoices();
   };
 
-  handleCustomerChange = async customer => {
-    const handler = e => {
+  handleCustomerChange = async (customer) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -155,8 +155,8 @@ class Invoices extends Component {
     this.populateInvoices();
   };
 
-  handlePaymentMethodChange = async paymentMethod => {
-    const handler = e => {
+  handlePaymentMethodChange = async (paymentMethod) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -190,7 +190,7 @@ class Invoices extends Component {
       sortColumn,
       totalInvoices,
       pageSize,
-      currentPage
+      currentPage,
     } = this.state;
     const user = getCurrentUser();
     const total = invoices ? invoices.length : 0;

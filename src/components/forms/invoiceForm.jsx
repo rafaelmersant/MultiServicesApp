@@ -191,6 +191,10 @@ class InvoiceForm extends Form {
       data.subtotal += Math.round(parseFloat(item.total) * 100) / 100;
     });
 
+    data.itbis = Math.round(data.itbis * 100) / 100;
+    data.discount = Math.round(data.discount * 100) / 100;
+    data.subtotal = Math.round(data.subtotal * 100) / 100;
+
     this.setState({ data });
 
     //console.log("UpdateTotals - data", data);
@@ -897,7 +901,7 @@ class InvoiceForm extends Form {
           </NavLink>
 
           <button
-            className="btn btn-success mb-3 pull-right"
+            className="btn button-local mb-3 pull-right"
             onClick={this.newInvoice}
           >
             Nueva Factura

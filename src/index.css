@@ -47,3 +47,8 @@ div[disabled] {
   opacity: 0.8;
   cursor: not-allowed;
 }
+
+.button-local {
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+}

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 class NewInvoiceModal extends Component {
-  handleClosePopUp = e => {
+  handleClosePopUp = (e) => {
     window.location = `/invoice/new`;
     this.closeButton.click();
   };
@@ -22,7 +22,7 @@ class NewInvoiceModal extends Component {
           <div className="modal-content">
             <div className="center">
               <button
-                className="btn btn-success w-100 pb-5 pt-5"
+                className="btn button-local w-100 pb-5 pt-5"
                 onClick={this.handleClosePopUp}
               >
                 <h1>Nueva Factura</h1>
@@ -32,7 +32,7 @@ class NewInvoiceModal extends Component {
         </div>
 
         <button
-          ref={button => (this.closeButton = button)}
+          ref={(button) => (this.closeButton = button)}
           type="button"
           className="close"
           data-dismiss="modal"

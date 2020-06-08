@@ -29,19 +29,19 @@ class TableBody extends Component {
     return item.id + (column.path || column.key);
   };
 
-  formatDate = stringDate => {
+  formatDate = (stringDate) => {
     const time = new Date(stringDate);
     let timeFormatted = time.toLocaleString("en-US", {
       hour: "numeric",
       minute: "numeric",
-      hour12: true
+      hour12: true,
     });
     const dateFormatted = new Date(stringDate).toLocaleDateString();
 
     return `${dateFormatted} ${timeFormatted}`;
   };
 
-  formatDateWithoutTime = stringDate => {
+  formatDateWithoutTime = (stringDate) => {
     return new Date(stringDate).toLocaleDateString();
   };
 
@@ -50,9 +50,9 @@ class TableBody extends Component {
 
     return (
       <tbody>
-        {data.map(item => (
-          <tr key={item.id || item.product_id}>
-            {columns.map(column => (
+        {data.map((item) => (
+          <tr key={item.product_id || item.id}>
+            {columns.map((column) => (
               <td key={this.createKey(item, column)}>
                 {this.renderCell(item, column)}
               </td>

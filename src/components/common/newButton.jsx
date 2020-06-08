@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 
 const NewButton = ({ label, to }) => {
   return (
-    <NavLink className="btn btn-success pull-right" to={to}>
+    <NavLink className="btn button-local pull-right" to={to}>
       {label}
     </NavLink>
   );

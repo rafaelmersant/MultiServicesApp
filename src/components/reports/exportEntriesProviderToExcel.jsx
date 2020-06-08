@@ -13,7 +13,7 @@ class ExportEntriesProviderToExcel extends Component {
       <ExcelFile
         filename="ReporteEntradasProveedores"
         element={
-          <button className="btn btn-success"> Exportar a Excel </button>
+          <button className="btn button-local"> Exportar a Excel </button>
         }
       >
         <ExcelSheet data={data} name={sheetName}>
