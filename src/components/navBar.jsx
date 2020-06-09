@@ -12,8 +12,8 @@ const NavBar = ({ user }) => {
         </span> */}
 
         <img
-          width="170px"
-          src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
+          width="100px"
+          src={process.env.PUBLIC_URL + "/images/fanith.png"}
           alt="FERRINMAS"
         />
       </NavLink>
@@ -81,28 +81,31 @@ const NavBar = ({ user }) => {
                 </NavLink>
               </li>
 
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/productsCategories">
-                  | Categorias
+              <li className="nav-item dropdown">
+                <NavLink
+                  className="clickable text-secondary nav-link dropdown-toggle"
+                  id="navbarDropdown"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  to=""
+                >
+                  | Mantenimiento
                 </NavLink>
-              </li>
-
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/customers">
-                  | Clientes
-                </NavLink>
-              </li>
-
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/providers">
-                  | Proveedores
-                </NavLink>
-              </li>
-
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/ncf">
-                  | NCF
-                </NavLink>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <NavLink className="dropdown-item" to="/productsCategories">
+                    Categorias
+                  </NavLink>
+                  <NavLink className="dropdown-item" to="/customers">
+                    Clientes
+                  </NavLink>
+                  <NavLink className="dropdown-item" to="/providers">
+                    Proveedores
+                  </NavLink>
+                  <NavLink className="dropdown-item" to="/ncf">
+                    NCF
+                  </NavLink>
+                </div>
               </li>
 
               <li className="nav-item dropdown">
@@ -135,6 +138,12 @@ const NavBar = ({ user }) => {
                     to="/reports/entrtiesProvider"
                   >
                     Entradas por Proveedor
+                  </NavLink>
+                  <NavLink
+                    className="dropdown-item"
+                    to="/reports/purchaseOrders"
+                  >
+                    Ordenes de Compra
                   </NavLink>
                 </div>
               </li>
