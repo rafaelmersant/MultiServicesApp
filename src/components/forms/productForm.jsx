@@ -10,15 +10,17 @@ import { getProductsCategories } from "../../services/productCategoryService";
 import {
   getProduct,
   saveProduct,
-  getProductByExactDescription
+  getProductByExactDescription,
+  getProductProviders,
 } from "../../services/productService";
 import { getCurrentUser } from "../../services/authService";
 import {
   getProductsStocks,
   updateProductStock,
-  saveProductTracking
+  saveProductTracking,
 } from "../../services/inventoryService";
 import CategoryModal from "../modals/categoryModal";
+import ProductProvidersModal from "../modals/productProvidersModal";
 
 class ProductForm extends Form {
   state = {
@@ -36,27 +38,23 @@ class ProductForm extends Form {
       minimumStock: 0,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     },
+    providers: [],
     quantity: 0,
     itbis: false,
     companies: [],
     categories: [],
     errors: {},
     availableStock: 0,
-    action: "Nuevo Producto"
+    action: "Nuevo Producto",
   };
 
   schema = {
     id: Joi.number(),
-    description: Joi.string()
-      .required()
-      .max(100)
-      .label("Descripción"),
+    description: Joi.string().required().max(100).label("Descripción"),
     descriptionLong: Joi.optional(),
-    price: Joi.number()
-      .required()
-      .label("Precio"),
+    price: Joi.number().required().label("Precio"),
     cost: Joi.optional(),
     itbis: Joi.optional(),
     measure: Joi.optional(),
@@ -66,7 +64,7 @@ class ProductForm extends Form {
     minimumStock: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
-    creationDate: Joi.string()
+    creationDate: Joi.string(),
   };
 
   async updateInventory(productId, quantity) {
@@ -80,7 +78,7 @@ class ProductForm extends Form {
         quantity: quantity,
         company_id: getCurrentUser().companyId,
         createdUser: getCurrentUser().email,
-        creationDate: new Date().toISOString()
+        creationDate: new Date().toISOString(),
       };
 
       await saveProductTracking(inventory);
@@ -101,6 +99,32 @@ class ProductForm extends Form {
     this.setState({ categories });
   }
 
+  async populateProviders() {
+    try {
+      const productId = this.props.match.params.id;
+      if (productId === "new") return;
+
+      let _providers = [];
+      const { data: providers } = await getProductProviders(productId);
+
+      providers.forEach((item) => {
+        if (
+          !_providers.some(
+            (p) => p.header.provider.id === item.header.provider.id
+          )
+        )
+          _providers.push(item);
+      });
+
+      this.setState({
+        providers: _providers,
+      });
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404)
+        return this.props.history.replace("/not-found");
+    }
+  }
+
   async populateProduct() {
     try {
       const productId = this.props.match.params.id;
@@ -112,7 +136,7 @@ class ProductForm extends Form {
       this.setState({
         data: this.mapToViewModel(product.results),
         itbis: product.results[0].itbis > 0,
-        action: "Editar Producto"
+        action: "Editar Producto",
       });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -126,8 +150,8 @@ class ProductForm extends Form {
       this.setState({ availableStock: stock[0].quantityAvailable });
   }
 
-  handleSetNewCategory = e => {
-    const handler = e => {
+  handleSetNewCategory = (e) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -139,7 +163,7 @@ class ProductForm extends Form {
     this.setState({ data });
   };
 
-  handleChangeITBIS = e => {
+  handleChangeITBIS = (e) => {
     const { data } = { ...this.state };
 
     if (!this.state.itbis) {
@@ -170,7 +194,7 @@ class ProductForm extends Form {
     this.setState({ quantity: input.value });
   };
 
-  handleChangeCalculation = e => {
+  handleChangeCalculation = (e) => {
     const data = { ...this.state.data };
     data.cost = e.priceC2;
     data.price = e.priceSales;
@@ -183,6 +207,7 @@ class ProductForm extends Form {
     await this.populateCompanies();
     await this.populateCategories();
     await this.populateProduct();
+    await this.populateProviders();
   }
 
   mapToViewModel(product) {
@@ -204,7 +229,7 @@ class ProductForm extends Form {
       createdUser: product[0].createdUser
         ? product[0].createdUser
         : getCurrentUser().email,
-      creationDate: product[0].creationDate
+      creationDate: product[0].creationDate,
     };
   }
 
@@ -297,7 +322,7 @@ class ProductForm extends Form {
                 style={{
                   marginTop: "35px",
                   maxWidth: "10px",
-                  marginRight: "-22px"
+                  marginRight: "-22px",
                 }}
               >
                 <input
@@ -345,7 +370,7 @@ class ProductForm extends Form {
                       backgroundColor: "transparent",
                       marginTop: "32px",
                       fontSize: "36px",
-                      outline: "none"
+                      outline: "none",
                     }}
                   ></button>
                 </div>
@@ -372,6 +397,20 @@ class ProductForm extends Form {
           </form>
         </div>
         <CategoryModal setNewCategory={this.handleSetNewCategory} />
+
+        <ProductProvidersModal data={this.state.providers} />
+
+        <div className="pull-right">
+          <button
+            className="btn btn-dark"
+            type="button"
+            data-toggle="modal"
+            data-target="#productProvidersModal"
+            ref={(button) => (this.raiseProductProvidersModal = button)}
+          >
+            Proveedores
+          </button>
+        </div>
       </div>
     );
   }
