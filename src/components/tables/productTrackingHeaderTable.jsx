@@ -8,29 +8,30 @@ class ProductTrackingHeaderTable extends Component {
     {
       path: "id",
       label: "ID",
-      content: inventory => (
+      content: (inventory) => (
         <div className="text-center">
           <Link to={`/inventoryFull/${inventory.id}`}>{inventory.id}</Link>
         </div>
-      )
+      ),
     },
-    { path: "creationDate", label: "Fecha (mm/dd/aaaa)" },
+    // { path: "creationDate", label: "Fecha (mm/dd/aaaa)" },
+    { path: "docDate", label: "Fecha (mm/dd/aaaa)" },
     {
       path: "provider.name",
       label: "Proveedor",
-      content: item => (
+      content: (item) => (
         <Link to={`/provider/${item.provider.id}`}>{item.provider.name}</Link>
-      )
+      ),
     },
     {
       path: "totalAmount",
       label: "Monto Total",
       align: "text-right",
-      content: item => (
+      content: (item) => (
         <div className="text-right">
           <span> {formatNumber(parseFloat(item.totalAmount))} </span>
         </div>
-      )
+      ),
     },
     { path: "ncf", label: "NCF" },
     { path: "reference", label: "Factura" },
@@ -38,7 +39,7 @@ class ProductTrackingHeaderTable extends Component {
       path: "paid",
       label: "Estatus",
       align: "text-center",
-      content: entry => (
+      content: (entry) => (
         <div className="text-center">
           <span>
             {entry.paid
@@ -47,8 +48,8 @@ class ProductTrackingHeaderTable extends Component {
               .replace(false, "Pendiente")}
           </span>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   render() {
