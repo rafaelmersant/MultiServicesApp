@@ -108,3 +108,7 @@ export function savePurchaseOrder(order) {
 
   return http.post(`${apiEndpointPurchaseOrder}/`, order);
 }
+
+export function getProductProviders(productId) {
+  return http.get(`${apiUrl}/productsProviders/?product_id=${productId}`);
+}

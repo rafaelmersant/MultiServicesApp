@@ -9,6 +9,9 @@ class TableBody extends Component {
     if (column.path.toLowerCase().includes("duedate"))
       return this.formatDateWithoutTime(_.get(item, column.path));
 
+    if (column.path.toLowerCase().includes("docdate"))
+      return this.formatDateWithoutTime(_.get(item, column.path));
+
     if (column.path.toLowerCase().includes("date"))
       return this.formatDate(_.get(item, column.path));
 

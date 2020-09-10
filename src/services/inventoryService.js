@@ -5,6 +5,7 @@ import { getPurchaseOrderByProduct, savePurchaseOrder } from "./productService";
 
 const apiEndpointProdTrackingHeader = `${apiUrl}/productsTrackingsHeader`;
 const apiEndpointProdTracking = `${apiUrl}/productsTrackings`;
+const apiEndpointProdTrackingLong = `${apiUrl}/productsTrackingsLong`;
 const apiEndpointProdStock = `${apiUrl}/productsStocks`;
 
 function productsTrackingHeaderUrl(id) {
@@ -63,7 +64,7 @@ export function getProductsTrackings(
 }
 
 export function getProductsTrackingsByHeader(headerId) {
-  return http.get(`${apiEndpointProdTracking}/?header=${headerId}`);
+  return http.get(`${apiEndpointProdTrackingLong}/?header=${headerId}`);
 }
 
 export function getProductsTrackingsRange(productId, startDate, endDate) {
@@ -131,7 +132,7 @@ export function deleteTrackingHeader(trackingId) {
 export async function deleteTracking(entry) {
   await updateProductStock({
     quantity: entry.quantity,
-    product_id: entry.product.id
+    product_id: entry.product.id,
   });
   return http.delete(productsTrackingUrl(entry.id));
 }
@@ -154,7 +155,7 @@ export async function updateProductStock(inventory) {
     quantityHold: 0,
     company_id: getCurrentUser().companyId,
     lastUpdated: new Date().toISOString(),
-    modifiedUser: getCurrentUser().email
+    modifiedUser: getCurrentUser().email,
   };
 
   if (productStock.length) {
@@ -176,7 +177,7 @@ export async function updateProductStock(inventory) {
           product_id: productStock[0].product.id,
           quantity: newQuantity,
           company_id: getCurrentUser().companyId,
-          creationDate: new Date().toISOString()
+          creationDate: new Date().toISOString(),
         });
       }
     }
