@@ -12,7 +12,7 @@ class PrintInvoice extends Component {
       itbisTotal,
       valorTotal,
       discountTotal,
-      createdUserName
+      createdUserName,
     } = this.props;
 
     return (
@@ -69,7 +69,7 @@ class PrintInvoice extends Component {
               </span>
             )}
 
- 	    <span className="font-receipt font-receipt-small d-block">
+            <span className="font-receipt font-receipt-small d-block">
               Cliente: {invoiceHeader[0].customer.firstName}{" "}
               {invoiceHeader[0].customer.lastName}
             </span>
@@ -77,6 +77,11 @@ class PrintInvoice extends Component {
             {invoiceHeader[0].customer.identification.length > 0 && (
               <span className="font-receipt font-receipt-small d-block">
                 Cédula/RNC: {invoiceHeader[0].customer.identification}
+              </span>
+            )}
+            {invoiceHeader[0].customer.address.length > 0 && (
+              <span className="font-receipt font-receipt-small d-block">
+                Dirección: {invoiceHeader[0].customer.address}
               </span>
             )}
           </div>
@@ -135,7 +140,7 @@ class PrintInvoice extends Component {
               </tr>
             </thead>
             <tbody>
-              {invoiceDetail.map(item => (
+              {invoiceDetail.map((item) => (
                 <React.Fragment key={"F" + item.id}>
                   <tr key={"M" + item.id}>
                     <td colSpan="3">
@@ -176,15 +181,17 @@ class PrintInvoice extends Component {
                       </td>
                     </tr>
                   )}
- 		
-		  <tr>
+
+                  <tr>
                     <td colSpan="3">
-                      <span className="font-receipt font-receipt-small" style={{ color: "white", fontSize: "0.6em" }}>
+                      <span
+                        className="font-receipt font-receipt-small"
+                        style={{ color: "white", fontSize: "0.6em" }}
+                      >
                         |
                       </span>
                     </td>
                   </tr>
-
                 </React.Fragment>
               ))}
 
@@ -248,23 +255,36 @@ class PrintInvoice extends Component {
           </table>
         )}
         <div className="mt-4">
-          <span className="font-receipt font-receipt-small-F">Items: {invoiceDetail.length}</span>
+          <span className="font-receipt font-receipt-small-F">
+            Items: {invoiceDetail.length}
+          </span>
         </div>
         <div>
-          <span class="font-receipt font-receipt-small-F">No. Factura:{" "} </span>
+          <span class="font-receipt font-receipt-small-F">No. Factura: </span>
           <span className="font-receipt font-receipt-small-F">
             {invoiceHeader.length && invoiceHeader[0].sequence}
           </span>
         </div>
         <div>
-          <span class="font-receipt font-receipt-small-F">Método de pago:{" "} </span>
-          <span class="font-receipt font-receipt-small-F">{invoiceHeader.length && invoiceHeader[0].paymentMethod}</span>
+          <span class="font-receipt font-receipt-small-F">
+            Método de pago:{" "}
+          </span>
+          <span class="font-receipt font-receipt-small-F">
+            {invoiceHeader.length && invoiceHeader[0].paymentMethod}
+          </span>
         </div>
-        <div><span class="font-receipt font-receipt-small-F">Le atendió: {createdUserName}</span></div>
+        <div>
+          <span class="font-receipt font-receipt-small-F">
+            Le atendió: {createdUserName}
+          </span>
+        </div>
         <div className="mt-4" style={{ marginLeft: "115px" }}>
           GRACIAS POR SU COMPRA!
         </div>
-        <div className="mt-4 font-receipt-small-F" style={{ height: "55px", fontFamily: "TimesNewRoman" }}>
+        <div
+          className="mt-4 font-receipt-small-F"
+          style={{ height: "55px", fontFamily: "TimesNewRoman" }}
+        >
           II
         </div>
       </div>
