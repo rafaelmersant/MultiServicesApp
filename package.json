@@ -22,7 +22,7 @@
     "react-scripts": "^3.3.0",
     "react-to-print": "^2.5.0",
     "react-toastify": "^4.1.0",
-    "serve": "^11.2.0"
+    "serve": "^11.3.2"
   },
   "scripts": {
     "start": "react-scripts start",
