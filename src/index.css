@@ -23,19 +23,27 @@ code {
 }
 
 .font-receipt {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: sans-serif;
 }
 
 .font-receipt-small {
-  font-size: 16px;
+  font-size: 21px;
+}
+
+.font-receipt-small-2 {
+  font-size: 17px;
+}
+
+.font-receipt-small-F {
+  font-size: 23px;
 }
 
 .font-receipt-medium {
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .font-receipt-big {
-  font-size: 26px;
+  font-size: 28px;
 }
 
 table a {

@@ -22,9 +22,9 @@ class PrintInvoice extends Component {
             <div className="text-center">
               <img
                 width="210px"
-                src={process.env.PUBLIC_URL + "/images/fanith.png"}
-                //src={require("../../../public/images/fanith.png")}
-                alt="FANITH"
+                src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
+                //src={require("../../../public/images/FERRINMAS_small.jpg")}
+                alt="FERRINMAS"
               />
             </div>
 
@@ -36,14 +36,14 @@ class PrintInvoice extends Component {
               <span className="font-receipt">
                 {invoiceHeader[0].company.address}
               </span>
-            </div>
+            </div>*/}
             <div className="text-center">
-              <span className="font-receipt">
+              <span className="font-receipt font-receipt-small">
                 {invoiceHeader[0].company.phoneNumber}
               </span>
-            </div> */}
+            </div>
             <div className="text-center">
-              <span className="font-receipt">
+              <span className="font-receipt font-receipt-small">
                 {invoiceHeader[0].company.email}
               </span>
             </div>
@@ -69,16 +69,16 @@ class PrintInvoice extends Component {
               </span>
             )}
 
+ 	    <span className="font-receipt font-receipt-small d-block">
+              Cliente: {invoiceHeader[0].customer.firstName}{" "}
+              {invoiceHeader[0].customer.lastName}
+            </span>
+
             {invoiceHeader[0].customer.identification.length > 0 && (
               <span className="font-receipt font-receipt-small d-block">
                 Cédula/RNC: {invoiceHeader[0].customer.identification}
               </span>
             )}
-
-            <span className="font-receipt font-receipt-small d-block">
-              Cliente: {invoiceHeader[0].customer.firstName}{" "}
-              {invoiceHeader[0].customer.lastName}
-            </span>
           </div>
         )}
 
@@ -88,7 +88,7 @@ class PrintInvoice extends Component {
           </span>
 
           <span
-            className="font-receipt font-receipt-small"
+            className="font-receipt font-receipt-small-2"
             style={{ marginLeft: "45px" }}
           >
             {invoiceHeader.length &&
@@ -97,7 +97,7 @@ class PrintInvoice extends Component {
           </span>
 
           <span
-            className="font-receipt font-receipt-small"
+            className="font-receipt font-receipt-small-2"
             style={{ marginLeft: "25px" }}
           >
             {invoiceHeader.length &&
@@ -176,6 +176,15 @@ class PrintInvoice extends Component {
                       </td>
                     </tr>
                   )}
+ 		
+		  <tr>
+                    <td colSpan="3">
+                      <span className="font-receipt font-receipt-small" style={{ color: "white", fontSize: "0.6em" }}>
+                        |
+                      </span>
+                    </td>
+                  </tr>
+
                 </React.Fragment>
               ))}
 
@@ -239,23 +248,23 @@ class PrintInvoice extends Component {
           </table>
         )}
         <div className="mt-4">
-          Items: <span className="font-receipt">{invoiceDetail.length}</span>
+          <span className="font-receipt font-receipt-small-F">Items: {invoiceDetail.length}</span>
         </div>
         <div>
-          No. Factura:{" "}
-          <span className="font-receipt">
+          <span class="font-receipt font-receipt-small-F">No. Factura:{" "} </span>
+          <span className="font-receipt font-receipt-small-F">
             {invoiceHeader.length && invoiceHeader[0].sequence}
           </span>
         </div>
         <div>
-          Método de pago:{" "}
-          {invoiceHeader.length && invoiceHeader[0].paymentMethod}
+          <span class="font-receipt font-receipt-small-F">Método de pago:{" "} </span>
+          <span class="font-receipt font-receipt-small-F">{invoiceHeader.length && invoiceHeader[0].paymentMethod}</span>
         </div>
-        <div>Le atendió: {createdUserName}</div>
+        <div><span class="font-receipt font-receipt-small-F">Le atendió: {createdUserName}</span></div>
         <div className="mt-4" style={{ marginLeft: "115px" }}>
           GRACIAS POR SU COMPRA!
         </div>
-        <div className="mt-4" style={{ height: "55px" }}>
+        <div className="mt-4 font-receipt-small-F" style={{ height: "55px", fontFamily: "TimesNewRoman" }}>
           II
         </div>
       </div>
