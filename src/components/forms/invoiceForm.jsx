@@ -666,9 +666,8 @@ class InvoiceForm extends Form {
 
       setTimeout(() => {
         //sessionStorage["printInvoice"] = "y";
-        ////sessionStorage["newInvoice"] = "y";
-        ////window.location = `/invoice/${this.state.data.sequence}`;
-        console.log('INVOICE saved')
+        sessionStorage["newInvoice"] = "y";
+        window.location = `/invoice/${this.state.data.sequence}`;        
       }, this.state.details.length * 390);
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
