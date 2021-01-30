@@ -62,9 +62,9 @@ class InvoicesTable extends Component {
       content: (invoice) => (
         <div className="text-center">
           <span>
-            {invoice.paid
+            {invoice.printed
               .toString()
-              .replace(true, "Pagada")
+              .replace(true, "Impresa")
               .replace(false, "Pendiente")}
           </span>
         </div>

@@ -50,6 +50,7 @@ class InvoiceForm extends Form {
       customer_id: "",
       paymentMethod: "CASH",
       paid: false,
+      printed: false,
       reference: "",
       subtotal: 0,
       itbis: 0,
@@ -114,6 +115,7 @@ class InvoiceForm extends Form {
     customer_id: Joi.number().label("Cliente"),
     paymentMethod: Joi.optional(),
     paid: Joi.optional(),
+    printed: Joi.optional(),
     reference: Joi.optional(),
     subtotal: Joi.number().min(1),
     itbis: Joi.optional(),
@@ -294,6 +296,7 @@ class InvoiceForm extends Form {
       ncf: invoiceHeader[0].ncf,
       paymentMethod: invoiceHeader[0].paymentMethod,
       paid: invoiceHeader[0].paid,
+      printed: invoiceHeader[0].printed ? invoiceHeader.printed : false,
       reference: invoiceHeader[0].reference ? invoiceHeader[0].reference : "",
       subtotal: invoiceHeader[0].subtotal,
       itbis: invoiceHeader[0].itbis,
@@ -603,6 +606,21 @@ class InvoiceForm extends Form {
     if (this.state.line.quantity > 0) return false;
   }
 
+  async invoicePrinted() {
+    const { data } = { ...this.state };
+    data.printed = true;
+    this.setState({ data });
+
+    try {
+      console.log("state:", this.state.data);
+      console.log("local:", data);
+      await saveInvoiceHeader(this.state.data);
+      console.log("invoice marked as Printed");
+    } catch (ex) {
+      console.log("Exception for printed invoice --> " + ex);
+    }
+  }
+
   doSubmit = async () => {
     try {
       //console.log("doSubmit - state", this.state);
@@ -648,8 +666,9 @@ class InvoiceForm extends Form {
 
       setTimeout(() => {
         //sessionStorage["printInvoice"] = "y";
-        sessionStorage["newInvoice"] = "y";
-        window.location = `/invoice/${this.state.data.sequence}`;
+        ////sessionStorage["newInvoice"] = "y";
+        ////window.location = `/invoice/${this.state.data.sequence}`;
+        console.log('INVOICE saved')
       }, this.state.details.length * 390);
     } catch (ex) {
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
@@ -880,6 +899,8 @@ class InvoiceForm extends Form {
                   ></button>
                 )}
                 content={() => this.componentRef}
+                onAfterPrint={() => this.invoicePrinted()}
+                //onBeforePrint={() => this.invoicePrinted()}
               />
             )}
           <div hidden="hidden">

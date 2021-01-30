@@ -260,21 +260,23 @@ class PrintInvoice extends Component {
           </span>
         </div>
         <div>
-          <span class="font-receipt font-receipt-small-F">No. Factura: </span>
+          <span className="font-receipt font-receipt-small-F">
+            No. Factura:{" "}
+          </span>
           <span className="font-receipt font-receipt-small-F">
             {invoiceHeader.length && invoiceHeader[0].sequence}
           </span>
         </div>
         <div>
-          <span class="font-receipt font-receipt-small-F">
+          <span className="font-receipt font-receipt-small-F">
             Método de pago:{" "}
           </span>
-          <span class="font-receipt font-receipt-small-F">
+          <span className="font-receipt font-receipt-small-F">
             {invoiceHeader.length && invoiceHeader[0].paymentMethod}
           </span>
         </div>
         <div>
-          <span class="font-receipt font-receipt-small-F">
+          <span className="font-receipt font-receipt-small-F">
             Le atendió: {createdUserName}
           </span>
         </div>

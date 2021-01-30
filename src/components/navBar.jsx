@@ -37,13 +37,14 @@ const NavBar = ({ user }) => {
               Facturación
             </a>
           </li>
-          {user && user.role !== "Admin" && user.role !== "Owner" && (
+          
+          {/* {user && user.role !== "Admin" && user.role !== "Owner" && (
             <li className="nav-item">
               <NavLink className="nav-link" to="/products">
                 | Productos
               </NavLink>
             </li>
-          )}
+          )} */}
 
           {/* <li className="nav-item">
             <NavLink className="nav-link" to="/inventoriesFull">
