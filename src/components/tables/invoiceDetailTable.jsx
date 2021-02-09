@@ -72,7 +72,7 @@ class InvoiceDetailTable extends Component {
                 <th></th>
                 <th>{formatNumber(invoiceHeader.itbis)}</th>
                 <th>{formatNumber(invoiceHeader.discount)}</th>
-                <th>{formatNumber(invoiceHeader.subtotal)}</th>
+                <th>{formatNumber(invoiceHeader.subtotal - invoiceHeader.discount)}</th>
                 {(!invoiceHeader.paid || !invoiceHeader.id) && <th></th>}
               </tr>
             </tfoot>

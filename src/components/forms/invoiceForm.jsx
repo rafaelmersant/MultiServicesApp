@@ -36,6 +36,7 @@ import {
 import InvoiceDetailTable from "../tables/invoiceDetailTable";
 import _ from "lodash";
 import NewInvoiceModal from "../modals/newInvoiceModal";
+import * as Sentry from '@sentry/react'
 
 registerLocale("es", es);
 
@@ -282,6 +283,7 @@ class InvoiceForm extends Form {
       }
     } catch (ex) {
       sessionStorage["newInvoice"] = null;
+      Sentry.captureException(ex)
 
       if (ex.response && ex.response.status === 404)
         return this.props.history.replace("/not-found");
@@ -586,9 +588,14 @@ class InvoiceForm extends Form {
   async componentDidMount() {
     this._isMounted = true;
 
-    await this.populateProducts();
-    await this.populateInvoice(false);
+    try {
+      await this.populateProducts();
+      await this.populateInvoice(false);
 
+    } catch(ex) {
+      Sentry.captureException(ex)
+    }
+    
     if (!this.state.data.id) {
       await this.refreshNextInvoiceSequence();
       this.setNCF(this.state.data.typeDoc);
@@ -617,6 +624,7 @@ class InvoiceForm extends Form {
       await saveInvoiceHeader(this.state.data);
       console.log("invoice marked as Printed");
     } catch (ex) {
+      Sentry.captureException(ex)
       console.log("Exception for printed invoice --> " + ex);
     }
   }
@@ -646,11 +654,12 @@ class InvoiceForm extends Form {
           };
 
           await saveInvoiceDetail(detail);
-          await saveInvoiceSequence(this.state.invoiceSequence);
+          if (!this.state.data.id) await saveInvoiceSequence(this.state.invoiceSequence);
 
           try {
             await this.updateInventory(detail);
           } catch (ex) {
+            Sentry.captureException(ex)
             console.log("Exception for updateInventory --> " + ex);
           }
         });
@@ -660,16 +669,20 @@ class InvoiceForm extends Form {
             await deleteInvoiceDetail(item.id);
           });
         } catch (ex) {
+          Sentry.captureException(ex)
           console.log("Exception for deleteInvoiceDetail --> " + ex);
         }
-      }, 100);
 
-      setTimeout(() => {
-        //sessionStorage["printInvoice"] = "y";
-        sessionStorage["newInvoice"] = "y";
-        window.location = `/invoice/${this.state.data.sequence}`;        
-      }, this.state.details.length * 390);
+        setTimeout(() => {
+          //sessionStorage["printInvoice"] = "y";
+          sessionStorage["newInvoice"] = "y";
+          window.location = `/invoice/${this.state.data.sequence}`;        
+        }, this.state.details.length * 390);
+        
+      }, 100);
     } catch (ex) {
+      Sentry.captureException(ex)
+
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");
 
