@@ -62,6 +62,7 @@ class InvoiceForm extends Form {
       creationDate: new Date().toISOString(),
       serverDate: new Date().toISOString(),
     },
+    disabledSave: false,
     invoiceDate: new Date(),
     products: [],
     details: [],
@@ -438,18 +439,25 @@ class InvoiceForm extends Form {
   };
 
   handleDeleteDetail = (detail, soft = false) => {
-    const detailsToDelete = [...this.state.detailsToDelete];
-    if (!soft) detailsToDelete.push(detail);
-
-    const details = this.state.details.filter(
-      (d) => d.product_id !== detail.product_id
+    
+    const answer = window.confirm(
+      `Seguro que desea eliminar el producto: \n ${detail.product}`
     );
 
-    this.setState({ details, detailsToDelete });
-
-    setTimeout(() => {
-      this.updateTotals();
-    });
+    if (answer) {
+      const detailsToDelete = [...this.state.detailsToDelete];
+      if (!soft) detailsToDelete.push(detail);
+  
+      const details = this.state.details.filter(
+        (d) => d.product_id !== detail.product_id
+      );
+  
+      this.setState({ details, detailsToDelete });
+  
+      setTimeout(() => {
+        this.updateTotals();
+      });
+    }
   };
 
   handleEditDetail = async (detail) => {
@@ -631,7 +639,11 @@ class InvoiceForm extends Form {
 
   doSubmit = async () => {
     try {
-      //console.log("doSubmit - state", this.state);
+      if (this.state.disabledSave)
+        return false
+
+      this.setState({disabledSave : true})
+
       if (this.state.data.typeDoc !== "0") this.getNextNCF();
 
       setTimeout(async () => {
@@ -678,7 +690,9 @@ class InvoiceForm extends Form {
           sessionStorage["newInvoice"] = "y";
           window.location = `/invoice/${this.state.data.sequence}`;        
         }, this.state.details.length * 390);
-        
+
+        this.setState({disabledSave : false})
+
       }, 100);
     } catch (ex) {
       Sentry.captureException(ex)
@@ -904,11 +918,11 @@ class InvoiceForm extends Form {
               getCurrentUser().role === "Owner") && (
               <ReactToPrint
                 trigger={() => (
-                  <button
+                  <a href="Javascript:void(0);"
                     ref={(button) => (this.printButton = button)}
-                    className="fa fa-print text-success pull-right"
-                    style={{ fontSize: "30px" }}
-                  ></button>
+                    className="fa fa-print text-success pull-right pt-2"
+                    style={{ fontSize: "35px" }}
+                  ></a>
                 )}
                 content={() => this.componentRef}
                 onAfterPrint={() => this.invoicePrinted()}

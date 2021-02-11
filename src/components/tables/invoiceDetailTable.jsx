@@ -17,20 +17,20 @@ class InvoiceDetailTable extends Component {
     path: "delete",
     key: "delete",
     content: detail => (
-      <div className="row text-center" style={{ width: "60px" }}>
+      <div className="row text-center" style={{ width: "68px" }}>
         <div className="col-2 text-center">
-          <button
+          <a href="javascript:void(0);"
             onClick={() => this.props.onDelete(detail)}
             className="fa fa-trash text-danger"
-            style={{ fontSize: "19px" }}
-          ></button>
+            style={{ fontSize: "23px" }}
+          ></a>
         </div>
         <div className="col-2 text-center">
-          <button
+          <a href="javascript:void(0);"
             onClick={() => this.props.onEdit(detail)}
             className="fa fa-edit text-warning"
-            style={{ fontSize: "19px" }}
-          ></button>
+            style={{ fontSize: "23px" }}
+          ></a>
         </div>
       </div>
     )
@@ -64,7 +64,7 @@ class InvoiceDetailTable extends Component {
 
           <TableBody columns={this.columns} data={details} />
 
-          {details.length > 1 && (
+          {details.length > 0 && (
             <tfoot>
               <tr className="table-active">
                 <th>Total</th>

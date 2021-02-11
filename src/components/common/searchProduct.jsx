@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Input from "./input";
 import { getProductsByDescription } from "../../services/productService";
+import { formatNumber } from '../../utils/custom';
 
 class SearchProduct extends Component {
   state = {
@@ -75,12 +76,13 @@ class SearchProduct extends Component {
               <button
                 key={product.id}
                 onClick={() => onSelect(product)}
-                className="list-group-item list-group-item-action w-100"
+                className="list-group-item list-group-item-action w-100 py-2"
               >
-                {product.description}
-                {product.category.description.length > 0 && " | "}
-                <span className="text-secondary">
-                  <em>{" " + product.category.description}</em>
+                <span>{product.description}</span> 
+                <span className="text-secondary ml-2" style={{ fontSize: ".8em" }}>(${formatNumber(product.price)})</span>
+                {/* {product.category.description.length > 0 && " | "} */}
+                <span className="text-info pull-right mb-0" style={{fontSize: ".7em"}}>
+                  <em>{product.category.description}</em>
                 </span>
               </button>
             ))}

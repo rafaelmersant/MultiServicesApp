@@ -76,11 +76,11 @@ class InvoicesTable extends Component {
     key: "delete",
     content: (invoice) => (
       <div className="text-center">
-        <button
+        <a href="Javascript:void(0);"
           onClick={() => this.props.onDelete(invoice)}
-          className="fa fa-trash"
-          style={{ color: "red", fontSize: "16px" }}
-        ></button>
+          className="fa fa-trash text-danger"
+          style={{ fontSize: "19px" }}
+        ></a>
       </div>
     ),
   };
