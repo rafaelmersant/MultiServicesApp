@@ -42,7 +42,7 @@ class ProductForm extends Form {
     },
     providers: [],
     quantity: 0,
-    itbis: false,
+    itbis: true,
     companies: [],
     categories: [],
     errors: {},

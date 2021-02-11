@@ -331,12 +331,14 @@ class InventoryFullForm extends Form {
   render() {
     return (
       <React.Fragment>
-        <div className="pull-right w-50">
-          <button className="btn btn-success mb-3" onClick={this.newEntry}>
+        <div className="row">
+        <div className="col-8">
+          <button className="btn btn-success mb-3 pull-right" onClick={this.newEntry}>
             Nueva Entrada
           </button>
         </div>
-
+        </div>
+        
         <div className="container pull-left col-lg-8 col-md-11 col-sm-11 ml-3 shadow p-3 mb-5 bg-white rounded">
           <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
 
