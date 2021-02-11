@@ -337,7 +337,7 @@ class InventoryFullForm extends Form {
           </button>
         </div>
 
-        <div className="container pull-left col-lg-7 col-md-11 col-sm-11 ml-3 shadow p-3 mb-5 bg-white rounded">
+        <div className="container pull-left col-lg-8 col-md-11 col-sm-11 ml-3 shadow p-3 mb-5 bg-white rounded">
           <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
 
           <form onSubmit={this.handleSubmit}>
