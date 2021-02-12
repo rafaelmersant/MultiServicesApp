@@ -439,11 +439,14 @@ class InvoiceForm extends Form {
   };
 
   handleDeleteDetail = (detail, soft = false) => {
-    
-    const answer = window.confirm(
-      `Seguro que desea eliminar el producto: \n ${detail.product}`
-    );
+    let answer = true
 
+    if (!soft) {
+      answer = window.confirm(
+        `Seguro que desea eliminar el producto: \n ${detail.product}`
+      );
+    }
+    
     if (answer) {
       const detailsToDelete = [...this.state.detailsToDelete];
       if (!soft) detailsToDelete.push(detail);
