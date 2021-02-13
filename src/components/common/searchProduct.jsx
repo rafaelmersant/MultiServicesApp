@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Input from "./input";
 import { getProductsByDescription } from "../../services/productService";
 import { formatNumber } from '../../utils/custom';
+import _ from 'lodash'
 
 class SearchProduct extends Component {
   state = {
@@ -35,6 +36,7 @@ class SearchProduct extends Component {
         }
       ];
 
+    products = _.orderBy(products, ["ocurrences"], ['desc'])
     this.setState({ products });
   };
 
