@@ -196,7 +196,7 @@ class ProductForm extends Form {
 
   handleChangeCalculation = (e) => {
     const data = { ...this.state.data };
-    data.cost = e.priceC2;
+    data.cost = e.costPlusITBIS;
     data.price = e.priceSales;
     data.itbis = e.itbis > 0 ? e.itbis : 0;
 

@@ -322,7 +322,7 @@ class InventoryFullForm extends Form {
 
   handleChangeCalculation = (e) => {
     const inventory = { ...this.state.inventory };
-    inventory.cost = e.priceC2;
+    inventory.cost = e.costPlusITBIS;
     inventory.price = e.priceSales;
 
     this.setState({ inventory });
