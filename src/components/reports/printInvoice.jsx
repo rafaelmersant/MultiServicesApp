@@ -3,9 +3,6 @@ import { formatNumber } from "../../utils/custom";
 
 class PrintInvoice extends Component {
   render() {
-    //console.log("header", this.props.invoiceHeader[0]);
-    //console.log("detail", this.props.invoiceDetail);
-
     const {
       invoiceHeader,
       invoiceDetail,
@@ -23,20 +20,9 @@ class PrintInvoice extends Component {
               <img
                 width="210px"
                 src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
-                //src={require("../../../public/images/FERRINMAS_small.jpg")}
                 alt="FERRINMAS"
               />
             </div>
-
-            {/* <h3 className="font-receipt text-center">
-              {invoiceHeader[0].company.name.toUpperCase()}</h3>
-            <span className="font-receipt d-block" style={{ marginLeft: "215px", marginTop: "-13px" }}>Ferreteria</span> */}
-
-            {/* <div className="text-center">
-              <span className="font-receipt">
-                {invoiceHeader[0].company.address}
-              </span>
-            </div>*/}
             <div className="text-center">
               <span className="font-receipt font-receipt-small">
                 {invoiceHeader[0].company.phoneNumber}
@@ -109,8 +95,6 @@ class PrintInvoice extends Component {
               invoiceHeader[0].ncf.includes("B01") &&
               "FACTURA PARA CREDITO FISCAL"}
           </span>
-
-          {/* <span className="d-block">---------------------------------------------------------------</span> */}
         </div>
 
         {invoiceDetail.length && (
@@ -122,7 +106,6 @@ class PrintInvoice extends Component {
                 </td>
               </tr>
               <tr key="h2">
-                {/* <td style={{cellSpacing: "5px"}}><span className="font-receipt">CANT</span></td> */}
                 <td style={{ cellSpacing: "10px" }}>
                   <span className="font-receipt">ITEM</span>
                 </td>
@@ -177,7 +160,9 @@ class PrintInvoice extends Component {
                       </td>
                       <td className="text-right">
                         {"-"}
-                        {formatNumber(item.discount)}
+                        <span className="font-receipt font-receipt-small">
+                          {formatNumber(item.discount)}
+                        </span>
                       </td>
                     </tr>
                   )}
