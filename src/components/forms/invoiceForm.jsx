@@ -921,11 +921,11 @@ class InvoiceForm extends Form {
               getCurrentUser().role === "Owner") && (
               <ReactToPrint
                 trigger={() => (
-                  <a href="Javascript:void(0);"
+                  <span
                     ref={(button) => (this.printButton = button)}
-                    className="fa fa-print text-success pull-right pt-2"
+                    className="fa fa-print text-success pull-right pt-2 cursor-pointer"
                     style={{ fontSize: "35px" }}
-                  ></a>
+                  ></span>
                 )}
                 content={() => this.componentRef}
                 onAfterPrint={() => this.invoicePrinted()}

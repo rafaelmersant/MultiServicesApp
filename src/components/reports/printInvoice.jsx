@@ -11,7 +11,7 @@ class PrintInvoice extends Component {
       discountTotal,
       createdUserName,
     } = this.props;
-
+console.log('invoiceHeader', invoiceHeader[0])
     return (
       <div className="mt-1" style={{ width: "408px" }}>
         {invoiceHeader.length && (

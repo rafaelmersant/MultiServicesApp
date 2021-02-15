@@ -51,18 +51,20 @@ class ProductsTable extends Component {
       )
     },
     { path: "category.description", label: "Categoria" },
-    { path: "creationDate", label: "Creado (m/d/a)" }
+    { path: "creationDate", label: "Creado (m/d/a)", content: item => (
+      <span>{new Date(item.creationDate).toLocaleDateString()}</span>
+    ) }
   ];
 
   deleteColumn = {
     key: "delete",
     content: product => (
       <div className="text-center">
-        <button
+        <span
           onClick={() => this.props.onDelete(product)}
-          className="fa fa-trash"
-          style={{ color: "red", fontSize: "16px" }}
-        ></button>
+          className="fa fa-trash text-danger cursor-pointer"
+          style={{ fontSize: "19px" }}
+        ></span>
       </div>
     )
   };

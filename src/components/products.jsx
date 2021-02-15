@@ -12,6 +12,7 @@ import {
 import { getCurrentUser } from "../services/authService";
 import { getProductInInvoice } from "../services/invoiceServices";
 import ProductsTable from "./tables/productsTable";
+import _ from 'lodash';
 
 class Products extends Component {
   state = {
@@ -52,9 +53,11 @@ class Products extends Component {
         );
         products = prods;
       }
+      
+      const productsFiltered = _.orderBy(products.results, ['ocurrences'], ['desc'])
 
       this.setState({
-        products: products.results,
+        products: productsFiltered,
         totalProducts: products.count,
         loading: false,
       });

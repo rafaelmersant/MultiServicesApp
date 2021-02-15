@@ -60,3 +60,7 @@ div[disabled] {
   background-color: #ffc107 !important;
   border-color: #ffc107 !important;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+}

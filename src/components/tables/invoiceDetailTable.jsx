@@ -19,18 +19,18 @@ class InvoiceDetailTable extends Component {
     content: detail => (
       <div className="row text-center" style={{ width: "68px" }}>
         <div className="col-2 text-center">
-          <a href="javascript:void(0);"
+          <span
             onClick={() => this.props.onDelete(detail)}
-            className="fa fa-trash text-danger"
+            className="fa fa-trash text-danger cursor-pointer"
             style={{ fontSize: "23px" }}
-          ></a>
+          ></span>
         </div>
         <div className="col-2 text-center">
-          <a href="javascript:void(0);"
+          <span
             onClick={() => this.props.onEdit(detail)}
-            className="fa fa-edit text-warning"
+            className="fa fa-edit text-warning cursor-pointer"
             style={{ fontSize: "23px" }}
-          ></a>
+          ></span>
         </div>
       </div>
     )
@@ -38,10 +38,6 @@ class InvoiceDetailTable extends Component {
 
   constructor() {
     super();
-    // const user = auth.getCurrentUser().email;
-    // const role = auth.getCurrentUser().role;
-
-    // if (user && (role === "Admin" || role === "Owner"))
     this.columns.push(this.deleteColumn);
   }
 

@@ -169,21 +169,6 @@ class Invoices extends Component {
     this.populateInvoices();
   };
 
-  // getPagedData = () => {
-  //   const {
-  //     pageSize,
-  //     currentPage,
-  //     sortColumn,
-  //     invoices: allInvoices
-  //   } = this.state;
-
-  //   let filtered = allInvoices;
-  //   const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
-  //   const invoices = paginate(sorted, currentPage, pageSize);
-
-  //   return { totalCount: filtered.length, invoices };
-  // };
-
   render() {
     const {
       invoices,

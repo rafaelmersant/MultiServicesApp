@@ -30,11 +30,11 @@ class CustomersTable extends Component {
     key: "delete",
     content: customer => (
       <div className="text-center">
-        <button
+        <span
           onClick={() => this.props.onDelete(customer)}
-          className="fa fa-trash"
-          style={{ color: "red", fontSize: "16px" }}
-        ></button>
+          className="fa fa-trash text-danger cursor-pointer"
+          style={{ fontSize: "19px" }}
+        ></span>
       </div>
     )
   };

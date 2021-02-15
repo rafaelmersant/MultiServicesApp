@@ -87,8 +87,8 @@ class Users extends Component {
       <div className="container">
         <div className="row">
           <div className="col margin-top-msg">
-            <NewButton label="Nuevo Usuario" to="/user/new" />
-
+              <NewButton label="Nuevo Usuario" to="/user/new" />
+            
             <SearchBox
               value={searchQuery}
               onChange={this.handleSearch}

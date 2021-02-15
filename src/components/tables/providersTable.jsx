@@ -29,11 +29,11 @@ class ProvidersTable extends Component {
     key: "delete",
     content: provider => (
       <div className="text-center">
-        <button
+        <span
           onClick={() => this.props.onDelete(provider)}
-          className="fa fa-trash"
-          style={{ color: "red", fontSize: "16px" }}
-        ></button>
+          className="fa fa-trash text-danger cursor-pointer"
+          style={{ fontSize: "19px" }}
+        ></span>
       </div>
     )
   };
