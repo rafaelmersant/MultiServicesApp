@@ -53,7 +53,7 @@ class InvoiceDetailTable extends Component {
           <thead className="thead-dark">
             <tr>
               {this.columns.map(column => (
-                <th key={column.path || column.key}>{column.label}</th>
+                <th key={column.path || column.key} className="py-2">{column.label}</th>
               ))}
             </tr>
           </thead>

@@ -51,7 +51,7 @@ class SearchCustomer extends Component {
           type="text"
           id="searchCustomerId"
           name="query"
-          className="form-control my-3"
+          className="form-control form-control-sm"
           placeholder="Buscar Cliente..."
           autoComplete="Off"
           onChange={this.handleChange}

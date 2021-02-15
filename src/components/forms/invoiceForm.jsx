@@ -722,31 +722,14 @@ class InvoiceForm extends Form {
     return (
       <React.Fragment>
         <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 shadow-sm p-3 mb-5 bg-white rounded border border-secondary">
-          <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+          <h4 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h4>
           <div
             className="col-12 pb-3 bg-light"
             disabled={!this.isInvoiceEditable()}
           >
             <form onSubmit={this.handleSubmit}>
-              <div className="row pull-right">
-                <label className="mr-1">Fecha</label>
-                <div
-                  className="mr-3"
-                  disabled={
-                    getCurrentUser().role !== "Admin" ||
-                    getCurrentUser().role !== "Owner"
-                  }
-                >
-                  <DatePicker
-                    selected={this.state.invoiceDate}
-                    onChange={(date) => this.handleChangeInvoiceDate(date)}
-                    dateFormat="dd/MM/yyyy"
-                  />
-                </div>
-              </div>
-
               <div className="row">
-                <div className="col-8" style={{ paddingLeft: "0" }}>
+                <div className="col-8">
                   <SearchCustomer
                     onSelect={this.handleSelectCustomer}
                     onFocus={() => this.handleFocusCustomer(false)}
@@ -771,6 +754,21 @@ class InvoiceForm extends Form {
                     />
                   </div>
                 )}
+
+                <div className="col-2">
+                  <label className="mr-1">Fecha</label>
+                  <div
+                    className="mr-3"
+                    disabled={
+                      getCurrentUser().role !== "Admin" &&
+                      getCurrentUser().role !== "Owner"
+                    }>
+                    <DatePicker className="form-control form-control-sm"
+                      selected={this.state.invoiceDate}
+                      onChange={(date) => this.handleChangeInvoiceDate(date)}
+                      dateFormat="dd/MM/yyyy"/>
+                  </div>
+                </div>
 
                 {this.state.data.ncf.length > 0 && this.state.data.id > 0 && (
                   <div className="col-2">
@@ -877,7 +875,7 @@ class InvoiceForm extends Form {
                   style={{ marginTop: "1.98em" }}
                 >
                   <button
-                    className="btn btn-info"
+                    className="btn btn-info btn-sm ml-1 pl-3 pr-3"
                     onClick={this.handleAddDetail}
                     disabled={this.validateLine()}
                   >

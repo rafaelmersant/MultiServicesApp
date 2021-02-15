@@ -128,7 +128,7 @@ class ProviderForm extends Form {
     return (
       <div className={containerSize}>
         {!popUp && (
-          <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+          <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
         )}
 
         <div className="col-12 pb-3 bg-light">

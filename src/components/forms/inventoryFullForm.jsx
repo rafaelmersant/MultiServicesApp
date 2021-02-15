@@ -340,22 +340,11 @@ class InventoryFullForm extends Form {
         </div>
         
         <div className="container pull-left col-lg-8 col-md-11 col-sm-11 ml-3 shadow p-3 mb-5 bg-white rounded">
-          <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+          <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
 
           <form onSubmit={this.handleSubmit}>
             <div className="header">
               <div className="col-12 pb-3 bg-light">
-                <div className="row mb-3 mr-2 ml-1">
-                  <label htmlFor="creationDate" style={{ marginRight: "10px" }}>
-                    Fecha
-                  </label>
-                  <DatePicker
-                    selected={this.state.creationDate}
-                    onChange={(date) => this.handleChangeCreationDate(date)}
-                    dateFormat="dd/MM/yyyy"
-                  />
-                </div>
-
                 <div className="row">
                   <div className="col">
                     {this.renderSelect(
@@ -366,7 +355,7 @@ class InventoryFullForm extends Form {
                   </div>
                   <div className="col-3">{this.renderInput("ncf", "NCF")}</div>
                   <div
-                    className="col-3"
+                    className="col-1"
                     style={{ marginTop: "35px", paddingLeft: "30px" }}
                   >
                     <input
@@ -379,6 +368,20 @@ class InventoryFullForm extends Form {
                     <label className="form-check-label" htmlFor="chkPaid">
                       Pagada
                     </label>
+                  </div>
+
+                  <div className="col-2">
+                    <label className="mr-1">Fecha</label>
+                    <div
+                      className="mr-3"
+                      >
+                      <DatePicker
+                        className="form-control form-control-sm"
+                        selected={this.state.creationDate}
+                        onChange={(date) => this.handleChangeCreationDate(date)}
+                        dateFormat="dd/MM/yyyy"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -397,6 +400,7 @@ class InventoryFullForm extends Form {
                   <div className="col">
                     <label htmlFor="docDate">Fecha Documento</label>
                     <DatePicker
+                      className="form-control form-control-sm"
                       selected={this.state.docDate}
                       onChange={(date) => this.handleChangeDocDate(date)}
                       dateFormat="dd/MM/yyyy"

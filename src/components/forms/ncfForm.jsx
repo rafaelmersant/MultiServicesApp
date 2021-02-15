@@ -125,7 +125,7 @@ class NCFForm extends Form {
   render() {
     return (
       <div className="container pull-left col-lg-8 col-md-8 col-sm-9 ml-3 shadow p-3 mb-5 bg-white rounded">
-        <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+        <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
             {this.renderSelect("typeDoc", "Tipo de NCF", this.state.typeDoc)}
