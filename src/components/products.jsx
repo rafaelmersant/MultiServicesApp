@@ -19,7 +19,7 @@ class Products extends Component {
     loading: true,
     products: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 50,
     searchQuery: "",
     totalProducts: 0,
     sortColumn: { path: "description", order: "asc" },
