@@ -98,11 +98,11 @@ export function saveInvoiceDetail(invoiceDetail, invoiceHeaderId) {
 
 export async function saveInvoiceSequence(invoiceSequence) {
   //if (invoiceSequence.id) {
-    const body = { ...invoiceSequence };
-    delete body.id;
+  const body = { ...invoiceSequence };
+  delete body.id;
 
-    return http.put(invoiceSequenceUrl(invoiceSequence.id), body);
-    //return http.put(invoiceSequenceUrl(invoiceSequence.id), body);
+  return http.put(invoiceSequenceUrl(invoiceSequence.id), body);
+  //return http.put(invoiceSequenceUrl(invoiceSequence.id), body);
   //}
 
   //return http.post(`${apiEndpointSequence}/`, invoiceSequence);
