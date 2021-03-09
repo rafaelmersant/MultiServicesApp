@@ -12,10 +12,37 @@ function invoiceLeadDetailUrl(id) {
   return `${apiEndpointDetail}/${id}`;
 }
 
-export async function getInvoiceLeadHeader(companyId, invoiceNo) {
-  return http.get(
-    `${apiEndpointHeader}/?company=${companyId}&invoice=${invoiceNo}`
-  );
+export async function getInvoiceLeadHeader(
+  companyId,
+  invoiceId,
+  currentPage,
+  sortColumn
+) {
+  if (invoiceId)
+    return http.get(
+      `${apiEndpointHeader}/?company=${companyId}&invoice=${invoiceId}`
+    );
+
+  if (currentPage || sortColumn) {
+    const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+    const column =
+      sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
+    const page = currentPage ? currentPage : 1;
+
+    return http.get(
+      `${apiEndpointHeader}/?company=${companyId}&ordering=${order}${column}&page=${page}`
+    );
+  }
+
+  return http.get(`${apiEndpointHeader}/?company=${companyId}`);
+}
+
+export async function getInvoiceLeadHeaderByConduceId(companyId, conduceId) {
+  return http.get(`${apiEndpointHeader}/?company=${companyId}&id=${conduceId}`);
+}
+
+export async function getInvoiceLeadHeaderById(id) {
+  return http.get(`${apiEndpointHeader}/?id=${id}`);
 }
 
 export async function getInvoiceLeadDetail(invoiceLeadHeader) {

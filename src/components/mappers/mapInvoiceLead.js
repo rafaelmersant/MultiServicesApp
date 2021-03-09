@@ -7,6 +7,12 @@ export function mapToViewInvoiceHeader(invoiceHeader) {
     id: invoiceHeader[0].id,
     sequence: parseFloat(invoiceHeader[0].sequence),
     customer_id: invoiceHeader[0].customer.id,
+    customer_firstName: invoiceHeader[0].customer.firstName
+      ? invoiceHeader[0].customer.firstName
+      : "",
+    customer_lastName: invoiceHeader[0].customer.lastName
+      ? invoiceHeader[0].customer.lastName
+      : "",
     ncf: invoiceHeader[0].ncf,
     paymentMethod: invoiceHeader[0].paymentMethod,
     paid: invoiceHeader[0].paid,
@@ -22,35 +28,12 @@ export function mapToViewInvoiceHeader(invoiceHeader) {
   };
 }
 
-//Map Invoice detail data for invoice lead (Conduce)
-// export function mapToViewInvoiceDetail(invoiceDetail) {
-//   let details = [];
-//   try {
-//     invoiceDetail.forEach((item) => {
-//       details.push({
-//         id: item.id,
-//         invoice_id: item.invoice.id,
-//         product_id: item.product.id,
-//         product: item.product.description,
-//         quantity: item.quantity,
-//         quantityDelivered: 0,
-//         quantityToDeliver: 0,
-//       });
-//     });
-//   } catch (error) {
-//     console.log("mapToViewInvoiceDetail error:", error);
-//   }
-
-//   return details;
-// }
-
 //Map invoice detail and its delivered (Conduces)
 export function mapToViewInvoiceDetailWithConduces(
   invoiceDetail,
   invoiceLeadDetail
 ) {
   let details = [];
-  console.log("invoiceDetailENTRO");
 
   try {
     invoiceDetail.forEach((item) => {
@@ -95,7 +78,6 @@ export function mapToViewInvoiceLeadHeader(invoiceLeadHeader, invoiceNo, data) {
     console.error("Error mapping InvoiceLeadHeader:", error);
   }
 
-  console.log("UHHMMM");
   data.invoice = invoiceNo;
 
   return data;

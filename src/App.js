@@ -7,12 +7,13 @@ import LoginForm from "./components/forms/loginForm";
 import Logout from "./components/logout";
 
 // Invoice
-import InvoiceLeadForm from './components/forms/invoiceLeadForm';
+import InvoiceLeadForm from "./components/forms/invoiceLeadForm";
 import InvoiceForm from "./components/forms/invoiceForm";
 import Invoices from "./components/invoices";
 import Invoices606 from "./components/invoices606";
 import Invoices607 from "./components/invoices607";
 import PrintInvoice from "./components/reports/printInvoice";
+import Conduces from "./components/conduces";
 
 // Inventory
 import Inventories from "./components/inventories";
@@ -53,7 +54,7 @@ import ExportStockToExcel from "./components/reports/exportStockToExcel";
 
 class App extends Component {
   state = {
-    user: {}
+    user: {},
   };
 
   componentDidMount() {
@@ -77,6 +78,7 @@ class App extends Component {
             <Route path="/login" component={LoginForm} />
             <Route path="/logout" component={Logout} />
             <ProtectedRoute path="/invoices" component={Invoices} />
+            <ProtectedRoute path="/conduces" component={Conduces} />
             <Route path="/invoicePrint/:id" component={PrintInvoice} />
 
             <ProtectedRoute path="/invoice/:id" component={InvoiceForm} />

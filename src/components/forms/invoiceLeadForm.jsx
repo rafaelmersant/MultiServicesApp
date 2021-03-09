@@ -1,11 +1,8 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import Joi from "joi-browser";
+import Joi, { intersect } from "joi-browser";
 import { toast } from "react-toastify";
 import ReactToPrint from "react-to-print";
 import Form from "../common/form";
-import Input from "../common/input";
-import Select from "../common/select";
 import { formatNumber } from "../../utils/custom";
 import { registerLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
@@ -15,8 +12,6 @@ import {
   getInvoiceHeader,
   getInvoiceDetail,
 } from "../../services/invoiceServices";
-import InvoiceDetailTable from "../tables/invoiceDetailTable";
-import _ from "lodash";
 import * as Sentry from "@sentry/react";
 import TableBody from "../common/tableBody";
 import {
@@ -24,13 +19,15 @@ import {
   saveInvoiceLeadHeader,
   saveInvoiceLeadDetail,
   getInvoiceLeadDetail,
+  getInvoiceLeadHeaderById,
+  getInvoiceLeadHeaderByConduceId,
 } from "../../services/invoiceLeadServices";
 import {
-  mapToViewInvoiceDetail,
   mapToViewInvoiceDetailWithConduces,
   mapToViewInvoiceHeader,
   mapToViewInvoiceLeadHeader,
 } from "../mappers/mapInvoiceLead";
+import PrintConduce from "../reports/printConduce";
 
 registerLocale("es", es);
 
@@ -57,12 +54,14 @@ class InvoiceLeadForm extends Form {
       quantityDelivered: 0,
       quantityToDeliver: 0,
     },
+    onlyView: false,
     errors: {},
     currentProduct: {},
     createdUserName: "",
     action: "Nuevo Conduce",
     serializedInvoiceHeader: {},
     serializedInvoiceDetail: [],
+    serializedInvoiceLeadDetail: [],
   };
 
   //Schema (Joi)
@@ -126,7 +125,26 @@ class InvoiceLeadForm extends Form {
     this.setState({ details });
   };
 
-  async fetchData(invoiceNo) {
+  handleSearchInvoice = async () => {
+    const handler = (e) => {
+      e.preventDefault();
+    };
+    handler(window.event);
+
+    await this.populateInvoiceLead(this.state.data.invoice);
+  };
+
+  async fetchData(invoiceNo, conduceNo) {
+    let invoiceId = 0;
+    let invoiceLeadHeader = {};
+
+    if (conduceNo) {
+      const { data: result } = await getInvoiceLeadHeaderById(conduceNo);
+      console.log("result", result.results[0]);
+      invoiceId = result.results[0].invoice.id;
+      invoiceNo = result.results[0].invoice.sequence;
+    }
+
     const { data: invoiceHeader } = await getInvoiceHeader(
       getCurrentUser().companyId,
       invoiceNo
@@ -136,10 +154,20 @@ class InvoiceLeadForm extends Form {
       invoiceHeader.results[0].id
     );
 
-    const { data: invoiceLeadHeader } = await getInvoiceLeadHeader(
-      getCurrentUser().companyId,
-      invoiceHeader.results[0].id
-    );
+    if (conduceNo) {
+      invoiceLeadHeader = await getInvoiceLeadHeaderByConduceId(
+        getCurrentUser().companyId,
+        conduceNo
+      );
+    } else {
+      invoiceLeadHeader = await getInvoiceLeadHeader(
+        getCurrentUser().companyId,
+        invoiceHeader.results[0].id,
+        null,
+        null
+      );
+    }
+    invoiceLeadHeader = { ...invoiceLeadHeader.data };
 
     let invoiceLeadDetail = [];
 
@@ -160,17 +188,14 @@ class InvoiceLeadForm extends Form {
     };
   }
 
-  async populateInvoiceLead() {
+  async populateInvoiceLead(invoiceNo, conduceNo) {
     try {
-      const invoiceNo = this.props.match.params.id;
-      if (invoiceNo === "new") return;
-
       const {
         invoiceLeadHeader,
         invoiceLeadDetail,
         invoiceHeader,
         invoiceDetail,
-      } = await this.fetchData(invoiceNo);
+      } = await this.fetchData(invoiceNo, conduceNo);
 
       console.log("invoiceHeader", invoiceHeader);
       console.log("invoiceDetail", invoiceDetail);
@@ -184,7 +209,7 @@ class InvoiceLeadForm extends Form {
       // Map all retrieved data
       const _invoiceLead = mapToViewInvoiceLeadHeader(
         invoiceLeadHeader.results,
-        invoiceNo,
+        invoiceHeader.results[0].sequence,
         { ...this.state.data }
       );
 
@@ -195,6 +220,11 @@ class InvoiceLeadForm extends Form {
         invoiceLeadDetail
       );
 
+      if (!(invoiceNo > 0)) {
+        const index = this.columns.indexOf(this.quantityToDeliver);
+        this.columns.splice(index, 1);
+      }
+
       this.setState({
         data: _invoiceLead,
         invoiceHeader: _invoiceHeader,
@@ -202,7 +232,9 @@ class InvoiceLeadForm extends Form {
         action: "Detalle de Conduce",
         serializedInvoiceHeader: invoiceHeader,
         serializedInvoiceDetail: invoiceDetail,
+        serializedInvoiceLeadDetail: invoiceLeadDetail,
         createdUserName: createdUserData[0].name,
+        onlyView: !(invoiceNo > 0),
       });
     } catch (ex) {
       Sentry.captureException(ex);
@@ -212,16 +244,11 @@ class InvoiceLeadForm extends Form {
     }
   }
 
-  // handleEditQuantity = (value) => {
+  async componentDidMount() {
+    const conduceNo = this.props.match.params.id;
+    if (conduceNo === "new") return;
 
-  //   const details = { ...this.state.details };
-  //   details.quantityToDeliver = value;
-
-  //   this.setState({ details });
-  // };
-
-  componentDidMount() {
-    this.populateInvoiceLead();
+    await this.populateInvoiceLead(0, conduceNo);
   }
 
   componentWillUnmount() {
@@ -229,7 +256,6 @@ class InvoiceLeadForm extends Form {
   }
 
   async saveDetails(headerId) {
-    const details = {};
     let results = [];
 
     this.state.details.forEach(async (item) => {
@@ -247,9 +273,25 @@ class InvoiceLeadForm extends Form {
     console.log("details saved:", results);
   }
 
+  validateFields = () => {
+    const total = this.state.details.reduce(
+      (acc, item) => acc + parseFloat(item.quantityToDeliver),
+      0
+    );
+    console.log("total", total);
+    if (total === 0) return false;
+
+    return true;
+  };
+
   doSubmit = async () => {
     try {
       console.log("Saving the details...");
+
+      if (!this.validateFields()) {
+        toast.error("Favor asegurarse de digitar la cantidad a entregar.");
+        return;
+      }
 
       //Save Invoice lead header
       const invoiceLeadHeader = {
@@ -264,6 +306,8 @@ class InvoiceLeadForm extends Form {
       await this.saveDetails(result.id);
 
       toast.success("El conduce fue realizado con exito!");
+
+      this.populateInvoiceLead(0, result.id);
     } catch (ex) {
       Sentry.captureException(ex);
 
@@ -284,7 +328,7 @@ class InvoiceLeadForm extends Form {
   };
 
   render() {
-    const { user } = this.props;
+    const { invoiceHeader } = { ...this.state };
 
     return (
       <React.Fragment>
@@ -293,9 +337,30 @@ class InvoiceLeadForm extends Form {
           <div className="col-12 pb-3 bg-light">
             <form onSubmit={this.handleSubmit}>
               <div className="row">
-                <div className="col-2">
+                <div className="col-2" disabled={this.state.onlyView}>
                   {this.renderInput("invoice", "Factura")}
                 </div>
+                <div
+                  className="col-1 pt-0 pb-0 mr-0 ml-0 pr-0 pl-0"
+                  style={{ marginTop: "1.98em" }}
+                >
+                  <button
+                    className="btn btn-info btn-sm ml-1 pl-3 pr-3"
+                    onClick={this.handleSearchInvoice}
+                    disabled={this.state.onlyView}
+                  >
+                    Buscar
+                  </button>
+                </div>
+                {invoiceHeader.customer_firstName && (
+                  <div className="col" style={{ marginTop: "1.98em" }}>
+                    <span className="mr-2">Cliente:</span>
+                    <span>
+                      {invoiceHeader.customer_firstName}{" "}
+                      {invoiceHeader.customer_lastName}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -314,8 +379,33 @@ class InvoiceLeadForm extends Form {
                 </table>
               </div>
 
-              {this.renderButton("Guardar")}
+              {!this.state.onlyView && this.renderButton("Guardar")}
             </form>
+          </div>
+
+          {this.state.onlyView && (
+            <ReactToPrint
+              trigger={() => (
+                <span
+                  ref={(button) => (this.printButton = button)}
+                  className="fa fa-print text-success pull-right pt-2 cursor-pointer"
+                  style={{ fontSize: "35px" }}
+                  //onClick={this.handlePrintConduce()}
+                ></span>
+              )}
+              content={() => this.componentRef}
+              //onAfterPrint={() => this.invoicePrinted()}
+            />
+          )}
+
+          <div hidden="hidden">
+            <PrintConduce
+              ref={(el) => (this.componentRef = el)}
+              invoiceHeader={this.state.serializedInvoiceHeader}
+              invoiceDetail={this.state.serializedInvoiceDetail}
+              invoiceLeadDetail={this.state.serializedInvoiceLeadDetail}
+              createdUserName={this.state.createdUserName}
+            />
           </div>
         </div>
       </React.Fragment>

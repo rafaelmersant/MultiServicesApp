@@ -36,7 +36,7 @@ import {
 import InvoiceDetailTable from "../tables/invoiceDetailTable";
 import _ from "lodash";
 import NewInvoiceModal from "../modals/newInvoiceModal";
-import * as Sentry from '@sentry/react'
+import * as Sentry from "@sentry/react";
 
 registerLocale("es", es);
 
@@ -284,7 +284,7 @@ class InvoiceForm extends Form {
       }
     } catch (ex) {
       sessionStorage["newInvoice"] = null;
-      Sentry.captureException(ex)
+      Sentry.captureException(ex);
 
       if (ex.response && ex.response.status === 404)
         return this.props.history.replace("/not-found");
@@ -439,24 +439,24 @@ class InvoiceForm extends Form {
   };
 
   handleDeleteDetail = (detail, soft = false) => {
-    let answer = true
+    let answer = true;
 
     if (!soft) {
       answer = window.confirm(
         `Seguro que desea eliminar el producto: \n ${detail.product}`
       );
     }
-    
+
     if (answer) {
       const detailsToDelete = [...this.state.detailsToDelete];
       if (!soft) detailsToDelete.push(detail);
-  
+
       const details = this.state.details.filter(
         (d) => d.product_id !== detail.product_id
       );
-  
+
       this.setState({ details, detailsToDelete });
-  
+
       setTimeout(() => {
         this.updateTotals();
       });
@@ -602,11 +602,10 @@ class InvoiceForm extends Form {
     try {
       await this.populateProducts();
       await this.populateInvoice(false);
-
-    } catch(ex) {
-      Sentry.captureException(ex)
+    } catch (ex) {
+      Sentry.captureException(ex);
     }
-    
+
     if (!this.state.data.id) {
       await this.refreshNextInvoiceSequence();
       this.setNCF(this.state.data.typeDoc);
@@ -630,22 +629,18 @@ class InvoiceForm extends Form {
     this.setState({ data });
 
     try {
-      console.log("state:", this.state.data);
-      console.log("local:", data);
       await saveInvoiceHeader(this.state.data);
-      console.log("invoice marked as Printed");
     } catch (ex) {
-      Sentry.captureException(ex)
+      Sentry.captureException(ex);
       console.log("Exception for printed invoice --> " + ex);
     }
   }
 
   doSubmit = async () => {
     try {
-      if (this.state.disabledSave)
-        return false
+      if (this.state.disabledSave) return false;
 
-      this.setState({disabledSave : true})
+      this.setState({ disabledSave: true });
 
       if (this.state.data.typeDoc !== "0") this.getNextNCF();
 
@@ -669,12 +664,13 @@ class InvoiceForm extends Form {
           };
 
           await saveInvoiceDetail(detail);
-          if (!this.state.data.id) await saveInvoiceSequence(this.state.invoiceSequence);
+          if (!this.state.data.id)
+            await saveInvoiceSequence(this.state.invoiceSequence);
 
           try {
             await this.updateInventory(detail);
           } catch (ex) {
-            Sentry.captureException(ex)
+            Sentry.captureException(ex);
             console.log("Exception for updateInventory --> " + ex);
           }
         });
@@ -684,21 +680,20 @@ class InvoiceForm extends Form {
             await deleteInvoiceDetail(item.id);
           });
         } catch (ex) {
-          Sentry.captureException(ex)
+          Sentry.captureException(ex);
           console.log("Exception for deleteInvoiceDetail --> " + ex);
         }
 
         setTimeout(() => {
           //sessionStorage["printInvoice"] = "y";
           sessionStorage["newInvoice"] = "y";
-          window.location = `/invoice/${this.state.data.sequence}`;        
+          window.location = `/invoice/${this.state.data.sequence}`;
         }, this.state.details.length * 390);
 
-        this.setState({disabledSave : false})
-
+        this.setState({ disabledSave: false });
       }, 100);
     } catch (ex) {
-      Sentry.captureException(ex)
+      Sentry.captureException(ex);
 
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");
@@ -762,11 +757,14 @@ class InvoiceForm extends Form {
                     disabled={
                       getCurrentUser().role !== "Admin" &&
                       getCurrentUser().role !== "Owner"
-                    }>
-                    <DatePicker className="form-control form-control-sm"
+                    }
+                  >
+                    <DatePicker
+                      className="form-control form-control-sm"
                       selected={this.state.invoiceDate}
                       onChange={(date) => this.handleChangeInvoiceDate(date)}
-                      dateFormat="dd/MM/yyyy"/>
+                      dateFormat="dd/MM/yyyy"
+                    />
                   </div>
                 </div>
 
