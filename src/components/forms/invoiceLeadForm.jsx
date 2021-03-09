@@ -140,7 +140,6 @@ class InvoiceLeadForm extends Form {
 
     if (conduceNo) {
       const { data: result } = await getInvoiceLeadHeaderById(conduceNo);
-      console.log("result", result.results[0]);
       invoiceId = result.results[0].invoice.id;
       invoiceNo = result.results[0].invoice.sequence;
     }
@@ -200,7 +199,6 @@ class InvoiceLeadForm extends Form {
       console.log("invoiceHeader", invoiceHeader);
       console.log("invoiceDetail", invoiceDetail);
       console.log("invoiceLeadHeader", invoiceLeadHeader);
-      console.log("invoiceLeadDetail", invoiceLeadDetail.length);
 
       const { data: createdUserData } = await getUserByEmail(
         this.state.data.createdUser
@@ -225,6 +223,10 @@ class InvoiceLeadForm extends Form {
         this.columns.splice(index, 1);
       }
 
+      const serializedInvoiceLeadDetail = invoiceLeadDetail.filter((item) => {
+        if (item.quantity > 0) return item;
+      });
+
       this.setState({
         data: _invoiceLead,
         invoiceHeader: _invoiceHeader,
@@ -232,7 +234,7 @@ class InvoiceLeadForm extends Form {
         action: "Detalle de Conduce",
         serializedInvoiceHeader: invoiceHeader,
         serializedInvoiceDetail: invoiceDetail,
-        serializedInvoiceLeadDetail: invoiceLeadDetail,
+        serializedInvoiceLeadDetail,
         createdUserName: createdUserData[0].name,
         onlyView: !(invoiceNo > 0),
       });
@@ -274,12 +276,20 @@ class InvoiceLeadForm extends Form {
   }
 
   validateFields = () => {
-    const total = this.state.details.reduce(
+    const { details } = { ...this.state };
+
+    const total = details.reduce(
       (acc, item) => acc + parseFloat(item.quantityToDeliver),
       0
     );
-    console.log("total", total);
+
     if (total === 0) return false;
+
+    for (const item of details) {
+      const pending = item.quantity - item.quantityDelivered;
+
+      if (item.quantityToDeliver > pending) return false;
+    }
 
     return true;
   };
@@ -289,7 +299,9 @@ class InvoiceLeadForm extends Form {
       console.log("Saving the details...");
 
       if (!this.validateFields()) {
-        toast.error("Favor asegurarse de digitar la cantidad a entregar.");
+        toast.error(
+          "Favor asegurarse de digitar la cantidad a entregar correcta."
+        );
         return;
       }
 
@@ -329,6 +341,10 @@ class InvoiceLeadForm extends Form {
 
   render() {
     const { invoiceHeader } = { ...this.state };
+    const totalToDeliver = this.state.serializedInvoiceLeadDetail.reduce(
+      (acc, item) => acc + item.quantity,
+      0
+    );
 
     return (
       <React.Fragment>
@@ -404,6 +420,7 @@ class InvoiceLeadForm extends Form {
               invoiceHeader={this.state.serializedInvoiceHeader}
               invoiceDetail={this.state.serializedInvoiceDetail}
               invoiceLeadDetail={this.state.serializedInvoiceLeadDetail}
+              totalToDeliver={totalToDeliver}
               createdUserName={this.state.createdUserName}
             />
           </div>
