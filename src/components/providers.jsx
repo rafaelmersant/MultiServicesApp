@@ -19,7 +19,7 @@ class Providers extends Component {
     currentPage: 1,
     pageSize: 10,
     searchQuery: "",
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
@@ -29,7 +29,7 @@ class Providers extends Component {
     this.setState({ providers, loading: false });
   }
 
-  handleDelete = async provider => {
+  handleDelete = async (provider) => {
     const { data: found } = await getProviderInInventory(
       getCurrentUser().companyId,
       provider.id
@@ -46,7 +46,9 @@ class Providers extends Component {
     );
     if (answer) {
       const originalProviders = this.state.providers;
-      const providers = this.state.providers.filter(m => m.id !== provider.id);
+      const providers = this.state.providers.filter(
+        (m) => m.id !== provider.id
+      );
       this.setState({ providers });
 
       try {
@@ -60,15 +62,15 @@ class Providers extends Component {
     }
   };
 
-  handlePageChange = page => {
+  handlePageChange = (page) => {
     this.setState({ currentPage: page });
   };
 
-  handleSearch = query => {
+  handleSearch = (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
   };
 
-  handleSort = sortColumn => {
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
@@ -78,12 +80,12 @@ class Providers extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      providers: allProviders
+      providers: allProviders,
     } = this.state;
 
     let filtered = allProviders;
     if (searchQuery)
-      filtered = allProviders.filter(m =>
+      filtered = allProviders.filter((m) =>
         `${m.firstName.toLowerCase()} ${m.lastName.toLowerCase()}`.startsWith(
           searchQuery.toLocaleLowerCase()
         )
@@ -103,7 +105,7 @@ class Providers extends Component {
     const { totalCount, providers } = this.getPagedData();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <h5 className="pull-left text-info mt-2">Listado de Proveedores</h5>

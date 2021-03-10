@@ -17,41 +17,29 @@ class UserForm extends Form {
       company_id: getCurrentUser().companyId,
       userHash: "hash",
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     },
     companies: [],
     roles: [
       { id: "Admin", name: "Admin" },
       { id: "Level1", name: "Level1" },
       { id: "Level2", name: "Level2" },
-      { id: "Reportes", name: "Reportes" }
+      { id: "Reportes", name: "Reportes" },
     ],
     errors: {},
-    action: "Nuevo Usuario"
+    action: "Nuevo Usuario",
   };
 
   schema = {
     id: Joi.number(),
-    email: Joi.string()
-      .required()
-      .email()
-      .label("Email"),
-    password: Joi.string()
-      .required()
-      .min(8)
-      .max(30)
-      .label("Password"),
-    name: Joi.string()
-      .required()
-      .min(5)
-      .label("Nombre"),
-    userRole: Joi.string()
-      .required()
-      .label("Rol"),
+    email: Joi.string().required().email().label("Email"),
+    password: Joi.string().required().min(8).max(30).label("Password"),
+    name: Joi.string().required().min(5).label("Nombre"),
+    userRole: Joi.string().required().label("Rol"),
     company_id: Joi.number().label("Compañîa"),
     userHash: Joi.string().optional(),
     createdUser: Joi.string(),
-    creationDate: Joi.string()
+    creationDate: Joi.string(),
   };
 
   async populateCompanies() {
@@ -68,7 +56,7 @@ class UserForm extends Form {
 
       this.setState({
         data: this.mapToViewModel(user),
-        action: "Editar Usuario"
+        action: "Editar Usuario",
       });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -93,7 +81,7 @@ class UserForm extends Form {
       createdUser: user[0].createdByUser
         ? user[0].createdByUser
         : getCurrentUser().email,
-      creationDate: user[0].creationDate
+      creationDate: user[0].creationDate,
     };
   }
 
@@ -115,7 +103,7 @@ class UserForm extends Form {
 
   render() {
     return (
-      <div className="container pull-left col-5 ml-3 shadow p-3 mb-5 bg-white rounded">
+      <div className="container-fluid">
         <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>

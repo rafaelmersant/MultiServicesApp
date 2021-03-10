@@ -100,7 +100,7 @@ class Conduces extends Component {
     const total = conduces ? conduces.length : 0;
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <NewButton label="Nuevo Conduce" to="/conduce/new" />

@@ -181,18 +181,15 @@ class Invoices extends Component {
     const total = invoices ? invoices.length : 0;
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
-            <NewButton label="Nueva Factura" to="/invoice/new" />
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col">
-            <div className="row">
+            <div className="d-flex justify-content-between mb-3">
               <div>
                 <h5 className="text-info">Búsqueda</h5>
+              </div>
+              <div>
+                <NewButton label="Nueva Factura" to="/invoice/new" />
               </div>
             </div>
 

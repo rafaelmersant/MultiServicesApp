@@ -18,7 +18,7 @@ class Customers extends Component {
     currentPage: 1,
     pageSize: 10,
     searchQuery: "",
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
@@ -28,7 +28,7 @@ class Customers extends Component {
     this.setState({ customers, loading: false });
   }
 
-  handleDelete = async customer => {
+  handleDelete = async (customer) => {
     const { data: found } = await getCustomerInInvoice(
       getCurrentUser().companyId,
       customer.id
@@ -43,7 +43,9 @@ class Customers extends Component {
     );
     if (answer) {
       const originalCustomers = this.state.customers;
-      const customers = this.state.customers.filter(m => m.id !== customer.id);
+      const customers = this.state.customers.filter(
+        (m) => m.id !== customer.id
+      );
       this.setState({ customers });
 
       try {
@@ -57,15 +59,15 @@ class Customers extends Component {
     }
   };
 
-  handlePageChange = page => {
+  handlePageChange = (page) => {
     this.setState({ currentPage: page });
   };
 
-  handleSearch = query => {
+  handleSearch = (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
   };
 
-  handleSort = sortColumn => {
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
@@ -75,12 +77,12 @@ class Customers extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      customers: allCustomers
+      customers: allCustomers,
     } = this.state;
 
     let filtered = allCustomers;
     if (searchQuery)
-      filtered = allCustomers.filter(m =>
+      filtered = allCustomers.filter((m) =>
         `${m.firstName.toLowerCase()} ${m.lastName.toLowerCase()}`.startsWith(
           searchQuery.toLocaleLowerCase()
         )
@@ -100,7 +102,7 @@ class Customers extends Component {
     const { totalCount, customers } = this.getPagedData();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <h5 className="pull-left text-info mt-2">Listado de Clientes</h5>

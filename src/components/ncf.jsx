@@ -13,7 +13,7 @@ class NCF extends Component {
     ncfs: [],
     currentPage: 1,
     pageSize: 10,
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   componentDidMount() {
@@ -27,7 +27,7 @@ class NCF extends Component {
     this.setState({ ncfs });
   }
 
-  handleDelete = async entry => {
+  handleDelete = async (entry) => {
     if (entry.current > 0) {
       toast.error(
         "No puede eliminar esta entrada porque su secuencia ha sido usada en factura(s)."
@@ -40,7 +40,7 @@ class NCF extends Component {
     );
     if (answer) {
       const originalNCFs = this.state.ncfs;
-      const ncfs = this.state.ncfs.filter(m => m.id !== entry.id);
+      const ncfs = this.state.ncfs.filter((m) => m.id !== entry.id);
       this.setState({ ncfs });
 
       try {
@@ -54,11 +54,11 @@ class NCF extends Component {
     }
   };
 
-  handlePageChange = page => {
+  handlePageChange = (page) => {
     this.setState({ currentPage: page });
   };
 
-  handleSort = sortColumn => {
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
@@ -77,7 +77,7 @@ class NCF extends Component {
     const { totalCount, ncfs } = this.getPagedData();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <h5 className="pull-left text-info mt-2">

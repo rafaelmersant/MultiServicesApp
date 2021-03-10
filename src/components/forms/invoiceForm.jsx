@@ -716,7 +716,8 @@ class InvoiceForm extends Form {
 
     return (
       <React.Fragment>
-        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 shadow-sm p-3 mb-5 bg-white rounded border border-secondary">
+        {/* <div className="container-fluid pull-left col-lg-9 col-md-11 col-sm-11 ml-3 shadow-sm p-3 mb-5 bg-white rounded border border-secondary"></div> */}
+        <div className="container-fluid">
           <h4 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h4>
           <div
             className="col-12 pb-3 bg-light"
@@ -912,22 +913,38 @@ class InvoiceForm extends Form {
           <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
           <ProductModal setNewProduct={this.handleSetNewProduct} />
 
-          {this.state.data.id > 0 &&
-            (getCurrentUser().role === "Admin" ||
-              getCurrentUser().role === "Owner") && (
-              <ReactToPrint
-                trigger={() => (
-                  <span
-                    ref={(button) => (this.printButton = button)}
-                    className="fa fa-print text-success pull-right pt-2 cursor-pointer"
-                    style={{ fontSize: "35px" }}
-                  ></span>
-                )}
-                content={() => this.componentRef}
-                onAfterPrint={() => this.invoicePrinted()}
-                //onBeforePrint={() => this.invoicePrinted()}
-              />
-            )}
+          <div className="container-fluid mt-3">
+            <NavLink className="btn btn-secondary" to="/invoices">
+              {"<-"} Ir al listado
+            </NavLink>
+
+            <button
+              className="btn button-local mb-3 pull-right"
+              onClick={this.newInvoice}
+            >
+              Nueva Factura
+            </button>
+          </div>
+
+          <div className="d-flex justify-content-end w-100 pr-3 mb-3">
+            {this.state.data.id > 0 &&
+              (getCurrentUser().role === "Admin" ||
+                getCurrentUser().role === "Owner") && (
+                <ReactToPrint
+                  trigger={() => (
+                    <span
+                      ref={(button) => (this.printButton = button)}
+                      className="fa fa-print text-success cursor-pointer"
+                      style={{ fontSize: "35px" }}
+                    ></span>
+                  )}
+                  content={() => this.componentRef}
+                  onAfterPrint={() => this.invoicePrinted()}
+                  //onBeforePrint={() => this.invoicePrinted()}
+                />
+              )}
+          </div>
+
           <div hidden="hidden">
             <PrintInvoice
               ref={(el) => (this.componentRef = el)}
@@ -941,18 +958,6 @@ class InvoiceForm extends Form {
           </div>
         </div>
 
-        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 mb-5">
-          <NavLink className="btn btn-secondary" to="/invoices">
-            {"<-"} Ir al listado
-          </NavLink>
-
-          <button
-            className="btn button-local mb-3 pull-right"
-            onClick={this.newInvoice}
-          >
-            Nueva Factura
-          </button>
-        </div>
         <div className="col-1 ml-0 pl-0">
           <button
             hidden

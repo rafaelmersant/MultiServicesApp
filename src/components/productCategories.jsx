@@ -7,7 +7,7 @@ import { paginate } from "../utils/paginate";
 import NewButton from "./common/newButton";
 import {
   getProductsCategories,
-  deleteCategory
+  deleteCategory,
 } from "../services/productCategoryService";
 import { getCategoryInProduct } from "../services/productService";
 import { getCurrentUser } from "../services/authService";
@@ -19,7 +19,7 @@ class ProductsCategories extends Component {
     currentPage: 1,
     pageSize: 10,
     searchQuery: "",
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
@@ -33,7 +33,7 @@ class ProductsCategories extends Component {
     sessionStorage["currentPage"] = 1;
   }
 
-  handleDelete = async category => {
+  handleDelete = async (category) => {
     const { data: found } = await getCategoryInProduct(
       getCurrentUser().companyId,
       category.id
@@ -51,7 +51,7 @@ class ProductsCategories extends Component {
     if (answer) {
       const originalCategories = this.state.categories;
       const categories = this.state.categories.filter(
-        m => m.id !== category.id
+        (m) => m.id !== category.id
       );
       this.setState({ categories });
 
@@ -66,15 +66,15 @@ class ProductsCategories extends Component {
     }
   };
 
-  handlePageChange = page => {
+  handlePageChange = (page) => {
     this.setState({ currentPage: page });
   };
 
-  handleSearch = query => {
+  handleSearch = (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
   };
 
-  handleSort = sortColumn => {
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
@@ -84,12 +84,12 @@ class ProductsCategories extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      categories: allCategories
+      categories: allCategories,
     } = this.state;
 
     let filtered = allCategories;
     if (searchQuery)
-      filtered = allCategories.filter(m =>
+      filtered = allCategories.filter((m) =>
         m.description.toLowerCase().startsWith(searchQuery.toLocaleLowerCase())
       );
 
@@ -107,7 +107,7 @@ class ProductsCategories extends Component {
     const { totalCount, categories } = this.getPagedData();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <h5 className="pull-left text-info mt-2">

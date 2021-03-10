@@ -12,7 +12,7 @@ import {
 import { getCurrentUser } from "../services/authService";
 import { getProductInInvoice } from "../services/invoiceServices";
 import ProductsTable from "./tables/productsTable";
-import _ from 'lodash';
+import _ from "lodash";
 
 class Products extends Component {
   state = {
@@ -53,8 +53,12 @@ class Products extends Component {
         );
         products = prods;
       }
-      
-      const productsFiltered = _.orderBy(products.results, ['ocurrences'], ['desc'])
+
+      const productsFiltered = _.orderBy(
+        products.results,
+        ["ocurrences"],
+        ["desc"]
+      );
 
       this.setState({
         products: productsFiltered,
@@ -134,7 +138,7 @@ class Products extends Component {
     const user = getCurrentUser();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <h5 className="pull-left text-info mt-2">Listado de Productos</h5>

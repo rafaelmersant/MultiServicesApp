@@ -14,7 +14,7 @@ class Companies extends Component {
     currentPage: 1,
     pageSize: 10,
     searchQuery: "",
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
@@ -23,13 +23,13 @@ class Companies extends Component {
     this.setState({ companies });
   }
 
-  handleDelete = async company => {
+  handleDelete = async (company) => {
     const answer = window.confirm(
       "Esta seguro de eliminar esta compañia? \nNo podrá deshacer esta acción"
     );
     if (answer) {
       const originalCompanies = this.state.companies;
-      const companies = this.state.companies.filter(m => m.id !== company.id);
+      const companies = this.state.companies.filter((m) => m.id !== company.id);
       this.setState({ companies });
 
       try {
@@ -43,15 +43,15 @@ class Companies extends Component {
     }
   };
 
-  handlePageChange = page => {
+  handlePageChange = (page) => {
     this.setState({ currentPage: page });
   };
 
-  handleSearch = query => {
+  handleSearch = (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
   };
 
-  handleSort = sortColumn => {
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
@@ -61,12 +61,12 @@ class Companies extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      companies: allCompanies
+      companies: allCompanies,
     } = this.state;
 
     let filtered = allCompanies;
     if (searchQuery)
-      filtered = allCompanies.filter(m =>
+      filtered = allCompanies.filter((m) =>
         m.name.toLowerCase().startsWith(searchQuery.toLocaleLowerCase())
       );
 
@@ -84,7 +84,7 @@ class Companies extends Component {
     const { totalCount, companies } = this.getPagedData();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col margin-top-msg">
             <NewButton label="Nueva Compañía" to="/company/new" />
