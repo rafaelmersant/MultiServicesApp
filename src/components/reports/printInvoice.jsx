@@ -283,7 +283,7 @@ class PrintInvoice extends Component {
           GRACIAS POR SU COMPRA!
         </div>
         <div
-          className="mt-4 font-receipt-small-F"
+          className="mt-5 font-receipt-small-F"
           style={{ height: "55px", fontFamily: "TimesNewRoman" }}
         >
           II
