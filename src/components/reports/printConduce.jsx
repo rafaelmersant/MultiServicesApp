@@ -22,11 +22,25 @@ class PrintConduce extends Component {
         {invoiceHeader && (
           <div>
             <div className="text-center">
-              <img
+              <span
+                style={{
+                  fontFamily: "Calisto MT",
+                  fontSize: "1.9em",
+                  fontWeight: "bold",
+                }}
+              >
+                FERRINMAS
+              </span>
+              {/* <img
                 width="210px"
                 src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
                 alt="FERRINMAS"
-              />
+              /> */}
+            </div>
+            <div className="text-center">
+              <span className="font-receipt font-receipt-small">
+                {invoiceHeader[0].company.address}
+              </span>
             </div>
             <div className="text-center">
               <span className="font-receipt font-receipt-small">
@@ -100,10 +114,10 @@ class PrintConduce extends Component {
               </tr>
               <tr key="h2">
                 <td style={{ cellSpacing: "10px" }}>
-                  <span className="font-receipt">CANTIDAD</span>
+                  <span className="font-receipt">CANTIDAD / ITEM</span>
                 </td>
                 <td className="text-right" style={{ cellSpacing: "10px" }}>
-                  <span className="font-receipt">ITEM</span>
+                  {/* <span className="font-receipt">ITEM</span> */}
                 </td>
               </tr>
               <tr key="h3">
@@ -180,7 +194,7 @@ class PrintConduce extends Component {
           </span>
         </div>
 
-        <div className="text-center mt-5">
+        <div className="text-center mt-5 mb-4">
           <span className="d-block">
             -----------------------------------------------
           </span>

@@ -261,15 +261,16 @@ class ProductForm extends Form {
 
   render() {
     const { popUp } = this.props;
-    const _standardSize =
-      "container pull-left col-lg-8 col-md-8 col-sm-9 ml-3 shadow p-3 mb-5 bg-white rounded border";
-    const _fullSize =
-      "container pull-left col-lg-12 col-md-12 col-sm-12 p-3 mb-5 bg-white rounded border";
+    // const _standardSize =
+    //   "container pull-left col-lg-8 col-md-8 col-sm-9 ml-3 shadow p-3 mb-5 bg-white rounded border";
+    // const _fullSize = "container-fluid";
+    // pull-left col-lg-12 col-md-12 col-sm-12 p-3 mb-5 bg-white rounded border
     const _customCol = popUp ? "col-3" : "col-2";
-    const containerSize = popUp ? _fullSize : _standardSize;
+    const _customColFull = popUp ? "col-12" : "col-5";
+    //const containerSize = popUp ? _fullSize : _standardSize;
 
     return (
-      <div className={containerSize}>
+      <div className="container-fluid">
         {!popUp && (
           <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
         )}
@@ -300,7 +301,9 @@ class ProductForm extends Form {
               </div>
             </div>
 
-            <PriceCalculation onChange={this.handleChangeCalculation} />
+            {!popUp && (
+              <PriceCalculation onChange={this.handleChangeCalculation} />
+            )}
 
             <div className="row mt-3">
               <div className={_customCol}>
@@ -310,12 +313,17 @@ class ProductForm extends Form {
                   value={this.state.data.cost}
                   label="Costo"
                   onChange={this.handleChangeCost}
-                  disabled="disabled"
+                  disabled={popUp ? "" : "disabled"}
                 />
               </div>
 
               <div className={_customCol}>
-                {this.renderInput("price", "Precio", "text", "disabled")}
+                {this.renderInput(
+                  "price",
+                  "Precio",
+                  "text",
+                  popUp ? "" : "disabled"
+                )}
               </div>
               <div
                 className="col-1"
@@ -337,7 +345,7 @@ class ProductForm extends Form {
               <div className={_customCol}>
                 {this.renderInput("itbis", "ITBIS", "text", "disabled")}
               </div>
-              <div className="col-5">
+              <div className={_customColFull}>
                 <Input
                   disabled="disabled"
                   type="text"
@@ -349,7 +357,7 @@ class ProductForm extends Form {
             </div>
 
             <div className="row">
-              <div className="col-5">
+              <div className={_customColFull}>
                 {this.renderSelect(
                   "category_id",
                   "Categoria",
@@ -358,37 +366,39 @@ class ProductForm extends Form {
               </div>
 
               {!popUp && (
-                <div className="col-1 ml-0 pl-0">
-                  <button
-                    type="button"
-                    className="fa fa-plus-circle"
-                    data-toggle="modal"
-                    data-target="#categoryModal"
-                    style={{
-                      color: "green",
-                      border: "0",
-                      backgroundColor: "transparent",
-                      marginTop: "32px",
-                      fontSize: "36px",
-                      outline: "none",
-                    }}
-                  ></button>
-                </div>
-              )}
+                <React.Fragment>
+                  <div className="col-1 ml-0 pl-0">
+                    <button
+                      type="button"
+                      className="fa fa-plus-circle"
+                      data-toggle="modal"
+                      data-target="#categoryModal"
+                      style={{
+                        color: "green",
+                        border: "0",
+                        backgroundColor: "transparent",
+                        marginTop: "32px",
+                        fontSize: "36px",
+                        outline: "none",
+                      }}
+                    ></button>
+                  </div>
 
-              <div className="col-3">
-                <Input
-                  type="text"
-                  name="quantity"
-                  value={this.state.quantity}
-                  label="Cantidad para inventario"
-                  onChange={this.handleChangeQuantity}
-                  autoComplete="off"
-                />
-              </div>
-              <div className="col-2">
-                {this.renderInput("minimumStock", "Mínimo en Inv.")}
-              </div>
+                  <div className="col-3">
+                    <Input
+                      type="text"
+                      name="quantity"
+                      value={this.state.quantity}
+                      label="Cantidad para inventario"
+                      onChange={this.handleChangeQuantity}
+                      autoComplete="off"
+                    />
+                  </div>
+                  <div className="col-2">
+                    {this.renderInput("minimumStock", "Mínimo en Inv.")}
+                  </div>
+                </React.Fragment>
+              )}
             </div>
 
             {false &&
@@ -400,17 +410,19 @@ class ProductForm extends Form {
 
         <ProductProvidersModal data={this.state.providers} />
 
-        <div className="pull-right">
-          <button
-            className="btn btn-dark"
-            type="button"
-            data-toggle="modal"
-            data-target="#productProvidersModal"
-            ref={(button) => (this.raiseProductProvidersModal = button)}
-          >
-            Proveedores
-          </button>
-        </div>
+        {!popUp && (
+          <div className="d-flex justify-content-end mt-2">
+            <button
+              className="btn btn-dark"
+              type="button"
+              data-toggle="modal"
+              data-target="#productProvidersModal"
+              ref={(button) => (this.raiseProductProvidersModal = button)}
+            >
+              Proveedores
+            </button>
+          </div>
+        )}
       </div>
     );
   }

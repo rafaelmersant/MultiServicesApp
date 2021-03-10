@@ -9,16 +9,12 @@ import { getCompany } from "../../services/companyService";
 class LoginForm extends Form {
   state = {
     data: { email: "", password: "" },
-    errors: {}
+    errors: {},
   };
 
   schema = {
-    email: Joi.string()
-      .required()
-      .label("Email"),
-    password: Joi.string()
-      .required()
-      .label("Contraseña")
+    email: Joi.string().required().label("Email"),
+    password: Joi.string().required().label("Contraseña"),
   };
 
   doSubmit = async () => {
@@ -32,7 +28,7 @@ class LoginForm extends Form {
       localStorage.setItem("ms_companyName", company[0].name);
 
       const { state } = this.props.location;
-      window.location = state ? state.from.pathname : "/";
+      window.location = state ? state.from.pathname : "/invoice/new";
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         toast.error("Email/Contraseña incorrecto.");

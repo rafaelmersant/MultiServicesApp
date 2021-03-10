@@ -17,11 +17,25 @@ class PrintInvoice extends Component {
         {invoiceHeader.length && (
           <div>
             <div className="text-center">
-              <img
+              <span
+                style={{
+                  fontFamily: "Calisto MT",
+                  fontSize: "1.9em",
+                  fontWeight: "bold",
+                }}
+              >
+                FERRINMAS
+              </span>
+              {/* <img
                 width="210px"
                 src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
                 alt="FERRINMAS"
-              />
+              /> */}
+            </div>
+            <div className="text-center">
+              <span className="font-receipt font-receipt-small">
+                {invoiceHeader[0].company.address}
+              </span>
             </div>
             <div className="text-center">
               <span className="font-receipt font-receipt-small">

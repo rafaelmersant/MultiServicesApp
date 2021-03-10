@@ -18,99 +18,114 @@ const NavBarSide = ({ user }) => {
           className="list-group-item list-group-item-action bg-light"
           to="/invoice/new"
         >
+          <span className="fa fa-money mr-2" />
           Facturación
         </NavLink>
 
         {user && (user.role === "Admin" || user.role === "Owner") && (
           <React.Fragment>
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/conduces"
             >
+              <span className="fa fa-truck mr-2" />
               Conduces
             </NavLink>
 
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/inventoriesFull"
             >
+              <span className="fa fa-calendar mr-2" />
               Entrada de Inventario
             </NavLink>
 
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/inventories"
             >
+              <span className="fa fa-calendar mr-2" />
               Movimientos de Productos
             </NavLink>
 
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/products"
             >
+              <span className="fa fa-list mr-2" />
               Productos
             </NavLink>
 
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/productsCategories"
             >
+              <span className="fa fa-list mr-2" />
               Categorias
             </NavLink>
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/customers"
             >
+              <span className="fa fa-users mr-2" />
               Clientes
             </NavLink>
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/providers"
             >
+              <span className="fa fa-users mr-2" />
               Proveedores
             </NavLink>
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/ncf"
             >
+              <span className="fa fa-money mr-2" />
               NCF
             </NavLink>
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/invoices"
             >
+              <span className="fa fa-list mr-2" />
               Listado de Facturas
             </NavLink>
 
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/reports/report607"
             >
+              <span className="fa fa-list mr-2" />
               Facturas 607
             </NavLink>
 
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/inventory/report"
             >
+              <span className="fa fa-list mr-2" />
               Inventario
             </NavLink>
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/reports/report606"
             >
+              <span className="fa fa-list mr-2" />
               Reporte 606
             </NavLink>
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/reports/entrtiesProvider"
             >
+              <span className="fa fa-list mr-2" />
               Entradas por Proveedor
             </NavLink>
             <NavLink
-              className="list-group-item list-group-item-action bg-light"
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/reports/purchaseOrders"
             >
+              <span className="fa fa-list mr-2" />
               Ordenes de Compra
             </NavLink>
           </React.Fragment>

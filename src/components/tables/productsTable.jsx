@@ -9,7 +9,7 @@ class ProductsTable extends Component {
     {
       path: "description",
       label: "Descripción",
-      content: product => {
+      content: (product) => {
         if (
           auth.getCurrentUser().role === "Admin" ||
           auth.getCurrentUser().role === "Owner"
@@ -20,45 +20,43 @@ class ProductsTable extends Component {
         } else {
           return <span className="text-info"> {product.description} </span>;
         }
-      }
+      },
     },
     {
       path: "quantity",
       label: "Cantidad",
-      content: item => (
+      content: (item) => (
         <div className="text-right">{formatNumber(item.quantity ?? 0)}</div>
-      )
+      ),
     },
     {
       path: "price",
       label: "Precio",
-      content: item => (
+      content: (item) => (
         <div className="text-right">{formatNumber(item.price)}</div>
-      )
+      ),
     },
     {
       path: "cost",
       label: "Costo",
-      content: item => (
+      content: (item) => (
         <div className="text-right">{formatNumber(item.cost)}</div>
-      )
+      ),
     },
     {
       path: "itbis",
       label: "ITBIS",
-      content: item => (
+      content: (item) => (
         <div className="text-right">{formatNumber(item.itbis)}</div>
-      )
+      ),
     },
     { path: "category.description", label: "Categoria" },
-    { path: "creationDate", label: "Creado (m/d/a)", content: item => (
-      <span>{new Date(item.creationDate).toLocaleDateString()}</span>
-    ) }
+    { path: "creationDate", label: "Creado (m/d/a)" },
   ];
 
   deleteColumn = {
     key: "delete",
-    content: product => (
+    content: (product) => (
       <div className="text-center">
         <span
           onClick={() => this.props.onDelete(product)}
@@ -66,7 +64,7 @@ class ProductsTable extends Component {
           style={{ fontSize: "19px" }}
         ></span>
       </div>
-    )
+    ),
   };
 
   constructor() {
