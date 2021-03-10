@@ -6,7 +6,7 @@ import { getCompanies } from "../../services/companyService";
 import {
   getProductCategory,
   saveProductCategory,
-  getProductsCategoriesByDescrp
+  getProductsCategoriesByDescrp,
 } from "../../services/productCategoryService";
 import { getCurrentUser } from "../../services/authService";
 
@@ -17,22 +17,19 @@ class ProductCategoryForm extends Form {
       description: "",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     },
     companies: [],
     errors: {},
-    action: "Nueva Categoria"
+    action: "Nueva Categoria",
   };
 
   schema = {
     id: Joi.number(),
-    description: Joi.string()
-      .required()
-      .min(3)
-      .label("Categoria"),
+    description: Joi.string().required().min(3).label("Categoria"),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
-    creationDate: Joi.string()
+    creationDate: Joi.string(),
   };
 
   async populateCompanies() {
@@ -49,7 +46,7 @@ class ProductCategoryForm extends Form {
 
       this.setState({
         data: this.mapToViewModel(category),
-        action: "Editar Categoria"
+        action: "Editar Categoria",
       });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -68,7 +65,7 @@ class ProductCategoryForm extends Form {
       description: category[0].description,
       company_id: category[0].company.id,
       createdUser: category[0].createdByUser,
-      creationDate: category[0].creationDate
+      creationDate: category[0].creationDate,
     };
   }
 
@@ -101,7 +98,7 @@ class ProductCategoryForm extends Form {
     const containerSize = popUp ? _fullSize : _standardSize;
 
     return (
-      <div className={containerSize}>
+      <div className="container-fluid">
         {!popUp && (
           <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
         )}

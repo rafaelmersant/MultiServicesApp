@@ -331,15 +331,13 @@ class InventoryFullForm extends Form {
   render() {
     return (
       <React.Fragment>
-        <div className="row">
-        <div className="col-8">
-          <button className="btn btn-success mb-3 pull-right" onClick={this.newEntry}>
+        <div className="d-flex justify-content-end mr-3">
+          <button className="btn btn-success mb-3" onClick={this.newEntry}>
             Nueva Entrada
           </button>
         </div>
-        </div>
-        
-        <div className="container pull-left col-lg-8 col-md-11 col-sm-11 ml-3 shadow p-3 mb-5 bg-white rounded">
+
+        <div className="container-fluid">
           <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
 
           <form onSubmit={this.handleSubmit}>
@@ -372,9 +370,7 @@ class InventoryFullForm extends Form {
 
                   <div className="col-2">
                     <label className="mr-1">Fecha</label>
-                    <div
-                      className="mr-3"
-                      >
+                    <div className="mr-3">
                       <DatePicker
                         className="form-control form-control-sm"
                         selected={this.state.creationDate}
