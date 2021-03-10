@@ -265,7 +265,7 @@ class InvoiceForm extends Form {
         searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
         hideSearchCustomer: true,
         ncf: invoiceHeader[0].ncf.length,
-        action: "Detalle de Factura",
+        action: "Detalle de Factura No. ",
         serializedInvoiceHeader: invoiceHeader,
         serializedInvoiceDetail: invoiceDetail,
         createdUserName: createdUserData[0].name,
@@ -718,7 +718,12 @@ class InvoiceForm extends Form {
       <React.Fragment>
         {/* <div className="container-fluid pull-left col-lg-9 col-md-11 col-sm-11 ml-3 shadow-sm p-3 mb-5 bg-white rounded border border-secondary"></div> */}
         <div className="container-fluid">
-          <h4 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h4>
+          <h4 className="bg-dark text-light pl-2 pr-2 list-header">
+            {this.state.action}
+            {this.state.data.sequence > 0 &&
+              !this.state.action.includes("Nueva") &&
+              this.state.data.sequence}
+          </h4>
           <div
             className="col-12 pb-3 bg-light"
             disabled={!this.isInvoiceEditable()}
@@ -764,7 +769,7 @@ class InvoiceForm extends Form {
                       className="form-control form-control-sm"
                       selected={this.state.invoiceDate}
                       onChange={(date) => this.handleChangeInvoiceDate(date)}
-                      dateFormat="dd/MM/yyyy"
+                      dateFormat="dd/MM/yyyy hh:mm aa"
                     />
                   </div>
                 </div>

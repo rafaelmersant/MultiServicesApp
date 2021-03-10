@@ -205,7 +205,7 @@ class Invoices extends Component {
               </div>
             )}
 
-            {!this.state.loading && (
+            {!this.state.loading && invoices.length > 0 && (
               <div className="row">
                 <InvoicesTable
                   invoices={invoices}
@@ -216,8 +216,15 @@ class Invoices extends Component {
                 />
               </div>
             )}
+            {!invoices.length && (
+              <div className="text-center mt-5 mb-5">
+                <h5>
+                  No existen registros con el criterio de búsqueda especificado
+                </h5>
+              </div>
+            )}
 
-            {!this.state.loading && (
+            {!this.state.loading && invoices.length > 0 && (
               <div className="row">
                 <div>
                   <Pagination

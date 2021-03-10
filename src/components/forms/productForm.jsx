@@ -61,7 +61,7 @@ class ProductForm extends Form {
     model: Joi.optional(),
     category_id: Joi.number().label("Categoria"),
     barcode: Joi.optional(),
-    minimumStock: Joi.optional(),
+    minimumStock: Joi.number().required().label("Mínimo en Inventario"),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
     creationDate: Joi.string(),
@@ -261,18 +261,17 @@ class ProductForm extends Form {
 
   render() {
     const { popUp } = this.props;
-    // const _standardSize =
-    //   "container pull-left col-lg-8 col-md-8 col-sm-9 ml-3 shadow p-3 mb-5 bg-white rounded border";
-    // const _fullSize = "container-fluid";
-    // pull-left col-lg-12 col-md-12 col-sm-12 p-3 mb-5 bg-white rounded border
+
     const _customCol = popUp ? "col-3" : "col-2";
     const _customColFull = popUp ? "col-12" : "col-5";
-    //const containerSize = popUp ? _fullSize : _standardSize;
+    const _customColMedium = popUp ? "col-6" : "col-3";
 
     return (
       <div className="container-fluid">
         {!popUp && (
-          <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
+          <h3 className="bg-dark text-light list-header">
+            {this.state.action}
+          </h3>
         )}
 
         <div className="col-12 pb-3 bg-light">
@@ -287,11 +286,6 @@ class ProductForm extends Form {
               </div>
             </div>
 
-            {/* <div className="form-row">
-              <div className="form-group col-12">
-                {this.renderInput("descriptionLong", "Descripción Larga")}
-              </div>
-            </div> */}
             <div className="row mb-2">
               <div className="col">
                 {this.renderInput("measure", "Almacen")}
@@ -365,8 +359,8 @@ class ProductForm extends Form {
                 )}
               </div>
 
-              {!popUp && (
-                <React.Fragment>
+              <React.Fragment>
+                {!popUp && (
                   <div className="col-1 ml-0 pl-0">
                     <button
                       type="button"
@@ -383,22 +377,21 @@ class ProductForm extends Form {
                       }}
                     ></button>
                   </div>
-
-                  <div className="col-3">
-                    <Input
-                      type="text"
-                      name="quantity"
-                      value={this.state.quantity}
-                      label="Cantidad para inventario"
-                      onChange={this.handleChangeQuantity}
-                      autoComplete="off"
-                    />
-                  </div>
-                  <div className="col-2">
-                    {this.renderInput("minimumStock", "Mínimo en Inv.")}
-                  </div>
-                </React.Fragment>
-              )}
+                )}
+                <div className={_customColMedium}>
+                  <Input
+                    type="text"
+                    name="quantity"
+                    value={this.state.quantity}
+                    label="Cantidad para inventario"
+                    onChange={this.handleChangeQuantity}
+                    autoComplete="off"
+                  />
+                </div>
+                <div className={_customColMedium}>
+                  {this.renderInput("minimumStock", "Mínimo en Inv.")}
+                </div>
+              </React.Fragment>
             </div>
 
             {false &&

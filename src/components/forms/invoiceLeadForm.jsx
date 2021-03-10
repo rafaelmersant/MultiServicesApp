@@ -1,5 +1,5 @@
 import React from "react";
-import Joi, { intersect } from "joi-browser";
+import Joi from "joi-browser";
 import { toast } from "react-toastify";
 import ReactToPrint from "react-to-print";
 import Form from "../common/form";
@@ -135,12 +135,10 @@ class InvoiceLeadForm extends Form {
   };
 
   async fetchData(invoiceNo, conduceNo) {
-    let invoiceId = 0;
     let invoiceLeadHeader = {};
 
     if (conduceNo) {
       const { data: result } = await getInvoiceLeadHeaderById(conduceNo);
-      invoiceId = result.results[0].invoice.id;
       invoiceNo = result.results[0].invoice.sequence;
     }
 
@@ -223,9 +221,9 @@ class InvoiceLeadForm extends Form {
         this.columns.splice(index, 1);
       }
 
-      const serializedInvoiceLeadDetail = invoiceLeadDetail.filter((item) => {
-        if (item.quantity > 0) return item;
-      });
+      const serializedInvoiceLeadDetail = invoiceLeadDetail.filter(
+        (item) => item.quantity > 0
+      );
 
       this.setState({
         data: _invoiceLead,
@@ -349,7 +347,9 @@ class InvoiceLeadForm extends Form {
     return (
       <React.Fragment>
         <div className="container-fluid">
-          <h4 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h4>
+          <h4 className="bg-dark text-light list-header">
+            {this.state.action}
+          </h4>
           <div className="col-12 pb-3 bg-light">
             <form onSubmit={this.handleSubmit}>
               <div className="row">

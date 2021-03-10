@@ -114,6 +114,7 @@ class PurchaseOrders extends Component {
       currentPage,
     } = this.state;
     const user = getCurrentUser();
+    console.log("orders", orders);
 
     return (
       <div className="container-fluid">

@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Route, Redirect, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import NotFound from "./components/notFound";
-import NavBar from "./components/navBar";
 import LoginForm from "./components/forms/loginForm";
 import Logout from "./components/logout";
 
@@ -83,7 +82,7 @@ class App extends Component {
 
           <div id="page-content-wrapper">
             <nav className="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-              <button className="btn btn-secondary" id="menu-toggle">
+              <button className="btn btn-light" id="menu-toggle">
                 ...
               </button>
 
@@ -141,8 +140,8 @@ class App extends Component {
 
                   {user && user.role === "Owner" && (
                     <li className="nav-item dropdown">
-                      <a
-                        className="nav-link dropdown-toggle"
+                      <span
+                        className="nav-link dropdown-toggle cursor-pointer"
                         href="#"
                         id="navbarDropdown"
                         role="button"
@@ -151,7 +150,7 @@ class App extends Component {
                         aria-expanded="false"
                       >
                         Admin
-                      </a>
+                      </span>
                       <div
                         className="dropdown-menu dropdown-menu-right"
                         aria-labelledby="navbarDropdown"

@@ -68,3 +68,7 @@ div[disabled] {
 .border-none {
   border: none !important;
 }
+
+.list-header {
+  padding: 4px 8px !important;
+}

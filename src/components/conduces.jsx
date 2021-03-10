@@ -88,6 +88,31 @@ class Conduces extends Component {
     this.populateConduces();
   };
 
+  handleDelete = async (conduce) => {
+    const answer = window.confirm(
+      `Seguro que desea eliminar el conduce #${conduce.id}`
+    );
+
+    if (answer) {
+      try {
+        const conduces = this.state.conduces.filter(
+          (item) => item.id !== conduce.id
+        );
+        this.setState({ conduces });
+
+        var deleted = { status: 200 }; //await deleteInvoiceHeader(invoice.id);
+      } catch (ex) {
+        if (ex.response && ex.response.status === 404)
+          toast.error("Este factura ya fue eliminada");
+      }
+
+      if (deleted && deleted.status === 200)
+        toast.success(
+          ` (Simulando) -> El conduce #${conduce.id} fue eliminado con exito!`
+        );
+    }
+  };
+
   render() {
     const {
       conduces,

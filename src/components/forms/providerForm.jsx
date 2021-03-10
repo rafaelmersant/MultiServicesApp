@@ -6,7 +6,7 @@ import { getCompanies } from "../../services/companyService";
 import {
   getProvider,
   saveProvider,
-  getProviderByFirstName
+  getProviderByFirstName,
 } from "../../services/providerService";
 import { getCurrentUser } from "../../services/authService";
 
@@ -22,29 +22,24 @@ class ProviderForm extends Form {
       rnc: "",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     },
     companies: [],
     errors: {},
-    action: "Nuevo Proveedor"
+    action: "Nuevo Proveedor",
   };
 
   schema = {
     id: Joi.number(),
-    firstName: Joi.string()
-      .required()
-      .max(100)
-      .label("Nombre de Empresa"),
+    firstName: Joi.string().required().max(100).label("Nombre de Empresa"),
     lastName: Joi.optional(),
     email: Joi.optional(),
     address: Joi.optional(),
     phoneNumber: Joi.optional(),
     rnc: Joi.optional(),
-    company_id: Joi.number()
-      .required()
-      .label("Compañîa"),
+    company_id: Joi.number().required().label("Compañîa"),
     createdUser: Joi.string(),
-    creationDate: Joi.string()
+    creationDate: Joi.string(),
   };
 
   async populateCompanies() {
@@ -61,7 +56,7 @@ class ProviderForm extends Form {
 
       this.setState({
         data: this.mapToViewModel(provider),
-        action: "Editar Proveedor"
+        action: "Editar Proveedor",
       });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -94,7 +89,7 @@ class ProviderForm extends Form {
       createdUser: provider[0].createdByUser
         ? provider[0].createdByUser
         : getCurrentUser().email,
-      creationDate: provider[0].creationDate
+      creationDate: provider[0].creationDate,
     };
   }
 
@@ -119,16 +114,13 @@ class ProviderForm extends Form {
 
   render() {
     const { user, popUp } = this.props;
-    const _standardSize =
-      "container pull-left col-lg-8 col-md-8 col-sm-11 ml-3 shadow p-3 mb-5 bg-white rounded";
-    const _fullSize =
-      "container pull-left col-lg-12 col-md-12 col-sm-12  shadow p-3 mb-5 bg-white rounded";
-    const containerSize = popUp ? _fullSize : _standardSize;
 
     return (
-      <div className={containerSize}>
+      <div className="container-fluid">
         {!popUp && (
-          <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
+          <h3 className="bg-dark text-light list-header">
+            {this.state.action}
+          </h3>
         )}
 
         <div className="col-12 pb-3 bg-light">
@@ -137,9 +129,6 @@ class ProviderForm extends Form {
               <div className="col">
                 {this.renderInput("firstName", "Nombre de Empresa")}
               </div>
-              {/* <div className="col">
-                {this.renderInput("lastName", "Apellidos")}
-              </div> */}
             </div>
             <div className="row">
               <div className="col">{this.renderInput("email", "Email")}</div>

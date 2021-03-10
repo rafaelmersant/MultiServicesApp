@@ -36,7 +36,7 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/inventoriesFull"
             >
-              <span className="fa fa-calendar mr-2" />
+              <span className="fa fa-clone mr-2" />
               Entrada de Inventario
             </NavLink>
 
@@ -44,7 +44,7 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/inventories"
             >
-              <span className="fa fa-calendar mr-2" />
+              <span className="fa fa-bars mr-2" />
               Movimientos de Productos
             </NavLink>
 
@@ -81,7 +81,7 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/ncf"
             >
-              <span className="fa fa-money mr-2" />
+              <span className="fa fa-credit-card mr-2" />
               NCF
             </NavLink>
             <NavLink
@@ -125,7 +125,7 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/reports/purchaseOrders"
             >
-              <span className="fa fa-list mr-2" />
+              <span className="fa fa-book mr-2" />
               Ordenes de Compra
             </NavLink>
           </React.Fragment>
