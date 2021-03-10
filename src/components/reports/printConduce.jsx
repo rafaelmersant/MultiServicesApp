@@ -83,9 +83,11 @@ class PrintConduce extends Component {
             ---------------------------------------------------------------
           </span>
 
-          <span className="font-receipt font-receipt-small-2 text-center">
-            {invoiceLeadDetail.length && "CONDUCE"}
-          </span>
+          <div className="text-center">
+            <span className="font-receipt font-receipt-medium">
+              {invoiceLeadDetail.length && "CONDUCE"}
+            </span>
+          </div>
         </div>
 
         {invoiceLeadDetail.length && (
@@ -98,10 +100,10 @@ class PrintConduce extends Component {
               </tr>
               <tr key="h2">
                 <td style={{ cellSpacing: "10px" }}>
-                  <span className="font-receipt">ITEM</span>
+                  <span className="font-receipt">CANTIDAD</span>
                 </td>
                 <td className="text-right" style={{ cellSpacing: "10px" }}>
-                  <span className="font-receipt">CANTIDAD</span>
+                  <span className="font-receipt">ITEM</span>
                 </td>
               </tr>
               <tr key="h3">
@@ -115,29 +117,17 @@ class PrintConduce extends Component {
                 (item) =>
                   item.quantity > 0 && (
                     <React.Fragment key={"I" + item.id}>
-                      <tr key={"D" + item.id}>
-                        <td colSpan="3">
-                          <span className="font-receipt font-receipt-small">
-                            {item.product.description}
-                          </span>
-                        </td>
-                      </tr>
-
                       <tr key={item.product.id}>
-                        <td className="text-right">
+                        <td className="text-left">
                           <span className="font-receipt font-receipt-small">
                             {formatNumber(item.quantity)}
                           </span>
                         </td>
                       </tr>
-
-                      <tr>
+                      <tr key={"D" + item.id}>
                         <td colSpan="3">
-                          <span
-                            className="font-receipt font-receipt-small"
-                            style={{ color: "white", fontSize: "0.6em" }}
-                          >
-                            |
+                          <span className="font-receipt font-receipt-small">
+                            {item.product.description}
                           </span>
                         </td>
                       </tr>
@@ -184,10 +174,17 @@ class PrintConduce extends Component {
             {invoiceLeadDetail.length && invoiceLeadDetail[0].header.id}
           </span>
         </div>
-        <div>
+        <div className="mb-2">
           <span className="font-receipt font-receipt-small-F">
             Le atendió: {createdUserName}
           </span>
+        </div>
+
+        <div className="text-center mt-5">
+          <span className="d-block">
+            -----------------------------------------------
+          </span>
+          <span className="font-receipt font-receipt-small-F">Recibido</span>
         </div>
       </div>
     );
