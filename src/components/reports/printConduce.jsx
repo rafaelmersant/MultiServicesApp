@@ -212,7 +212,7 @@ class PrintConduce extends Component {
           </span>
         </div>
 
-        <div className="text-center mb-4" style={{ marginTop: "20px" }}>
+        <div className="text-center mb-4" style={{ marginTop: "50px" }}>
           <span className="d-block">
             -----------------------------------------------
           </span>
