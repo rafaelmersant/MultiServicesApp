@@ -16,15 +16,15 @@ class SearchProduct extends Component {
 
     this.setState({ searchProductInput: input.value });
 
-    setTimeout(() => {
+    setTimeout(async () => {
       let { data: products } = await getProductsByDescription(
         this.props.companyId,
         descrp
       );
       products = products.results;
-  
+
       if (input.value === "") products = [];
-  
+
       if (input.value.length > 0 && products.length === 0)
         products = [
           {
@@ -34,10 +34,10 @@ class SearchProduct extends Component {
             price: 0,
           },
         ];
-  
+
       products = _.orderBy(products, ["ocurrences"], ["desc"]);
       this.setState({ products });
-    }, 500)
+    }, 500);
   };
 
   shouldComponentUpdate(nextProps, nextState) {
