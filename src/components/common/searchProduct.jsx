@@ -14,7 +14,7 @@ class SearchProduct extends Component {
   handleChange = async ({ currentTarget: input }) => {
     const descrp = input.value.toUpperCase().split(" ").join("%20");
 
-    this.setState({ searchProductInput: input.value });
+    // this.setState({ searchProductInput: input.value });
 
     setTimeout(async () => {
       let { data: products } = await getProductsByDescription(
@@ -36,7 +36,7 @@ class SearchProduct extends Component {
         ];
 
       products = _.orderBy(products, ["ocurrences"], ["desc"]);
-      this.setState({ products });
+      this.setState({ products, searchProductInput: input.value });
     }, 500);
   };
 
