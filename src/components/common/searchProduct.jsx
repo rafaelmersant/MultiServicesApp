@@ -16,26 +16,28 @@ class SearchProduct extends Component {
 
     this.setState({ searchProductInput: input.value });
 
-    let { data: products } = await getProductsByDescription(
-      this.props.companyId,
-      descrp
-    );
-    products = products.results;
-
-    if (input.value === "") products = [];
-
-    if (input.value.length > 0 && products.length === 0)
-      products = [
-        {
-          id: 0,
-          description: "No existe el producto, desea crearlo?",
-          category: { id: 0, description: "" },
-          price: 0,
-        },
-      ];
-
-    products = _.orderBy(products, ["ocurrences"], ["desc"]);
-    this.setState({ products });
+    setTimeout(() => {
+      let { data: products } = await getProductsByDescription(
+        this.props.companyId,
+        descrp
+      );
+      products = products.results;
+  
+      if (input.value === "") products = [];
+  
+      if (input.value.length > 0 && products.length === 0)
+        products = [
+          {
+            id: 0,
+            description: "No existe el producto, desea crearlo?",
+            category: { id: 0, description: "" },
+            price: 0,
+          },
+        ];
+  
+      products = _.orderBy(products, ["ocurrences"], ["desc"]);
+      this.setState({ products });
+    }, 500)
   };
 
   shouldComponentUpdate(nextProps, nextState) {
