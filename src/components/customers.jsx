@@ -33,7 +33,8 @@ class Customers extends Component {
       getCurrentUser().companyId,
       customer.id
     );
-    if (found.length) {
+
+    if (found.count) {
       toast.error("No puede eliminar un cliente que tiene factura creada.");
       return false;
     }

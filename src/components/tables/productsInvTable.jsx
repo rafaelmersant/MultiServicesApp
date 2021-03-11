@@ -8,30 +8,29 @@ class ProductsInvTable extends Component {
     {
       path: "description",
       label: "Descripción",
-      content: product => (
+      content: (product) => (
         <Link to={`/product/${product.product.id}`}>
           {" "}
           {product.product.description}{" "}
         </Link>
-      )
+      ),
     },
     { path: "typeTracking", label: "Tipo" },
     { path: "quantity", label: "Cantidad" },
     { path: "cost", label: "Costo" },
-    { path: "price", label: "Precio" }
+    { path: "price", label: "Precio" },
   ];
 
   deleteColumn = {
     key: "delete",
-    content: product => (
+    content: (product) => (
       <div className="text-center">
         <span
           onClick={() => this.props.onDelete(product)}
-          className="fa fa-trash text-danger cursor-pointer"
-          style={{ fontSize: "19px" }}
+          className="fa fa-trash text-danger cursor-pointer  trash-size"
         ></span>
       </div>
-    )
+    ),
   };
 
   constructor() {

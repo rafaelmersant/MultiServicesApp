@@ -34,7 +34,7 @@ class Providers extends Component {
       getCurrentUser().companyId,
       provider.id
     );
-    if (found.length) {
+    if (found.count) {
       toast.error(
         "No puede eliminar un proveedor que tiene entradas en inventario."
       );

@@ -37,8 +37,7 @@ class ConducesTable extends Component {
       <div className="text-center">
         <span
           onClick={() => this.props.onDelete(conduce)}
-          className="fa fa-trash text-danger cursor-pointer"
-          style={{ fontSize: "19px" }}
+          className="fa fa-trash text-danger cursor-pointer trash-size"
         ></span>
       </div>
     ),

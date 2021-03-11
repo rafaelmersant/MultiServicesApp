@@ -9,33 +9,26 @@ class ProvidersTable extends Component {
     {
       path: "firstName",
       label: "Nombre de Empresa",
-      content: provider => (
+      content: (provider) => (
         <Link to={`/provider/${provider.id}`}> {provider.firstName} </Link>
-      )
+      ),
     },
-    // {
-    //   path: "lastName",
-    //   label: "Apellido",
-    //   content: provider => (
-    //     <Link to={`/provider/${provider.id}`}> {provider.lastName} </Link>
-    //   )
-    // },
+
     { path: "email", label: "Email" },
     { path: "phoneNumber", label: "Teléfono" },
-    { path: "creationDate", label: "Creado (m/d/a)" }
+    { path: "creationDate", label: "Creado (m/d/a)" },
   ];
 
   deleteColumn = {
     key: "delete",
-    content: provider => (
+    content: (provider) => (
       <div className="text-center">
         <span
           onClick={() => this.props.onDelete(provider)}
-          className="fa fa-trash text-danger cursor-pointer"
-          style={{ fontSize: "19px" }}
+          className="fa fa-trash text-danger cursor-pointer trash-size"
         ></span>
       </div>
-    )
+    ),
   };
 
   constructor() {

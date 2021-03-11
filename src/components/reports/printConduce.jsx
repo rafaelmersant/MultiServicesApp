@@ -200,6 +200,12 @@ class PrintConduce extends Component {
           </span>
           <span className="font-receipt font-receipt-small-F">Recibido</span>
         </div>
+        <div
+          className="mt-5 font-receipt-small-F"
+          style={{ height: "55px", fontFamily: "TimesNewRoman" }}
+        >
+          II
+        </div>
       </div>
     );
   }

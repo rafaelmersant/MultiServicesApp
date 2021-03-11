@@ -72,3 +72,7 @@ div[disabled] {
 .list-header {
   padding: 4px 8px !important;
 }
+
+.trash-size {
+  font-size: 19px !important;
+}

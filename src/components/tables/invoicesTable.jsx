@@ -78,8 +78,7 @@ class InvoicesTable extends Component {
       <div className="text-center">
         <span
           onClick={() => this.props.onDelete(invoice)}
-          className="fa fa-trash text-danger cursor-pointer"
-          style={{ fontSize: "19px" }}
+          className="fa fa-trash text-danger cursor-pointer trash-size"
         ></span>
       </div>
     ),

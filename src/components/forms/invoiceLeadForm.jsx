@@ -119,7 +119,7 @@ class InvoiceLeadForm extends Form {
   handleChangeQuantity = ({ currentTarget: input }) => {
     const { details } = { ...this.state };
 
-    const index = details.findIndex((item) => item.id == input.id);
+    const index = details.findIndex((item) => item.id === parseInt(input.id));
     details[index].quantityToDeliver = input.value;
 
     this.setState({ details });
