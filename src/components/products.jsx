@@ -111,9 +111,13 @@ class Products extends Component {
     else await this.populateProducts("", parseInt(page));
   };
 
-  handleSearch = (query) => {
+  handleSearch = async (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
-    this.populateProducts(query, this.state.currentPage, this.state.sortColumn);
+    await this.populateProducts(
+      query,
+      this.state.currentPage,
+      this.state.sortColumn
+    );
   };
 
   handleSort = async (sortColumn) => {

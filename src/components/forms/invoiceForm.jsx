@@ -711,7 +711,6 @@ class InvoiceForm extends Form {
 
     return (
       <React.Fragment>
-        {/* <div className="container-fluid pull-left col-lg-9 col-md-11 col-sm-11 ml-3 shadow-sm p-3 mb-5 bg-white rounded border border-secondary"></div> */}
         <div className="container-fluid">
           <h4 className="bg-dark text-light pl-2 pr-2 list-header">
             {this.state.action}
@@ -818,15 +817,6 @@ class InvoiceForm extends Form {
               </div>
 
               <div className="row mr-0 ml-0 pr-0 pl-0">
-                <div className="col-1 mr-0 ml-0 pr-0 pl-0">
-                  <Input
-                    type="text"
-                    name="quantity"
-                    value={this.state.line.quantity}
-                    label="Cant."
-                    onChange={this.handleChangeQuantity}
-                  />
-                </div>
                 <div className="col-5 mr-0 ml-0 pr-0 pl-0">
                   <SearchProduct
                     onSelect={this.handleSelectProduct}
@@ -836,6 +826,15 @@ class InvoiceForm extends Form {
                     companyId={getCurrentUser().companyId}
                     value={this.state.searchProductText}
                     label="Producto"
+                  />
+                </div>
+                <div className="col-1 mr-0 ml-0 pr-0 pl-0">
+                  <Input
+                    type="text"
+                    name="quantity"
+                    value={this.state.line.quantity}
+                    label="Cant."
+                    onChange={this.handleChangeQuantity}
                   />
                 </div>
 
