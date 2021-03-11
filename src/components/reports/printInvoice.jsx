@@ -24,7 +24,25 @@ class PrintInvoice extends Component {
                   fontWeight: "bold",
                 }}
               >
-                FERRINMAS
+                FERRIN
+              </span>
+              <span
+                style={{
+                  fontFamily: "Calisto MT",
+                  fontSize: "2.2em",
+                  fontWeight: "bold",
+                }}
+              >
+                M
+              </span>
+              <span
+                style={{
+                  fontFamily: "Calisto MT",
+                  fontSize: "1.9em",
+                  fontWeight: "bold",
+                }}
+              >
+                AS
               </span>
               {/* <img
                 width="210px"
