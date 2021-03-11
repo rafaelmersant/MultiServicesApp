@@ -56,15 +56,30 @@ class InvoicesTable extends Component {
       ),
     },
     {
-      path: "paid",
-      label: "Estatus",
+      path: "printed",
+      label: "Impresa",
       align: "text-center",
       content: (invoice) => (
         <div className="text-center">
           <span>
             {invoice.printed
               .toString()
-              .replace(true, "Impresa")
+              .replace(true, "SI")
+              .replace(false, "Pendiente")}
+          </span>
+        </div>
+      ),
+    },
+    {
+      path: "paid",
+      label: "Pagada",
+      align: "text-center",
+      content: (invoice) => (
+        <div className="text-center">
+          <span>
+            {invoice.paid
+              .toString()
+              .replace(true, "SI")
               .replace(false, "Pendiente")}
           </span>
         </div>
