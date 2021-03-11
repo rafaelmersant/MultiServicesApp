@@ -34,7 +34,7 @@ class PrintConduce extends Component {
               <span
                 style={{
                   fontFamily: "Calisto MT",
-                  fontSize: "2.2em",
+                  fontSize: "2.5em",
                   fontWeight: "bold",
                 }}
               >
