@@ -2,6 +2,7 @@ import http from "./httpService";
 import { getCurrentUser } from "./authService";
 import { apiUrl } from "../config.json";
 import { getPurchaseOrderByProduct, savePurchaseOrder } from "./productService";
+import * as Sentry from "@sentry/react";
 
 const apiEndpointProdTrackingHeader = `${apiUrl}/productsTrackingsHeader`;
 const apiEndpointProdTracking = `${apiUrl}/productsTrackings`;
@@ -142,55 +143,62 @@ export function deleteStock(stockId) {
 }
 
 export async function updateProductStock(inventory) {
-  const { data: productStock } = await getProductsStocks(inventory.product_id);
-  const quantity =
-    inventory.typeTracking === "E"
-      ? parseFloat(inventory.quantity)
-      : parseFloat(inventory.quantity) * -1;
+  try {
+    const { data: productStock } = await getProductsStocks(
+      inventory.product_id
+    );
+    const quantity =
+      inventory.typeTracking === "E"
+        ? parseFloat(inventory.quantity)
+        : parseFloat(inventory.quantity) * -1;
 
-  const stock = {
-    id: "",
-    product_id: inventory.product_id,
-    quantityAvailable: quantity,
-    quantityHold: 0,
-    company_id: getCurrentUser().companyId,
-    lastUpdated: new Date().toISOString(),
-    modifiedUser: getCurrentUser().email,
-  };
+    const stock = {
+      id: "",
+      product_id: inventory.product_id,
+      quantityAvailable: quantity,
+      quantityHold: 0,
+      company_id: getCurrentUser().companyId,
+      lastUpdated: new Date().toISOString(),
+      modifiedUser: getCurrentUser().email,
+    };
 
-  if (productStock.length) {
-    const quantityAvailable = parseFloat(productStock[0].quantityAvailable);
-    const newQuantity = Math.round((quantityAvailable + quantity) * 100) / 100;
+    if (productStock.length) {
+      const quantityAvailable = parseFloat(productStock[0].quantityAvailable);
+      const newQuantity =
+        Math.round((quantityAvailable + quantity) * 100) / 100;
 
-    stock.id = productStock[0].id;
-    stock.quantityAvailable = newQuantity;
+      stock.id = productStock[0].id;
+      stock.quantityAvailable = newQuantity;
 
-    if (productStock[0].product.minimumStock > newQuantity) {
-      const { data: order } = await getPurchaseOrderByProduct(
-        productStock[0].product.company.id,
-        productStock[0].product.id
-      );
+      if (productStock[0].product.minimumStock > newQuantity) {
+        const { data: order } = await getPurchaseOrderByProduct(
+          productStock[0].product.company.id,
+          productStock[0].product.id
+        );
 
-      if (!order.count) {
-        await savePurchaseOrder({
-          id: 0,
-          product_id: productStock[0].product.id,
-          quantity: newQuantity,
-          company_id: getCurrentUser().companyId,
-          creationDate: new Date().toISOString(),
-        });
+        if (!order.count) {
+          await savePurchaseOrder({
+            id: 0,
+            product_id: productStock[0].product.id,
+            quantity: newQuantity,
+            company_id: getCurrentUser().companyId,
+            creationDate: new Date().toISOString(),
+          });
+        }
       }
+
+      console.log("Updating Stock START...");
+      console.log("Tracking possible issue");
+      console.log("productStock", productStock);
+      console.log("quantity", quantity);
+      console.log("quantityAvailable", quantityAvailable);
+      console.log("newQuantity", newQuantity);
+      console.log("stockToSave", stock);
+      console.log("Updating Stock END...");
     }
 
-    console.log("Updating Stock START...");
-    console.log("Tracking possible issue");
-    console.log("productStock", productStock);
-    console.log("quantity", quantity);
-    console.log("quantityAvailable", quantityAvailable);
-    console.log("newQuantity", newQuantity);
-    console.log("stockToSave", stock);
-    console.log("Updating Stock END...");
+    await saveProductStock(stock);
+  } catch (ex) {
+    Sentry.captureException(ex);
   }
-
-  await saveProductStock(stock);
 }

@@ -280,7 +280,7 @@ class InvoiceForm extends Form {
 
       if (sessionStorage["newInvoice"] === "y") {
         sessionStorage["newInvoice"] = null;
-        this.raiseNewInvoiceModal.click();
+        //this.raiseNewInvoiceModal.click();
       }
     } catch (ex) {
       sessionStorage["newInvoice"] = null;
@@ -602,6 +602,8 @@ class InvoiceForm extends Form {
     try {
       await this.populateProducts();
       await this.populateInvoice(false);
+
+      console.log("data (didMount):", this.state.data);
     } catch (ex) {
       Sentry.captureException(ex);
     }
@@ -644,54 +646,47 @@ class InvoiceForm extends Form {
 
       if (this.state.data.typeDoc !== "0") this.getNextNCF();
 
-      setTimeout(async () => {
-        if (!this.state.data.id) await this.refreshNextInvoiceSequence();
-        console.log("invoiceHeader", this.state.data);
-        const { data: invoiceHeader } = await saveInvoiceHeader(
-          this.state.data
-        );
+      if (!this.state.data.id) await this.refreshNextInvoiceSequence();
+      console.log("invoiceHeader", this.state.data);
+      const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
 
-        this.state.details.forEach(async (item) => {
-          const detail = {
-            id: item.id,
-            invoice_id: invoiceHeader.id,
-            product_id: item.product_id,
-            quantity: item.quantity,
-            price: item.price,
-            itbis: item.itbis,
-            discount: item.discount,
-            creationDate: new Date().toISOString(),
-          };
+      for (const item of this.state.details) {
+        const detail = {
+          id: item.id,
+          invoice_id: invoiceHeader.id,
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price: item.price,
+          itbis: item.itbis,
+          discount: item.discount,
+          creationDate: new Date().toISOString(),
+        };
 
-          await saveInvoiceDetail(detail);
-          if (!this.state.data.id)
-            await saveInvoiceSequence(this.state.invoiceSequence);
-
-          try {
-            await this.updateInventory(detail);
-          } catch (ex) {
-            Sentry.captureException(ex);
-            console.log("Exception for updateInventory --> " + ex);
-          }
-        });
+        await saveInvoiceDetail(detail);
+        if (!this.state.data.id)
+          await saveInvoiceSequence(this.state.invoiceSequence);
 
         try {
-          this.state.detailsToDelete.forEach(async (item) => {
-            await deleteInvoiceDetail(item.id);
-          });
+          await this.updateInventory(detail);
         } catch (ex) {
           Sentry.captureException(ex);
-          console.log("Exception for deleteInvoiceDetail --> " + ex);
+          console.log("Exception for updateInventory --> " + ex);
         }
+      }
 
-        setTimeout(() => {
-          //sessionStorage["printInvoice"] = "y";
-          sessionStorage["newInvoice"] = "y";
-          window.location = `/invoice/${this.state.data.sequence}`;
-        }, this.state.details.length * 390);
+      try {
+        for (const item of this.state.detailsToDelete) {
+          await deleteInvoiceDetail(item.id);
+        }
+      } catch (ex) {
+        Sentry.captureException(ex);
+        console.log("Exception for deleteInvoiceDetail --> " + ex);
+      }
 
-        this.setState({ disabledSave: false });
-      }, 100);
+      this.setState({ disabledSave: false });
+
+      sessionStorage["newInvoice"] = "y";
+      window.location = `/invoice/${this.state.data.sequence}`;
     } catch (ex) {
       Sentry.captureException(ex);
 
@@ -919,12 +914,15 @@ class InvoiceForm extends Form {
           <ProductModal setNewProduct={this.handleSetNewProduct} />
 
           <div className="container-fluid mt-3">
-            <NavLink className="btn btn-secondary" to="/invoices">
-              {"<-"} Ir al listado
-            </NavLink>
+            {(getCurrentUser().role === "Admin" ||
+              getCurrentUser().role === "Owner") && (
+              <NavLink className="btn btn-secondary" to="/invoices">
+                {"<-"} Ir al listado
+              </NavLink>
+            )}
 
             <button
-              className="btn button-local mb-3 pull-right"
+              className="btn btn-success mb-3 pull-right"
               onClick={this.newInvoice}
             >
               Nueva Factura
