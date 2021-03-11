@@ -27,7 +27,7 @@ code {
 }
 
 .font-receipt-small {
-  font-size: 21px;
+  font-size: 22px;
 }
 
 .font-receipt-small-2 {
@@ -44,6 +44,26 @@ code {
 
 .font-receipt-big {
   font-size: 28px;
+}
+
+.font-receipt-small-invoice {
+  font-size: 19px;
+}
+
+.font-receipt-small-2-invoice {
+  font-size: 15px;
+}
+
+.font-receipt-small-F-invoice {
+  font-size: 21px;
+}
+
+.font-receipt-medium-invoice {
+  font-size: 19px;
+}
+
+.font-receipt-big-invoice {
+  font-size: 23px;
 }
 
 table a {
