@@ -37,6 +37,10 @@ import InvoiceDetailTable from "../tables/invoiceDetailTable";
 import _ from "lodash";
 import NewInvoiceModal from "../modals/newInvoiceModal";
 import * as Sentry from "@sentry/react";
+import {
+  mapToViewInvoiceDetail,
+  mapToViewInvoiceHeader,
+} from "../mappers/mapInvoice";
 
 registerLocale("es", es);
 
@@ -259,8 +263,8 @@ class InvoiceForm extends Form {
       );
 
       this.setState({
-        data: this.mapToViewInvoiceHeader(invoiceHeader),
-        details: this.mapToViewInvoiceDetail(invoiceDetail),
+        data: mapToViewInvoiceHeader(invoiceHeader),
+        details: mapToViewInvoiceDetail(invoiceDetail),
         invoiceDate: new Date(invoiceHeader[0].creationDate),
         searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
         hideSearchCustomer: true,
@@ -289,49 +293,6 @@ class InvoiceForm extends Form {
       if (ex.response && ex.response.status === 404)
         return this.props.history.replace("/not-found");
     }
-  }
-
-  mapToViewInvoiceHeader(invoiceHeader) {
-    return {
-      id: invoiceHeader[0].id,
-      sequence: parseFloat(invoiceHeader[0].sequence),
-      customer_id: invoiceHeader[0].customer.id,
-      ncf: invoiceHeader[0].ncf,
-      paymentMethod: invoiceHeader[0].paymentMethod,
-      paid: invoiceHeader[0].paid,
-      printed: invoiceHeader[0].printed ? invoiceHeader.printed : false,
-      reference: invoiceHeader[0].reference ? invoiceHeader[0].reference : "",
-      subtotal: invoiceHeader[0].subtotal,
-      itbis: invoiceHeader[0].itbis,
-      discount: invoiceHeader[0].discount,
-      company_id: invoiceHeader[0].company.id,
-      createdUser: invoiceHeader[0].createdByUser
-        ? invoiceHeader[0].createdByUser
-        : getCurrentUser().email,
-      creationDate: invoiceHeader[0].creationDate,
-    };
-  }
-
-  mapToViewInvoiceDetail(invoiceDetail) {
-    let details = [];
-    invoiceDetail.forEach((item) => {
-      details.push({
-        id: item.id,
-        invoice_id: item.invoice.id,
-        product_id: item.product.id,
-        product: item.product.description,
-        quantity: item.quantity,
-        price: item.price,
-        cost: item.cost,
-        itbis: item.itbis,
-        discount: item.discount,
-        total:
-          Math.round(parseFloat(item.price) * parseFloat(item.quantity) * 100) /
-          100,
-      });
-    });
-
-    return details;
   }
 
   handleChangeInvoiceDate = (date) => {
@@ -498,16 +459,7 @@ class InvoiceForm extends Form {
     this.setNCF(input.value);
   };
 
-  handleChangeQuantity = ({ currentTarget: input }) => {
-    const line = { ...this.state.line };
-    line[input.name] = input.value;
-    this.setState({ line });
-
-    if (this.state.currentProduct.length)
-      this.updateLine(this.state.currentProduct);
-  };
-
-  handleChangeDiscount = ({ currentTarget: input }) => {
+  handleChangeQtyDisc = ({ currentTarget: input }) => {
     const line = { ...this.state.line };
     line[input.name] = input.value;
     this.setState({ line });
@@ -644,7 +596,8 @@ class InvoiceForm extends Form {
 
       this.setState({ disabledSave: true });
 
-      if (this.state.data.typeDoc !== "0") this.getNextNCF();
+      if (!this.state.data.id && this.state.data.typeDoc !== "0")
+        this.getNextNCF();
 
       if (!this.state.data.id) await this.refreshNextInvoiceSequence();
       console.log("invoiceHeader", this.state.data);
@@ -834,7 +787,7 @@ class InvoiceForm extends Form {
                     name="quantity"
                     value={this.state.line.quantity}
                     label="Cant."
-                    onChange={this.handleChangeQuantity}
+                    onChange={this.handleChangeQtyDisc}
                   />
                 </div>
 
@@ -864,7 +817,7 @@ class InvoiceForm extends Form {
                     name="discount"
                     value={this.state.line.discount}
                     label="Desc/Unidad"
-                    onChange={this.handleChangeDiscount}
+                    onChange={this.handleChangeQtyDisc}
                     onBlur={this.handleBlurDiscount}
                   />
                 </div>

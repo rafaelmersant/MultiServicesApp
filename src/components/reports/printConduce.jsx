@@ -17,6 +17,11 @@ class PrintConduce extends Component {
 
     invoiceHeader = invoiceHeader.results;
 
+    if (invoiceLeadDetail.length) {
+      var _date = Date.parse(invoiceLeadDetail[0].header.creationDate);
+      var conduceDate = new Date(_date);
+    }
+
     return (
       <div className="mt-1" style={{ width: "408px" }}>
         {invoiceHeader && (
@@ -80,9 +85,9 @@ class PrintConduce extends Component {
             )}
 
             <span className="font-receipt font-receipt-small d-block">
-              Fecha: {new Date().toLocaleDateString("en-GB")}
+              Fecha: {conduceDate.toLocaleDateString("en-GB")}
               <span className="ml-2">
-                Hora: {new Date().toLocaleTimeString()}
+                Hora: {conduceDate.toLocaleTimeString()}
               </span>
             </span>
 

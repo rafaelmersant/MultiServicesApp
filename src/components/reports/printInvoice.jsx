@@ -11,6 +11,12 @@ class PrintInvoice extends Component {
       discountTotal,
       createdUserName,
     } = this.props;
+    console.log("invoiceHeader print", invoiceHeader);
+
+    if (invoiceHeader.length) {
+      var _date = Date.parse(invoiceHeader[0].creationDate);
+      var invoiceDate = new Date(_date);
+    }
 
     return (
       <div className="mt-1" style={{ width: "338px" }}>
@@ -75,9 +81,9 @@ class PrintInvoice extends Component {
             )}
 
             <span className="font-receipt font-receipt-small-invoice d-block">
-              Fecha: {new Date().toLocaleDateString("en-GB")}
+              Fecha: {invoiceDate.toLocaleDateString("en-GB")}
               <span className="ml-2">
-                Hora: {new Date().toLocaleTimeString()}
+                Hora: {invoiceDate.toLocaleTimeString()}
               </span>
             </span>
 
@@ -110,23 +116,19 @@ class PrintInvoice extends Component {
             ----------------------------------------------------
           </span>
 
-	<div className="text-center">
-          <span
-            className="font-receipt font-receipt-small-2-invoice"
-          >
-            {invoiceHeader.length &&
-              !invoiceHeader[0].ncf.includes("B01") &&
-              "FACTURA PARA CONSUMIDOR FINAL"}
-          </span>
+          <div className="text-center">
+            <span className="font-receipt font-receipt-small-2-invoice">
+              {invoiceHeader.length &&
+                !invoiceHeader[0].ncf.includes("B01") &&
+                "FACTURA PARA CONSUMIDOR FINAL"}
+            </span>
 
-          <span
-            className="font-receipt font-receipt-small-2-invoice"
-          >
-            {invoiceHeader.length &&
-              invoiceHeader[0].ncf.includes("B01") &&
-              "FACTURA PARA CREDITO FISCAL"}
-          </span>
-	</div>
+            <span className="font-receipt font-receipt-small-2-invoice">
+              {invoiceHeader.length &&
+                invoiceHeader[0].ncf.includes("B01") &&
+                "FACTURA PARA CREDITO FISCAL"}
+            </span>
+          </div>
         </div>
 
         {invoiceDetail.length && (
@@ -297,9 +299,7 @@ class PrintInvoice extends Component {
             Le atendió: {createdUserName}
           </span>
         </div>
-        <div className="mt-4 text-center">
-          GRACIAS POR SU COMPRA!
-        </div>
+        <div className="mt-4 text-center">GRACIAS POR SU COMPRA!</div>
         <div
           className="mt-5 font-receipt-small-F-invoice"
           style={{ height: "55px", fontFamily: "TimesNewRoman" }}

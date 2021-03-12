@@ -51,7 +51,7 @@ class InvoicesTable extends Component {
       align: "text-right",
       content: (item) => (
         <div className="text-right">
-          <span>{formatNumber(item.subtotal)}</span>
+          <span>{formatNumber(item.subtotal - item.discount)}</span>
         </div>
       ),
     },
