@@ -16,8 +16,9 @@ class PrintConduce extends Component {
     console.log("serializer D", invoiceDetail);
 
     invoiceHeader = invoiceHeader.results;
+    conduceDate = new Date();
 
-    if (invoiceLeadDetail.length) {
+    if (invoiceLeadDetail.length && invoiceLeadDetail[0]) {
       var _date = Date.parse(invoiceLeadDetail[0].header.creationDate);
       var conduceDate = new Date(_date);
     }
