@@ -34,6 +34,14 @@ const NavBarSide = ({ user }) => {
 
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
+              to="/quotations"
+            >
+              <span className="fa fa-truck mr-2" />
+              Cotizaciones
+            </NavLink>
+
+            <NavLink
+              className="list-group-item list-group-item-action bg-light border-none"
               to="/inventoriesFull"
             >
               <span className="fa fa-clone mr-2" />
