@@ -33,6 +33,14 @@ class Invoices extends Component {
 
   async componentDidMount() {
     await this.populateInvoices();
+
+    this.intervalInvoiceId = setInterval(async () => {
+      await this.populateInvoices();
+    }, 3000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this, this.intervalInvoiceId);
   }
 
   async populateInvoices(_sortColumn, _currentPage) {

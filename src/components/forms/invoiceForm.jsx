@@ -307,6 +307,8 @@ class InvoiceForm extends Form {
     };
     handler(window.event);
 
+    console.log("product selected:", product);
+
     if (product.id === 0) {
       this.raiseProductModal.click();
       return false;

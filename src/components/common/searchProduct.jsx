@@ -1,105 +1,115 @@
-import React, { Component } from "react";
+import React, { useCallback, useState } from "react";
 import Input from "./input";
 import { getProductsByDescription } from "../../services/productService";
 import { formatNumber } from "../../utils/custom";
 import _ from "lodash";
+import { debounce } from "throttle-debounce";
 
-class SearchProduct extends Component {
-  state = {
-    products: [],
-    erros: {},
-    searchProductInput: "",
+const SearchProduct = (props) => {
+  const [products, setProducts] = useState([]);
+  const [productName, setProductName] = useState("");
+
+  const debounced = useCallback(
+    debounce(400, (nextValue) => {
+      handleSearchProduct(nextValue);
+    }),
+    []
+  );
+
+  const handleSelectProduct = (product) => {
+    setProductName(product.description);
+    props.onSelect(product);
   };
 
-  handleChange = async ({ currentTarget: input }) => {
-    const descrp = input.value.toUpperCase().split(" ").join("%20");
+  const handleSearchProduct = async (value) => {
+    if (value.length >= 3) {
+      const productNameQuery = value.toUpperCase().split(" ").join("%20");
 
-    this.setState({ searchProductInput: input.value });
+      let { data: _products } = await getProductsByDescription(
+        props.companyId,
+        productNameQuery
+      );
 
-    let { data: products } = await getProductsByDescription(
-      this.props.companyId,
-      descrp
-    );
-    products = products.results;
+      _products = _products.results;
 
-    if (input.value === "") products = [];
+      if (value === "" || value.length < 3) _products = [];
 
-    if (input.value.length > 0 && products.length === 0)
-      products = [
-        {
-          id: 0,
-          description: "No existe el producto, desea crearlo?",
-          category: { id: 0, description: "" },
-          price: 0,
-        },
-      ];
+      if (value.length > 3 && _products.length === 0) {
+        _products = [
+          {
+            id: 0,
+            description: "No existe el producto, desea crearlo?",
+            category: { id: 0, description: "" },
+            price: 0,
+          },
+        ];
+      }
 
-    products = _.orderBy(products, ["ocurrences"], ["desc"]);
-
-    this.setState({ products });
+      _products = _products.length
+        ? _.orderBy(_products, ["ocurrences"], ["desc"])
+        : _products;
+      console.log("_products", _products);
+      setProducts(_products);
+    } else {
+      setProducts([]);
+    }
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (this.props.hide && this.props === nextProps) return false;
-    else return true;
-  }
+  const handleChange = (event) => {
+    const value = event.target.value;
+    setProductName(value);
 
-  componentDidUpdate() {
-    if (this.props.hide)
-      this.setState({ searchProductInput: this.props.value });
-  }
+    debounced(value);
+  };
 
-  render() {
-    const { onSelect, onFocus, onBlur, hide, label = "" } = this.props;
-    const { products } = this.state;
+  const { onFocus, onBlur, hide, label = "" } = props;
 
-    return (
-      <div>
-        <Input
-          type="text"
-          name="query"
-          className="form-control my-3"
-          placeholder="Buscar producto..."
-          autoComplete="Off"
-          onChange={this.handleChange}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          value={this.state.searchProductInput}
-          label={label}
-        />
+  return (
+    <div>
+      <Input
+        type="text"
+        name="query"
+        className="form-control my-3"
+        placeholder="Buscar producto..."
+        autoComplete="Off"
+        onChange={(e) => handleChange(e)}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        value={productName}
+        label={label}
+      />
 
-        {products && !hide && (
-          <div
-            className="list-group col-12 shadow bg-white position-absolute p-0"
-            style={{ marginTop: "-15px", zIndex: "999" }}
-          >
-            {products.map((product) => (
-              <button
-                key={product.id}
-                onClick={() => onSelect(product)}
-                className="list-group-item list-group-item-action w-100 py-2"
+      {products.length > 0 && !hide && (
+        <div
+          className="list-group col-12 shadow bg-white position-absolute p-0"
+          style={{ marginTop: "-15px", zIndex: "999" }}
+        >
+          {products.map((product) => (
+            <button
+              key={product.id}
+              onClick={() => handleSelectProduct(product)}
+              className="list-group-item list-group-item-action w-100 py-2"
+            >
+              <span>{product.description}</span>
+              <span
+                className="text-secondary ml-2"
+                style={{ fontSize: ".8em" }}
               >
-                <span>{product.description}</span>
-                <span
-                  className="text-secondary ml-2"
-                  style={{ fontSize: ".8em" }}
-                >
-                  (${formatNumber(product.price)})
-                </span>
-                {/* {product.category.description.length > 0 && " | "} */}
-                <span
-                  className="text-info pull-right mb-0"
-                  style={{ fontSize: ".7em" }}
-                >
-                  <em>{product.category.description}</em>
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  }
-}
+                (${formatNumber(product.price)})
+              </span>
+              {/* {product.category.description.length > 0 && " | "} */}
+              <span
+                className="text-info pull-right mb-0"
+                style={{ fontSize: ".7em" }}
+              >
+                <em>{product.category.description}</em>
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default SearchProduct;

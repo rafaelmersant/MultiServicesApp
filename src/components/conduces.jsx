@@ -14,10 +14,10 @@ class Conduces extends Component {
     currentPage: 1,
     pageSize: 10,
     sortColumn: { path: "creationDate", order: "desc" },
-    searchParams: {
-      customerId: 0,
-      invoiceNo: 0,
-    },
+    // searchParams: {
+    //   customerId: 0,
+    //   invoiceNo: 0,
+    // },
   };
 
   async componentDidMount() {
@@ -26,9 +26,9 @@ class Conduces extends Component {
 
   async populateConduces(_sortColumn, _currentPage) {
     const companyId = getCurrentUser().companyId;
-    const { invoiceNo, customerId } = {
-      ...this.state.searchParams,
-    };
+    // const { invoiceNo, customerId } = {
+    //   ...this.state.searchParams,
+    // };
     const { currentPage, sortColumn } = { ...this.state };
 
     _sortColumn = _sortColumn ? _sortColumn : sortColumn;

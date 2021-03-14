@@ -26,6 +26,8 @@ class Products extends Component {
   };
 
   async componentDidMount() {
+    this.defaultProducts = [];
+
     const currentPage = parseInt(sessionStorage["currentPage"] ?? 0);
     if (currentPage > 1) this.setState({ currentPage: currentPage });
 
@@ -37,21 +39,27 @@ class Products extends Component {
     const descrp = query.toUpperCase().split(" ").join("%20");
 
     try {
-      if (query === "") {
-        const { data: prods } = await getProducts(
-          getCurrentUser().companyId,
-          page,
-          sortColumn
-        );
-        products = prods;
-      } else {
+      if (descrp.length >= 3) {
         const { data: prods } = await getProductsByDescription(
           getCurrentUser().companyId,
           descrp,
           page,
           sortColumn
         );
+
         products = prods;
+      } else {
+        if (!this.defaultProducts.count) {
+          const { data: prods } = await getProducts(
+            getCurrentUser().companyId,
+            page,
+            sortColumn
+          );
+          this.defaultProducts = prods;
+          products = prods;
+        } else {
+          products = this.defaultProducts;
+        }
       }
 
       const productsFiltered = _.orderBy(
@@ -65,8 +73,6 @@ class Products extends Component {
         totalProducts: products.count,
         loading: false,
       });
-
-      this.forceUpdate();
     } catch (ex) {
       sessionStorage["currentPage"] = 1;
       console.log(ex);
@@ -106,19 +112,23 @@ class Products extends Component {
     this.setState({ currentPage: page });
     sessionStorage["currentPage"] = parseInt(page);
 
-    if (this.state.searchQuery)
+    if (this.state.searchQuery) {
       await this.populateProducts(this.state.searchQuery, parseInt(page));
-    else await this.populateProducts("", parseInt(page));
+    } else await this.populateProducts("", parseInt(page));
   };
 
   handleSearch = async (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
 
-    await this.populateProducts(
-      query,
-      this.state.currentPage,
-      this.state.sortColumn
-    );
+    setTimeout(async () => {
+      if (query === this.state.searchQuery) {
+        await this.populateProducts(
+          query,
+          this.state.currentPage,
+          this.state.sortColumn
+        );
+      }
+    }, 400);
   };
 
   handleSort = async (sortColumn) => {
