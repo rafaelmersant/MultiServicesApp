@@ -82,7 +82,7 @@ const SearchProduct = (props) => {
       {products.length > 0 && !hide && (
         <div
           className="list-group col-12 shadow bg-white position-absolute p-0"
-          style={{ marginTop: "-15px", zIndex: "999" }}
+          style={{ marginTop: "-15px", zIndex: "999", maxWidth: "600px" }}
         >
           {products.map((product) => (
             <button

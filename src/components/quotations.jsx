@@ -21,7 +21,7 @@ class Quotations extends Component {
   };
 
   async componentDidMount() {
-    await this.populateConduces();
+    //await this.populateConduces();
   }
 
   async populateConduces(_sortColumn, _currentPage) {
@@ -115,20 +115,20 @@ class Quotations extends Component {
 
   render() {
     const {
-      conduces,
+      quotations,
       sortColumn,
-      totalConduces,
+      totalQuotations,
       pageSize,
       currentPage,
     } = this.state;
     const user = getCurrentUser();
-    const total = conduces ? conduces.length : 0;
+    const total = quotations ? quotations.length : 0;
 
     return (
       <div className="container-fluid">
         <div className="row">
           <div className="col">
-            <NewButton label="Nuevo Conduce" to="/conduce/new" />
+            <NewButton label="Nueva Cotización" to="/quotation/new" />
           </div>
         </div>
 
@@ -136,17 +136,17 @@ class Quotations extends Component {
           <div className="col">
             <div className="row">
               <div>
-                <h5 className="text-info">Listado de Conduces</h5>
+                <h5 className="text-info">Listado de Cotizaciones</h5>
               </div>
             </div>
-
+            <h3>En construcción...</h3>
             {/* <SearchInvoiceBlock
               onInvoiceChange={this.handleInvoiceChange}
               onCustomerChange={this.handleCustomerChange}
               onPaymentMethodChange={this.handlePaymentMethodChange}
             /> */}
 
-            {this.state.loading && (
+            {/* {this.state.loading && (
               <div className="d-flex justify-content-center">
                 <Loading />
               </div>
@@ -183,7 +183,7 @@ class Quotations extends Component {
                   </em>
                 </p>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
