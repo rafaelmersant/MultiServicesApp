@@ -11,7 +11,7 @@ import { saveProduct } from "../../services/productService";
 import {
   saveProductTracking,
   updateProductStock,
-  getProductsStocks
+  getProductsStocks,
 } from "../../services/inventoryService";
 
 class InventoryForm extends Form {
@@ -28,37 +28,32 @@ class InventoryForm extends Form {
       cost: "",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     },
     product: {},
     typeTrackings: [
       { id: "E", name: "Entrada" },
-      { id: "S", name: "Salida" }
+      { id: "S", name: "Salida" },
     ],
     errors: {},
     action: "Nuevo Registro de Inventario",
+    clearSearchProduct: false,
     hideSearch: false,
     availableStock: 0,
-    searchProductText: ""
+    searchProductText: "",
   };
 
   schema = {
     header_id: Joi.optional(),
     id: Joi.number(),
     product_id: Joi.number().label("Producto"),
-    typeTracking: Joi.string()
-      .required()
-      .label("Tipo"),
-    quantity: Joi.number()
-      .required()
-      .label("Cantidad"),
-    price: Joi.number()
-      .required()
-      .label("Precio"),
+    typeTracking: Joi.string().required().label("Tipo"),
+    quantity: Joi.number().required().label("Cantidad"),
+    price: Joi.number().required().label("Precio"),
     cost: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
-    creationDate: Joi.string()
+    creationDate: Joi.string(),
   };
 
   async getProductStock(productId) {
@@ -68,11 +63,13 @@ class InventoryForm extends Form {
       this.setState({ availableStock: stock[0].quantityAvailable });
   }
 
-  handleSelectProduct = async product => {
-    const handler = e => {
+  handleSelectProduct = async (product) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
+
+    this.setState({ clearSearchProduct: false });
 
     if (product.id === 0) {
       this.raiseProductModal.click();
@@ -90,17 +87,17 @@ class InventoryForm extends Form {
       data,
       product,
       searchProductText: product.description,
-      hideSearch: true
+      hideSearch: true,
     });
   };
 
-  handleFocusProduct = value => {
+  handleFocusProduct = (value) => {
     setTimeout(() => {
       this.setState({ hideSearch: value });
     }, 200);
   };
 
-  handleSetNewProduct = e => {
+  handleSetNewProduct = (e) => {
     this.setState({ searchProductText: `${e.description}` });
     this.handleSelectProduct(e);
   };
@@ -159,6 +156,7 @@ class InventoryForm extends Form {
             onSelect={this.handleSelectProduct}
             onFocus={() => this.handleFocusProduct(false)}
             onBlur={() => this.handleFocusProduct(true)}
+            clearSearchProduct={this.state.clearSearchProduct}
             hide={this.state.hideSearch}
             companyId={getCurrentUser().companyId}
             value={this.state.searchProductText}
@@ -212,7 +210,7 @@ class InventoryForm extends Form {
               data-toggle="modal"
               data-target="#productModal"
               hidden="hidden"
-              ref={button => (this.raiseProductModal = button)}
+              ref={(button) => (this.raiseProductModal = button)}
             ></button>
           </form>
 

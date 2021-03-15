@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Input from "./input";
 import { getProductsByDescription } from "../../services/productService";
 import { formatNumber } from "../../utils/custom";
@@ -8,6 +8,13 @@ import { debounce } from "throttle-debounce";
 const SearchProduct = (props) => {
   const [products, setProducts] = useState([]);
   const [productName, setProductName] = useState("");
+
+  useEffect(() => {
+    if (props.hide && props.clearSearchProduct) {
+      setProductName("");
+      handleSearchProduct("");
+    }
+  }, [productName, props]);
 
   const debounced = useCallback(
     debounce(400, (nextValue) => {
@@ -48,7 +55,7 @@ const SearchProduct = (props) => {
       _products = _products.length
         ? _.orderBy(_products, ["ocurrences"], ["desc"])
         : _products;
-      console.log("_products", _products);
+
       setProducts(_products);
     } else {
       setProducts([]);

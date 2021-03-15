@@ -66,6 +66,7 @@ class InventoryFullForm extends Form {
     docDate: new Date(),
     creationDate: new Date(),
     action: "Nuevo Registro de Inventario",
+    clearSearchProduct: false,
     hideSearch: false,
     availableStock: 0,
     searchProductText: "",
@@ -95,6 +96,8 @@ class InventoryFullForm extends Form {
       e.preventDefault();
     };
     handler(window.event);
+
+    this.setState({ clearSearchProduct: false });
 
     if (product.id === 0) {
       this.raiseProductModal.click();
@@ -228,7 +231,11 @@ class InventoryFullForm extends Form {
       cleanInventory.cost = "";
       cleanInventory.typeTracking = "E";
 
-      this.setState({ inventory: cleanInventory, searchProductText: "" });
+      this.setState({
+        inventory: cleanInventory,
+        searchProductText: "",
+        clearSearchProduct: true,
+      });
 
       this.setState({ resetValues: true });
     } catch (ex) {
@@ -421,6 +428,7 @@ class InventoryFullForm extends Form {
                             onSelect={this.handleSelectProduct}
                             onFocus={() => this.handleFocusProduct(false)}
                             onBlur={() => this.handleFocusProduct(true)}
+                            clearSearchProduct={this.state.clearSearchProduct}
                             hide={this.state.hideSearch}
                             companyId={getCurrentUser().companyId}
                             value={this.state.searchProductText}

@@ -105,6 +105,7 @@ class InvoiceForm extends Form {
     },
     createdUserName: "",
     action: "Nueva Factura",
+    clearSearchProduct: false,
     hideSearchProduct: false,
     hideSearchCustomer: false,
     searchCustomerText: "",
@@ -307,6 +308,8 @@ class InvoiceForm extends Form {
     };
     handler(window.event);
 
+    this.setState({ clearSearchProduct: false });
+
     console.log("product selected:", product);
 
     if (product.id === 0) {
@@ -394,6 +397,7 @@ class InvoiceForm extends Form {
         details,
         currentProduct: {},
         searchProductText: "",
+        clearSearchProduct: true,
       });
 
       this.updateTotals();
@@ -777,6 +781,7 @@ class InvoiceForm extends Form {
                     onSelect={this.handleSelectProduct}
                     onFocus={() => this.handleFocusProduct(false)}
                     onBlur={() => this.handleFocusProduct(true)}
+                    clearSearchProduct={this.state.clearSearchProduct}
                     hide={this.state.hideSearchProduct}
                     companyId={getCurrentUser().companyId}
                     value={this.state.searchProductText}
