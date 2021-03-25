@@ -18,7 +18,7 @@ const NavBarSide = ({ user }) => {
           className="list-group-item list-group-item-action bg-light"
           to="/invoice/new"
         >
-          <span className="fa fa-money mr-2" />
+          <span className="fa fa-money mr-2 color-local" />
           Facturación
         </NavLink>
 
@@ -28,7 +28,7 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/conduces"
             >
-              <span className="fa fa-truck mr-2" />
+              <span className="fa fa-truck mr-2 color-local" />
               Conduces
             </NavLink>
 
@@ -36,7 +36,7 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/quotations"
             >
-              <span className="fa fa-truck mr-2" />
+              <span className="fa fa-book mr-2 color-local" />
               Cotizaciones
             </NavLink>
 
@@ -44,7 +44,7 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/inventoriesFull"
             >
-              <span className="fa fa-clone mr-2" />
+              <span className="fa fa-clone mr-2 color-local" />
               Entrada de Inventario
             </NavLink>
 
@@ -52,7 +52,7 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/inventories"
             >
-              <span className="fa fa-bars mr-2" />
+              <span className="fa fa-bars mr-2 color-local" />
               Movimientos de Productos
             </NavLink>
 
@@ -60,7 +60,7 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/products"
             >
-              <span className="fa fa-list mr-2" />
+              <span className="fa fa-list mr-2 color-local" />
               Productos
             </NavLink>
 
@@ -68,35 +68,35 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/productsCategories"
             >
-              <span className="fa fa-list mr-2" />
+              <span className="fa fa-list mr-2 color-local" />
               Categorias
             </NavLink>
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
               to="/customers"
             >
-              <span className="fa fa-users mr-2" />
+              <span className="fa fa-users mr-2 color-local" />
               Clientes
             </NavLink>
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
               to="/providers"
             >
-              <span className="fa fa-users mr-2" />
+              <span className="fa fa-users mr-2 color-local" />
               Proveedores
             </NavLink>
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
               to="/ncf"
             >
-              <span className="fa fa-credit-card mr-2" />
+              <span className="fa fa-credit-card mr-2 color-local" />
               NCF
             </NavLink>
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
               to="/invoices"
             >
-              <span className="fa fa-list mr-2" />
+              <span className="fa fa-list mr-2 color-local" />
               Listado de Facturas
             </NavLink>
 
@@ -104,7 +104,7 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/reports/report607"
             >
-              <span className="fa fa-list mr-2" />
+              <span className="fa fa-list mr-2 color-local" />
               Facturas 607
             </NavLink>
 
@@ -112,28 +112,28 @@ const NavBarSide = ({ user }) => {
               className="list-group-item list-group-item-action bg-light border-none"
               to="/inventory/report"
             >
-              <span className="fa fa-list mr-2" />
+              <span className="fa fa-list mr-2 color-local" />
               Inventario
             </NavLink>
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
               to="/reports/report606"
             >
-              <span className="fa fa-list mr-2" />
+              <span className="fa fa-list mr-2 color-local" />
               Reporte 606
             </NavLink>
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
               to="/reports/entrtiesProvider"
             >
-              <span className="fa fa-list mr-2" />
+              <span className="fa fa-list mr-2 color-local" />
               Entradas por Proveedor
             </NavLink>
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
               to="/reports/purchaseOrders"
             >
-              <span className="fa fa-book mr-2" />
+              <span className="fa fa-book mr-2 color-local" />
               Ordenes de Compra
             </NavLink>
           </React.Fragment>

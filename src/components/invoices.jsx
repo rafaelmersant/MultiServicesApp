@@ -66,6 +66,8 @@ class Invoices extends Component {
       invoices: invoices.results,
       totalInvoices: invoices.count,
       loading: false,
+      currentPage: _currentPage,
+      sortColumn: _sortColumn,
     });
   }
 
@@ -160,7 +162,7 @@ class Invoices extends Component {
     searchParams.invoiceNo = "";
 
     this.setState({ searchParams });
-    this.populateInvoices();
+    this.populateInvoices(null, 1);
   };
 
   handlePaymentMethodChange = async (paymentMethod) => {

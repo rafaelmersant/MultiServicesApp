@@ -81,6 +81,10 @@ div[disabled] {
   border-color: #ffc107 !important;
 }
 
+.color-local {
+  color: #440000 !important;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }
