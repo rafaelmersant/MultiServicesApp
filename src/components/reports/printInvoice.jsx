@@ -56,6 +56,7 @@ class PrintInvoice extends Component {
                 alt="FERRINMAS"
               /> */}
             </div>
+            <div className="mt-4 text-center">CONSTRUYENDO CONFIANZA</div>
             <div className="text-center">
               <span className="font-receipt font-receipt-small-invoice">
                 {invoiceHeader[0].company.address}
@@ -304,7 +305,6 @@ class PrintInvoice extends Component {
           className="mt-5 font-receipt-small-F-invoice"
           style={{ height: "55px", fontFamily: "TimesNewRoman" }}
         >
-          <div className="mt-4 text-center">CONSTRUYENDO CONFIANZA</div>
           II
         </div>
       </div>
