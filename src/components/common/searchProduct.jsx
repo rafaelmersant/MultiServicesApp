@@ -7,9 +7,11 @@ import { debounce } from "throttle-debounce";
 
 const SearchProduct = (props) => {
   const [products, setProducts] = useState([]);
-  const [productName, setProductName] = useState("");
+  const [productName, setProductName] = useState(props.value);
 
   useEffect(() => {
+    if (props.value) setProductName(props.value);
+
     if (props.hide && props.clearSearchProduct) {
       setProductName("");
       handleSearchProduct("");
