@@ -56,9 +56,9 @@ class PrintInvoice extends Component {
                 alt="FERRINMAS"
               /> */}
             </div>
-            <div className="text-center font-receipt font-receipt-small-invoice">
+            {/* <div className="text-center font-receipt font-receipt-small-invoice">
               CONSTRUYENDO CONFIANZA
-            </div>
+            </div> */}
             <div className="text-center">
               <span className="font-receipt font-receipt-small-invoice">
                 {invoiceHeader[0].company.address}
