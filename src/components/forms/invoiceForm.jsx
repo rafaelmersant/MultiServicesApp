@@ -289,7 +289,12 @@ class InvoiceForm extends Form {
       }
     } catch (ex) {
       sessionStorage["newInvoice"] = null;
-      Sentry.captureException(ex);
+
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log(ex);
+      }
 
       if (ex.response && ex.response.status === 404)
         return this.props.history.replace("/not-found");
@@ -563,7 +568,11 @@ class InvoiceForm extends Form {
 
       console.log("data (didMount):", this.state.data);
     } catch (ex) {
-      Sentry.captureException(ex);
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log(ex);
+      }
     }
 
     if (!this.state.data.id) {
@@ -591,7 +600,11 @@ class InvoiceForm extends Form {
     try {
       await saveInvoiceHeader(this.state.data);
     } catch (ex) {
-      Sentry.captureException(ex);
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log(ex);
+      }
       console.log("Exception for printed invoice --> " + ex);
     }
   }
@@ -628,7 +641,11 @@ class InvoiceForm extends Form {
         try {
           await this.updateInventory(detail);
         } catch (ex) {
-          Sentry.captureException(ex);
+          try {
+            Sentry.captureException(ex);
+          } catch (_ex) {
+            console.log(ex);
+          }
           console.log("Exception for updateInventory --> " + ex);
         }
       }
@@ -638,7 +655,11 @@ class InvoiceForm extends Form {
           await deleteInvoiceDetail(item.id);
         }
       } catch (ex) {
-        Sentry.captureException(ex);
+        try {
+          Sentry.captureException(ex);
+        } catch (_ex) {
+          console.log(ex);
+        }
         console.log("Exception for deleteInvoiceDetail --> " + ex);
       }
 
@@ -647,7 +668,11 @@ class InvoiceForm extends Form {
       sessionStorage["newInvoice"] = "y";
       window.location = `/invoice/${this.state.data.sequence}`;
     } catch (ex) {
-      Sentry.captureException(ex);
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log(ex);
+      }
 
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");
