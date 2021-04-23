@@ -6,7 +6,7 @@ class SearchCustomer extends Component {
   state = {
     customers: [],
     erros: {},
-    searchCustomerInput: ""
+    searchCustomerInput: "",
   };
 
   handleChange = async ({ currentTarget: input }) => {
@@ -16,6 +16,9 @@ class SearchCustomer extends Component {
       this.props.companyId,
       input.value
     );
+
+    customers = customers.results;
+
     if (input.value === "") customers = [];
 
     if (input.value.length > 0 && customers.length === 0)
@@ -24,8 +27,8 @@ class SearchCustomer extends Component {
           id: 0,
           firstName: "No existe el cliente",
           lastName: ", desea crearlo?",
-          email: ""
-        }
+          email: "",
+        },
       ];
 
     this.setState({ customers });
@@ -66,7 +69,7 @@ class SearchCustomer extends Component {
             className="list-group col-11 shadow-lg bg-white position-absolute p-0"
             style={{ marginTop: "-15px", zIndex: "999" }}
           >
-            {customers.map(customer => (
+            {customers.map((customer) => (
               <button
                 key={customer.id}
                 onClick={() => onSelect(customer)}

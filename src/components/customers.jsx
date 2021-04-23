@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import { toast } from "react-toastify";
-import _ from "lodash";
-import Pagination from "./common/pagination";
+import Pagination from "react-js-pagination";
 import SearchBox from "./common/searchBox";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
-import { paginate } from "../utils/paginate";
 import { getCustomers, deleteCustomer } from "../services/customerService";
 import { getCustomerInInvoice } from "../services/invoiceServices";
 import { getCurrentUser } from "../services/authService";
@@ -16,16 +14,38 @@ class Customers extends Component {
     loading: true,
     customers: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 15,
     searchQuery: "",
+    totalCustomers: 0,
     sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
-    const companyId = getCurrentUser().companyId;
-    const { data: customers } = await getCustomers(companyId);
+    this.populateCustomers();
+  }
 
-    this.setState({ customers, loading: false });
+  async populateCustomers(_sortColumn, _currentPage, _searchQuery = "") {
+    const companyId = getCurrentUser().companyId;
+    const { currentPage, sortColumn, searchQuery } = { ...this.state };
+
+    _sortColumn = _sortColumn ? _sortColumn : sortColumn;
+    _currentPage = _currentPage ? _currentPage : currentPage;
+    _searchQuery = _searchQuery ? _searchQuery : searchQuery;
+
+    const { data: customers } = await getCustomers(
+      companyId,
+      _sortColumn,
+      _currentPage,
+      _searchQuery
+    );
+
+    this.setState({
+      customers: customers.results,
+      totalCustomers: customers.count,
+      loading: false,
+      sortColumn: _sortColumn,
+      currentPage: _currentPage,
+    });
   }
 
   handleDelete = async (customer) => {
@@ -60,47 +80,29 @@ class Customers extends Component {
     }
   };
 
-  handlePageChange = (page) => {
+  handlePageChange = async (page) => {
     this.setState({ currentPage: page });
+
+    await this.populateCustomers(null, page);
   };
 
-  handleSearch = (query) => {
+  handleSearch = async (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
+    await this.populateCustomers(null, null, query);
   };
 
-  handleSort = (sortColumn) => {
+  handleSort = async (sortColumn) => {
     this.setState({ sortColumn });
-  };
 
-  getPagedData = () => {
-    const {
-      pageSize,
-      currentPage,
-      sortColumn,
-      searchQuery,
-      customers: allCustomers,
-    } = this.state;
-
-    let filtered = allCustomers;
-    if (searchQuery)
-      filtered = allCustomers.filter((m) =>
-        `${m.firstName.toLowerCase()} ${m.lastName.toLowerCase()}`.startsWith(
-          searchQuery.toLocaleLowerCase()
-        )
-      );
-
-    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
-
-    const customers = paginate(sorted, currentPage, pageSize);
-
-    return { totalCount: filtered.length, customers };
+    await this.populateCustomers(sortColumn);
   };
 
   render() {
     const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
     const { user } = this.props;
 
-    const { totalCount, customers } = this.getPagedData();
+    const { totalCustomers, customers } = { ...this.state };
+    const total = customers ? customers.length : 0;
 
     return (
       <div className="container-fluid">
@@ -131,16 +133,23 @@ class Customers extends Component {
               />
             )}
 
-            {!this.state.loading && (
+            {!this.state.loading && customers.length > 0 && (
               <div className="row">
-                <Pagination
-                  itemsCount={totalCount}
-                  pageSize={pageSize}
-                  currentPage={currentPage}
-                  onPageChange={this.handlePageChange}
-                />
+                <div>
+                  <Pagination
+                    activePage={currentPage}
+                    itemsCountPerPage={pageSize}
+                    totalItemsCount={totalCustomers}
+                    pageRangeDisplayed={5}
+                    onChange={this.handlePageChange.bind(this)}
+                    itemClass="page-item"
+                    linkClass="page-link"
+                  />
+                </div>
                 <p className="text-muted ml-3 mt-2">
-                  <em>Mostrando {totalCount} clientes</em>
+                  <em>
+                    Mostrando {total} clientes de {totalCustomers}
+                  </em>
                 </p>
               </div>
             )}

@@ -62,7 +62,7 @@ class CustomerForm extends Form {
       const { data: customer } = await getCustomer(customerId);
 
       this.setState({
-        data: this.mapToViewModel(customer),
+        data: this.mapToViewModel(customer.results),
         action: "Editar Cliente",
       });
     } catch (ex) {

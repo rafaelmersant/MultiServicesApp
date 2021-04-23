@@ -7,10 +7,17 @@ function customerUrl(id) {
   return `${apiEndpoint}/${id}`;
 }
 
-export function getCustomers(companyId) {
-  if (companyId) return http.get(`${apiEndpoint}/?company_id=${companyId}`);
+export function getCustomers(companyId, sortColumn, currentPage, searchQuery) {
+  const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+  const column =
+    sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
+  const page = currentPage ? currentPage : 1;
 
-  return http.get(`${apiEndpoint}/`);
+  let urlQuery = `${apiEndpoint}/?company_id=${companyId}&ordering=${order}${column}&page=${page}`;
+
+  if (searchQuery) urlQuery += `&search=${searchQuery}`;
+
+  return http.get(urlQuery);
 }
 
 export function getCustomersByName(companyId, searchText) {
