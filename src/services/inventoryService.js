@@ -113,6 +113,7 @@ export function saveProductTracking(entry) {
     delete body.id;
     return http.put(productsTrackingUrl(entry.id), body);
   }
+  console.log("tracking::", tracking);
   return http.post(`${apiEndpointProdTracking}/`, tracking);
 }
 
@@ -162,8 +163,11 @@ export async function updateProductStock(inventory) {
       modifiedUser: getCurrentUser().email,
     };
 
+    console.log("productStock:::", productStock);
     if (productStock.length) {
-      const quantityAvailable = parseFloat(productStock[0].quantityAvailable);
+      const quantityAvailable = parseFloat(
+        productStock[0].quantityAvailable ?? 0
+      );
       const newQuantity =
         Math.round((quantityAvailable + quantity) * 100) / 100;
 
@@ -187,14 +191,11 @@ export async function updateProductStock(inventory) {
         }
       }
 
-      console.log("Updating Stock START...");
-      console.log("Tracking possible issue");
       console.log("productStock", productStock);
       console.log("quantity", quantity);
       console.log("quantityAvailable", quantityAvailable);
       console.log("newQuantity", newQuantity);
       console.log("stockToSave", stock);
-      console.log("Updating Stock END...");
     }
 
     await saveProductStock(stock);
