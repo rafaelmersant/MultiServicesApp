@@ -7,7 +7,7 @@ import PurchaseOrdersTable from "./tables/purchaseOrdersTable";
 import { getCurrentUser } from "../services/authService";
 import {
   getPurchaseOrder,
-  savePurchaseOrder
+  savePurchaseOrder,
 } from "../services/productService";
 
 class PurchaseOrders extends Component {
@@ -18,7 +18,7 @@ class PurchaseOrders extends Component {
     pageSize: 10,
     searchQuery: "",
     totalOrders: 0,
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
@@ -32,10 +32,7 @@ class PurchaseOrders extends Component {
   async populateOrders(query, page, sortColumn) {
     const currentPage = page ? page : 1;
 
-    const product = query
-      .toUpperCase()
-      .split(" ")
-      .join("%20");
+    const product = query.toUpperCase().split(" ").join("%20");
 
     const { data: orders } = await getPurchaseOrder(
       getCurrentUser().companyId,
@@ -47,11 +44,11 @@ class PurchaseOrders extends Component {
     this.setState({
       orders: orders.results,
       totalOrders: orders.count,
-      loading: false
+      loading: false,
     });
   }
 
-  handleMarkAsComplete = async item => {
+  handleMarkAsComplete = async (item) => {
     const answer = window.confirm(
       "Esta seguro que desea marcar como completado?"
     );
@@ -63,7 +60,7 @@ class PurchaseOrders extends Component {
           quantity: item.quantity,
           company_id: item.company.id,
           creationDate: new Date(item.creationDate),
-          pending: false
+          pending: false,
         };
 
         await savePurchaseOrder(_item);
@@ -80,7 +77,7 @@ class PurchaseOrders extends Component {
     }
   };
 
-  handlePageChange = async page => {
+  handlePageChange = async (page) => {
     this.setState({ currentPage: page });
 
     if (this.state.searchQuery)
@@ -92,12 +89,12 @@ class PurchaseOrders extends Component {
     else await this.populateOrders("", parseInt(page), this.sortColumn);
   };
 
-  handleSearch = query => {
+  handleSearch = (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
     this.populateOrders(query);
   };
 
-  handleSort = async sortColumn => {
+  handleSort = async (sortColumn) => {
     this.setState({ sortColumn });
 
     await this.populateOrders(
@@ -114,12 +111,13 @@ class PurchaseOrders extends Component {
       searchQuery,
       totalOrders,
       pageSize,
-      currentPage
+      currentPage,
     } = this.state;
     const user = getCurrentUser();
+    console.log("orders", orders);
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <h5 className="pull-left text-info mt-2">Ordenes de Compra</h5>

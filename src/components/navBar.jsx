@@ -37,22 +37,15 @@ const NavBar = ({ user }) => {
               Facturación
             </a>
           </li>
-          {user && user.role !== "Admin" && user.role !== "Owner" && (
-            <li className="nav-item">
-              <NavLink className="nav-link" to="/products">
-                | Productos
-              </NavLink>
-            </li>
-          )}
-
-          {/* <li className="nav-item">
-            <NavLink className="nav-link" to="/inventoriesFull">
-              | Inventario
-            </NavLink>
-          </li> */}
 
           {user && (user.role === "Admin" || user.role === "Owner") && (
             <React.Fragment>
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/conduces">
+                  | Conduces
+                </NavLink>
+              </li>
+
               <li className="nav-item dropdown">
                 <NavLink
                   className="clickable text-secondary nav-link dropdown-toggle"

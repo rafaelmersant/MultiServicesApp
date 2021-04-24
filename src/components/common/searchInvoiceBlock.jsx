@@ -9,16 +9,16 @@ class SearchInvoiceBlock extends Component {
   state = {
     data: {
       invoice: "",
-      paymentMethod: "ALL"
+      paymentMethod: "ALL",
     },
     paymentMethods: [
       { id: "ALL", name: "Todos" },
       { id: "CASH", name: "Efectivo" },
       { id: "CARD", name: "Tarjeta de Crédito" },
-      { id: "CREDIT", name: "Crédito" }
+      { id: "CREDIT", name: "Crédito" },
     ],
     hideSearchCustomer: false,
-    searchCustomerText: ""
+    searchCustomerText: "",
   };
 
   handleChange = async ({ currentTarget: input }) => {
@@ -42,14 +42,14 @@ class SearchInvoiceBlock extends Component {
     this.setState({ data, searchCustomerText });
   };
 
-  handleFocusCustomer = value => {
+  handleFocusCustomer = (value) => {
     setTimeout(() => {
       this.setState({ hideSearchCustomer: value });
     }, 200);
   };
 
-  handleSelectCustomer = async customer => {
-    const handler = e => {
+  handleSelectCustomer = async (customer) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -66,14 +66,14 @@ class SearchInvoiceBlock extends Component {
     this.setState({
       data,
       hideSearchCustomer: true,
-      searchCustomerText: `${customer.firstName} ${customer.lastName}`
+      searchCustomerText: `${customer.firstName} ${customer.lastName}`,
     });
 
     this.props.onCustomerChange(customer);
   };
 
   handleClearCustomerSelection = () => {
-    const handler = e => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -111,7 +111,7 @@ class SearchInvoiceBlock extends Component {
           {this.state.searchCustomerText && (
             <div
               style={{
-                marginTop: "38px"
+                marginTop: "38px",
               }}
             >
               <span
@@ -120,7 +120,7 @@ class SearchInvoiceBlock extends Component {
                   fontSize: "24px",
                   position: "absolute",
                   marginLeft: "-39px",
-                  cursor: "pointer"
+                  cursor: "pointer",
                 }}
                 title="Limpiar filtro de cliente"
                 onClick={this.handleClearCustomerSelection}

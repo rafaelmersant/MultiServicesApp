@@ -14,7 +14,7 @@ class Invoices606 extends Component {
     currentPage: 1,
     pageSize: 4000,
     searchQuery: "",
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
@@ -29,28 +29,28 @@ class Invoices606 extends Component {
     this.setState({ invoices });
   }
 
-  handlePageChange = page => {
+  handlePageChange = (page) => {
     this.setState({ currentPage: page });
   };
 
-  handleSearch = query => {
+  handleSearch = (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
   };
 
-  handleSort = sortColumn => {
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
-  mapToExcelView = data => {
+  mapToExcelView = (data) => {
     let result = [];
 
-    data.forEach(item => {
+    data.forEach((item) => {
       result.push({
         creationDate: new Date(item.creationDate).toLocaleDateString(),
         ncf: item.ncf,
         discount: item.discount,
         itbis: item.itbis,
-        subtotal: item.subtotal
+        subtotal: item.subtotal,
       });
     });
 
@@ -63,12 +63,12 @@ class Invoices606 extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      invoices: allInvoices
+      invoices: allInvoices,
     } = this.state;
 
     let filtered = allInvoices;
     if (searchQuery)
-      filtered = allInvoices.filter(m =>
+      filtered = allInvoices.filter((m) =>
         `${m.ncf.toLowerCase()}`.includes(searchQuery.toLocaleLowerCase())
       );
 
@@ -86,7 +86,7 @@ class Invoices606 extends Component {
     const { totalCount, invoices } = this.getPagedData();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <h2 className="pull-right text-info">Reporte 606</h2>

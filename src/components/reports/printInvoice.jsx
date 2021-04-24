@@ -3,109 +3,141 @@ import { formatNumber } from "../../utils/custom";
 
 class PrintInvoice extends Component {
   render() {
-    //console.log("header", this.props.invoiceHeader[0]);
-    //console.log("detail", this.props.invoiceDetail);
-
     const {
       invoiceHeader,
       invoiceDetail,
       itbisTotal,
       valorTotal,
       discountTotal,
-      createdUserName
+      createdUserName,
     } = this.props;
+    console.log("invoiceHeader print", invoiceHeader);
+
+    if (invoiceHeader.length) {
+      var _date = Date.parse(invoiceHeader[0].creationDate);
+      var invoiceDate = new Date(_date);
+    }
 
     return (
-      <div className="mt-1" style={{ width: "408px" }}>
+      <div className="mt-1" style={{ width: "338px" }}>
         {invoiceHeader.length && (
           <div>
             <div className="text-center">
-              <img
+              <span
+                style={{
+                  fontFamily: "Calisto MT",
+                  fontSize: "2.4em",
+                  fontWeight: "bold",
+                }}
+              >
+                FERRIN
+              </span>
+              <span
+                style={{
+                  fontFamily: "Calisto MT",
+                  fontSize: "3em",
+                  fontWeight: "bold",
+                }}
+              >
+                M
+              </span>
+              <span
+                style={{
+                  fontFamily: "Calisto MT",
+                  fontSize: "2.4em",
+                  fontWeight: "bold",
+                }}
+              >
+                AS
+              </span>
+              {/* <img
                 width="210px"
-                src={process.env.PUBLIC_URL + "/images/fanith.png"}
-                //src={require("../../../public/images/fanith.png")}
-                alt="FANITH"
-              />
+                src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
+                alt="FERRINMAS"
+              /> */}
+              <div
+                className="font-receipt font-receipt-small-slogan"
+                style={{ marginTop: "-18px" }}
+              >
+                <span style={{ marginRight: "-27px" }}>
+                  CONSTRUYENDO CONFIANZA
+                </span>
+              </div>
             </div>
 
-            {/* <h3 className="font-receipt text-center">
-              {invoiceHeader[0].company.name.toUpperCase()}</h3>
-            <span className="font-receipt d-block" style={{ marginLeft: "215px", marginTop: "-13px" }}>Ferreteria</span> */}
-
-            {/* <div className="text-center">
-              <span className="font-receipt">
+            <div className="text-center">
+              <span className="font-receipt font-receipt-small-invoice">
                 {invoiceHeader[0].company.address}
               </span>
             </div>
             <div className="text-center">
-              <span className="font-receipt">
+              <span className="font-receipt font-receipt-small-invoice">
                 {invoiceHeader[0].company.phoneNumber}
               </span>
-            </div> */}
+            </div>
             <div className="text-center">
-              <span className="font-receipt">
+              <span className="font-receipt font-receipt-small-invoice">
                 {invoiceHeader[0].company.email}
               </span>
             </div>
 
             {invoiceHeader[0].company.rnc.length > 0 && (
               <div className="text-center">
-                <span className="font-receipt font-receipt-small">
+                <span className="font-receipt font-receipt-small-invoice">
                   RNC: {invoiceHeader[0].company.rnc}
                 </span>
               </div>
             )}
 
-            <span className="font-receipt font-receipt-small d-block">
-              Fecha: {new Date().toLocaleDateString("en-GB")}
+            <span className="font-receipt font-receipt-small-invoice d-block">
+              Fecha: {invoiceDate.toLocaleDateString("en-GB")}
               <span className="ml-2">
-                Hora: {new Date().toLocaleTimeString()}
+                Hora: {invoiceDate.toLocaleTimeString()}
               </span>
             </span>
 
             {invoiceHeader[0].ncf.length > 0 && (
-              <span className="font-receipt font-receipt-small d-block">
+              <span className="font-receipt font-receipt-small-invoice d-block">
                 NCF: {invoiceHeader[0].ncf}
               </span>
             )}
 
-            {invoiceHeader[0].customer.identification.length > 0 && (
-              <span className="font-receipt font-receipt-small d-block">
-                Cédula/RNC: {invoiceHeader[0].customer.identification}
-              </span>
-            )}
-
-            <span className="font-receipt font-receipt-small d-block">
+            <span className="font-receipt font-receipt-small-invoice d-block">
               Cliente: {invoiceHeader[0].customer.firstName}{" "}
               {invoiceHeader[0].customer.lastName}
             </span>
+
+            {invoiceHeader[0].customer.identification.length > 0 && (
+              <span className="font-receipt font-receipt-small-invoice d-block">
+                Cédula/RNC: {invoiceHeader[0].customer.identification}
+              </span>
+            )}
+            {invoiceHeader[0].customer.address.length > 0 && (
+              <span className="font-receipt font-receipt-small-invoice d-block">
+                Dirección: {invoiceHeader[0].customer.address}
+              </span>
+            )}
           </div>
         )}
 
         <div className="d-block">
           <span className="d-block">
-            ---------------------------------------------------------------
+            ----------------------------------------------------
           </span>
 
-          <span
-            className="font-receipt font-receipt-small"
-            style={{ marginLeft: "45px" }}
-          >
-            {invoiceHeader.length &&
-              !invoiceHeader[0].ncf.includes("B01") &&
-              "FACTURA PARA CONSUMIDOR FINAL"}
-          </span>
+          <div className="text-center">
+            <span className="font-receipt font-receipt-small-2-invoice">
+              {invoiceHeader.length &&
+                !invoiceHeader[0].ncf.includes("B01") &&
+                "FACTURA PARA CONSUMIDOR FINAL"}
+            </span>
 
-          <span
-            className="font-receipt font-receipt-small"
-            style={{ marginLeft: "25px" }}
-          >
-            {invoiceHeader.length &&
-              invoiceHeader[0].ncf.includes("B01") &&
-              "FACTURA PARA CREDITO FISCAL"}
-          </span>
-
-          {/* <span className="d-block">---------------------------------------------------------------</span> */}
+            <span className="font-receipt font-receipt-small-2-invoice">
+              {invoiceHeader.length &&
+                invoiceHeader[0].ncf.includes("B01") &&
+                "FACTURA PARA CREDITO FISCAL"}
+            </span>
+          </div>
         </div>
 
         {invoiceDetail.length && (
@@ -113,11 +145,10 @@ class PrintInvoice extends Component {
             <thead>
               <tr key="h1">
                 <td colSpan="3">
-                  ---------------------------------------------------------------
+                  ----------------------------------------------------
                 </td>
               </tr>
               <tr key="h2">
-                {/* <td style={{cellSpacing: "5px"}}><span className="font-receipt">CANT</span></td> */}
                 <td style={{ cellSpacing: "10px" }}>
                   <span className="font-receipt">ITEM</span>
                 </td>
@@ -130,16 +161,16 @@ class PrintInvoice extends Component {
               </tr>
               <tr key="h3">
                 <td colSpan="3">
-                  ---------------------------------------------------------------
+                  ----------------------------------------------------
                 </td>
               </tr>
             </thead>
             <tbody>
-              {invoiceDetail.map(item => (
+              {invoiceDetail.map((item) => (
                 <React.Fragment key={"F" + item.id}>
                   <tr key={"M" + item.id}>
                     <td colSpan="3">
-                      <span className="font-receipt font-receipt-small">
+                      <span className="font-receipt font-receipt-small-invoice">
                         {item.product.description}
                       </span>
                     </td>
@@ -147,17 +178,17 @@ class PrintInvoice extends Component {
 
                   <tr key={item.product.id}>
                     <td>
-                      <span className="font-receipt font-receipt-small">
+                      <span className="font-receipt font-receipt-small-invoice">
                         {item.quantity} x {formatNumber(item.product.price)}
                       </span>
                     </td>
                     <td className="text-right">
-                      <span className="font-receipt font-receipt-small">
+                      <span className="font-receipt font-receipt-small-invoice">
                         {formatNumber(item.itbis)}
                       </span>
                     </td>
                     <td className="text-right">
-                      <span className="font-receipt font-receipt-small">
+                      <span className="font-receipt font-receipt-small-invoice">
                         {formatNumber(item.quantity * item.product.price)}
                       </span>
                     </td>
@@ -166,32 +197,45 @@ class PrintInvoice extends Component {
                   {item.discount > 0 && (
                     <tr key={"D" + item.product.id}>
                       <td colSpan="2">
-                        <span className="font-receipt font-receipt-small">
+                        <span className="font-receipt font-receipt-small-invoice">
                           {"DESCUENTO"}
                         </span>
                       </td>
                       <td className="text-right">
                         {"-"}
-                        {formatNumber(item.discount)}
+                        <span className="font-receipt font-receipt-small-invoice">
+                          {formatNumber(item.discount)}
+                        </span>
                       </td>
                     </tr>
                   )}
+
+                  <tr>
+                    <td colSpan="3">
+                      <span
+                        className="font-receipt font-receipt-small-invoice"
+                        style={{ color: "white", fontSize: "0.6em" }}
+                      >
+                        |
+                      </span>
+                    </td>
+                  </tr>
                 </React.Fragment>
               ))}
 
               <tr key="f1">
                 <td colSpan="3">
-                  ---------------------------------------------------------------
+                  ----------------------------------------------------
                 </td>
               </tr>
               <tr key="f2">
                 <td colSpan="2">
-                  <span className="font-receipt font-receipt-medium">
+                  <span className="font-receipt font-receipt-medium-invoice">
                     SUBTOTAL
                   </span>
                 </td>
                 <td className="text-right">
-                  <span className="font-receipt font-receipt-medium">
+                  <span className="font-receipt font-receipt-medium-invoice">
                     {formatNumber(valorTotal - itbisTotal)}
                   </span>
                 </td>
@@ -199,12 +243,12 @@ class PrintInvoice extends Component {
 
               <tr key="f4">
                 <td colSpan="2">
-                  <span className="font-receipt font-receipt-medium">
+                  <span className="font-receipt font-receipt-medium-invoice">
                     DESCUENTO
                   </span>
                 </td>
                 <td className="text-right">
-                  <span className="font-receipt font-receipt-medium">
+                  <span className="font-receipt font-receipt-medium-invoice">
                     {formatNumber(discountTotal)}
                   </span>
                 </td>
@@ -212,12 +256,12 @@ class PrintInvoice extends Component {
 
               <tr key="f3">
                 <td colSpan="2">
-                  <span className="font-receipt font-receipt-medium">
+                  <span className="font-receipt font-receipt-medium-invoice">
                     ITBIS
                   </span>
                 </td>
                 <td className="text-right">
-                  <span className="font-receipt font-receipt-medium">
+                  <span className="font-receipt font-receipt-medium-invoice">
                     {formatNumber(itbisTotal)}
                   </span>
                 </td>
@@ -225,12 +269,12 @@ class PrintInvoice extends Component {
 
               <tr key="f5">
                 <td colSpan="2">
-                  <span className="font-receipt font-receipt-big">
+                  <span className="font-receipt font-receipt-big-invoice">
                     <b>TOTAL A PAGAR</b>
                   </span>
                 </td>
                 <td className="text-right">
-                  <span className="font-receipt font-receipt-big">
+                  <span className="font-receipt font-receipt-big-invoice">
                     <b>{formatNumber(valorTotal - discountTotal)}</b>
                   </span>
                 </td>
@@ -239,23 +283,36 @@ class PrintInvoice extends Component {
           </table>
         )}
         <div className="mt-4">
-          Items: <span className="font-receipt">{invoiceDetail.length}</span>
+          <span className="font-receipt font-receipt-small-F-invoice">
+            Items: {invoiceDetail.length}
+          </span>
         </div>
         <div>
-          No. Factura:{" "}
-          <span className="font-receipt">
+          <span className="font-receipt font-receipt-small-F-invoice">
+            No. Factura:{" "}
+          </span>
+          <span className="font-receipt font-receipt-small-F-invoice">
             {invoiceHeader.length && invoiceHeader[0].sequence}
           </span>
         </div>
         <div>
-          Método de pago:{" "}
-          {invoiceHeader.length && invoiceHeader[0].paymentMethod}
+          <span className="font-receipt font-receipt-small-F-invoice">
+            Método de pago:{" "}
+          </span>
+          <span className="font-receipt font-receipt-small-F-invoice">
+            {invoiceHeader.length && invoiceHeader[0].paymentMethod}
+          </span>
         </div>
-        <div>Le atendió: {createdUserName}</div>
-        <div className="mt-4" style={{ marginLeft: "115px" }}>
-          GRACIAS POR SU COMPRA!
+        <div>
+          <span className="font-receipt font-receipt-small-F-invoice">
+            Le atendió: {createdUserName}
+          </span>
         </div>
-        <div className="mt-4" style={{ height: "55px" }}>
+        <div className="mt-4 text-center">GRACIAS POR SU COMPRA!</div>
+        <div
+          className="mt-5 font-receipt-small-F-invoice"
+          style={{ height: "55px", fontFamily: "TimesNewRoman" }}
+        >
           II
         </div>
       </div>

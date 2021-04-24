@@ -16,7 +16,7 @@ class ProductsStock extends Component {
     currentPage: 1,
     pageSize: 8000,
     searchQuery: "",
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
@@ -30,29 +30,29 @@ class ProductsStock extends Component {
     this.setState({ products, loading: false });
   }
 
-  handlePageChange = page => {
+  handlePageChange = (page) => {
     this.setState({ currentPage: page });
   };
 
-  handleSearch = query => {
+  handleSearch = (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
   };
 
-  handleSort = sortColumn => {
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
-  mapToExcelView = data => {
+  mapToExcelView = (data) => {
     let result = [];
 
-    data.forEach(item => {
+    data.forEach((item) => {
       result.push({
         product: item.product.description,
         quantity: item.quantityAvailable,
         cost: item.product.cost,
         price: item.product.price,
         costTotal: item.product.cost * item.quantityAvailable,
-        priceTotal: item.product.price * item.quantityAvailable
+        priceTotal: item.product.price * item.quantityAvailable,
       });
     });
 
@@ -65,12 +65,12 @@ class ProductsStock extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      products: allProducts
+      products: allProducts,
     } = this.state;
 
     let filtered = allProducts;
     if (searchQuery)
-      filtered = allProducts.filter(m =>
+      filtered = allProducts.filter((m) =>
         `${m.product.description.toLowerCase()}`.startsWith(
           searchQuery.toLocaleLowerCase()
         )
@@ -90,7 +90,7 @@ class ProductsStock extends Component {
     const { totalCount, products } = this.getPagedData();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col margin-top-msg">
             <h2 className="pull-right text-info">Reporte de Inventario</h2>

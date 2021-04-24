@@ -6,7 +6,7 @@ import { getCompanies } from "../../services/companyService";
 import {
   getCustomer,
   saveCustomer,
-  getCustomerByFirstLastName
+  getCustomerByFirstLastName,
 } from "../../services/customerService";
 import { getCurrentUser } from "../../services/authService";
 
@@ -23,38 +23,30 @@ class CustomerForm extends Form {
       identificationType: "0",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     },
     companies: [],
     identificationTypes: [
       { id: "0", name: "Seleccionar..." },
       { id: "C", name: "Cédula" },
-      { id: "R", name: "RNC" }
+      { id: "R", name: "RNC" },
     ],
     errors: {},
-    action: "Nuevo Cliente"
+    action: "Nuevo Cliente",
   };
 
   schema = {
     id: Joi.number(),
-    firstName: Joi.string()
-      .required()
-      .max(100)
-      .label("Nombre"),
-    lastName: Joi.string()
-      .required()
-      .max(100)
-      .label("Apellidos"),
+    firstName: Joi.string().required().max(100).label("Nombre"),
+    lastName: Joi.string().required().max(100).label("Apellidos"),
     email: Joi.optional(),
     address: Joi.optional(),
     phoneNumber: Joi.optional(),
     identification: Joi.optional(),
     identificationType: Joi.optional(),
-    company_id: Joi.number()
-      .required()
-      .label("Compañîa"),
+    company_id: Joi.number().required().label("Compañîa"),
     createdUser: Joi.string(),
-    creationDate: Joi.string()
+    creationDate: Joi.string(),
   };
 
   async populateCompanies() {
@@ -70,8 +62,8 @@ class CustomerForm extends Form {
       const { data: customer } = await getCustomer(customerId);
 
       this.setState({
-        data: this.mapToViewModel(customer),
-        action: "Editar Cliente"
+        data: this.mapToViewModel(customer.results),
+        action: "Editar Cliente",
       });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -109,7 +101,7 @@ class CustomerForm extends Form {
       createdUser: customer[0].createdByUser
         ? customer[0].createdByUser
         : getCurrentUser().email,
-      creationDate: customer[0].creationDate
+      creationDate: customer[0].creationDate,
     };
   }
 
@@ -137,16 +129,13 @@ class CustomerForm extends Form {
 
   render() {
     const { user, popUp } = this.props;
-    const _standardSize =
-      "container pull-left col-lg-8 col-md-8 col-sm-11 ml-3 shadow p-3 mb-5 bg-white rounded";
-    const _fullSize =
-      "container pull-left col-lg-12 col-md-12 col-sm-12 p-3 mb-5 bg-white rounded";
-    const containerSize = popUp ? _fullSize : _standardSize;
 
     return (
-      <div className={containerSize}>
+      <div className="container-fluid">
         {!popUp && (
-          <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+          <h3 className="bg-dark text-light list-header">
+            {this.state.action}
+          </h3>
         )}
 
         <div className="col-12 pb-3 bg-light">

@@ -14,7 +14,7 @@ class EntriesProviders extends Component {
     currentPage: 1,
     pageSize: 1000,
     searchQuery: "",
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
@@ -34,15 +34,15 @@ class EntriesProviders extends Component {
     this.setState({ entries });
   }
 
-  handlePageChange = page => {
+  handlePageChange = (page) => {
     this.setState({ currentPage: page });
   };
 
-  handleSearch = query => {
+  handleSearch = (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
   };
 
-  handleSort = sortColumn => {
+  handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
@@ -52,12 +52,12 @@ class EntriesProviders extends Component {
       currentPage,
       sortColumn,
       searchQuery,
-      entries: allentries
+      entries: allentries,
     } = this.state;
 
     let filtered = allentries;
     if (searchQuery)
-      filtered = allentries.filter(m =>
+      filtered = allentries.filter((m) =>
         `${m.provider.name.toLowerCase()}`.startsWith(
           searchQuery.toLocaleLowerCase()
         )
@@ -70,12 +70,12 @@ class EntriesProviders extends Component {
     return { totalCount: filtered.length, entries };
   };
 
-  mapToExcelView = data => {
+  mapToExcelView = (data) => {
     let result = [];
 
-    data.forEach(item => {
+    data.forEach((item) => {
       result.push({
-        id: item.id
+        id: item.id,
       });
     });
 
@@ -89,7 +89,7 @@ class EntriesProviders extends Component {
     const { totalCount, entries } = this.getPagedData();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <h2 className="pull-right text-info">Entradas por Proveedor</h2>

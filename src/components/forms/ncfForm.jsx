@@ -19,34 +19,28 @@ class NCFForm extends Form {
       active: 1,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     },
     dueDate: new Date(),
     typeDoc: [
       { id: "B01", name: "B01" },
-      { id: "B02", name: "B02" }
+      { id: "B02", name: "B02" },
     ],
     errors: {},
-    action: "Nueva Secuencia"
+    action: "Nueva Secuencia",
   };
 
   schema = {
     id: Joi.number(),
     typeDoc: Joi.string().required(),
-    start: Joi.number()
-      .required()
-      .label("Secuencia Inicia"),
-    end: Joi.number()
-      .required()
-      .label("Secuencia Termina"),
+    start: Joi.number().required().label("Secuencia Inicia"),
+    end: Joi.number().required().label("Secuencia Termina"),
     current: Joi.optional(),
-    dueDate: Joi.string()
-      .required()
-      .label("Secuencia Vence"),
+    dueDate: Joi.string().required().label("Secuencia Vence"),
     active: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
-    creationDate: Joi.string()
+    creationDate: Joi.string(),
   };
 
   async populateEntry() {
@@ -58,7 +52,7 @@ class NCFForm extends Form {
 
       this.setState({
         data: this.mapToViewModel(entry),
-        action: "Visualizando Detalle de Registro"
+        action: "Visualizando Detalle de Registro",
       });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -66,16 +60,16 @@ class NCFForm extends Form {
     }
   }
 
-  handleChangeDueDate = date => {
+  handleChangeDueDate = (date) => {
     this.setState({ dueDate: date });
   };
 
-  deactivateOldEntries = async typeDoc => {
+  deactivateOldEntries = async (typeDoc) => {
     const { data: entries } = await getEntries(
       typeDoc,
       getCurrentUser().companyId
     );
-    entries.forEach(async item => {
+    entries.forEach(async (item) => {
       const entry = { ...item };
       entry.active = false;
       entry.company_id = entry.company.id;
@@ -100,7 +94,7 @@ class NCFForm extends Form {
       createdUser: entry[0].createdUser
         ? entry[0].createdUser
         : getCurrentUser().email,
-      creationDate: entry[0].creationDate
+      creationDate: entry[0].creationDate,
     };
   }
 
@@ -124,8 +118,8 @@ class NCFForm extends Form {
 
   render() {
     return (
-      <div className="container pull-left col-lg-8 col-md-8 col-sm-9 ml-3 shadow p-3 mb-5 bg-white rounded">
-        <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+      <div className="container-fluid">
+        <h3 className="bg-dark text-light list-header">{this.state.action}</h3>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
             {this.renderSelect("typeDoc", "Tipo de NCF", this.state.typeDoc)}
@@ -142,8 +136,9 @@ class NCFForm extends Form {
             <div className="row mb-4">
               <div className="col ml-0">
                 <DatePicker
+                  className="form-control form-control-sm"
                   selected={this.state.dueDate}
-                  onChange={date => this.handleChangeDueDate(date)}
+                  onChange={(date) => this.handleChangeDueDate(date)}
                   dateFormat="yyyy/MM/dd"
                 />
               </div>

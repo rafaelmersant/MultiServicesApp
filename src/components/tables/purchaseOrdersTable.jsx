@@ -8,21 +8,21 @@ class PurchaseOrdersTable extends Component {
     {
       path: "product",
       label: "Producto",
-      content: item => <div>{item.product.description}</div>
+      content: (item) => <div>{item.product && item.product.description}</div>,
     },
     {
       path: "quantity",
       label: "Cantidad",
-      content: item => (
+      content: (item) => (
         <div className="text-right">{formatNumber(item.quantity ?? 0)}</div>
-      )
+      ),
     },
-    { path: "creationDate", label: "Creado (m/d/a)" }
+    { path: "creationDate", label: "Creado (m/d/a)" },
   ];
 
   markAsCompleteColumn = {
     key: "pending",
-    content: item => (
+    content: (item) => (
       <div className="text-center">
         <span
           title="Marcar como completada"
@@ -31,7 +31,7 @@ class PurchaseOrdersTable extends Component {
           style={{ color: "orange", fontSize: "26px", cursor: "pointer" }}
         ></span>
       </div>
-    )
+    ),
   };
 
   constructor() {

@@ -9,34 +9,33 @@ class CustomersTable extends Component {
     {
       path: "firstName",
       label: "Nombre",
-      content: customer => (
+      content: (customer) => (
         <Link to={`/customer/${customer.id}`}> {customer.firstName} </Link>
-      )
+      ),
     },
     {
       path: "lastName",
       label: "Apellido",
-      content: customer => (
+      content: (customer) => (
         <Link to={`/customer/${customer.id}`}> {customer.lastName} </Link>
-      )
+      ),
     },
     { path: "email", label: "Email" },
     { path: "phoneNumber", label: "Teléfono" },
     { path: "address", label: "Dirección" },
-    { path: "creationDate", label: "Creado (m/d/a)" }
+    { path: "creationDate", label: "Creado (m/d/a)" },
   ];
 
   deleteColumn = {
     key: "delete",
-    content: customer => (
+    content: (customer) => (
       <div className="text-center">
-        <button
+        <span
           onClick={() => this.props.onDelete(customer)}
-          className="fa fa-trash"
-          style={{ color: "red", fontSize: "16px" }}
-        ></button>
+          className="fa fa-trash text-danger cursor-pointer trash-size"
+        ></span>
       </div>
-    )
+    ),
   };
 
   constructor() {

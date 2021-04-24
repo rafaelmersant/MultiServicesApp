@@ -23,6 +23,7 @@ class Invoices extends Component {
     invoices: [],
     currentPage: 1,
     pageSize: 10,
+    totalInvoices: 0,
     sortColumn: { path: "creationDate", order: "desc" },
     searchParams: {
       paymentMethod: "ALL",
@@ -33,6 +34,14 @@ class Invoices extends Component {
 
   async componentDidMount() {
     await this.populateInvoices();
+
+    this.intervalInvoiceId = setInterval(async () => {
+      await this.populateInvoices();
+    }, 3000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this, this.intervalInvoiceId);
   }
 
   async populateInvoices(_sortColumn, _currentPage) {
@@ -58,6 +67,8 @@ class Invoices extends Component {
       invoices: invoices.results,
       totalInvoices: invoices.count,
       loading: false,
+      currentPage: _currentPage,
+      sortColumn: _sortColumn,
     });
   }
 
@@ -152,7 +163,7 @@ class Invoices extends Component {
     searchParams.invoiceNo = "";
 
     this.setState({ searchParams });
-    this.populateInvoices();
+    this.populateInvoices(null, 1);
   };
 
   handlePaymentMethodChange = async (paymentMethod) => {
@@ -169,21 +180,6 @@ class Invoices extends Component {
     this.populateInvoices();
   };
 
-  // getPagedData = () => {
-  //   const {
-  //     pageSize,
-  //     currentPage,
-  //     sortColumn,
-  //     invoices: allInvoices
-  //   } = this.state;
-
-  //   let filtered = allInvoices;
-  //   const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
-  //   const invoices = paginate(sorted, currentPage, pageSize);
-
-  //   return { totalCount: filtered.length, invoices };
-  // };
-
   render() {
     const {
       invoices,
@@ -196,18 +192,15 @@ class Invoices extends Component {
     const total = invoices ? invoices.length : 0;
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
-            <NewButton label="Nueva Factura" to="/invoice/new" />
-          </div>
-        </div>
-
-        <div className="row">
-          <div className="col">
-            <div className="row">
+            <div className="d-flex justify-content-between mb-3">
               <div>
                 <h5 className="text-info">Búsqueda</h5>
+              </div>
+              <div>
+                <NewButton label="Nueva Factura" to="/invoice/new" />
               </div>
             </div>
 
@@ -223,7 +216,7 @@ class Invoices extends Component {
               </div>
             )}
 
-            {!this.state.loading && (
+            {!this.state.loading && invoices.length > 0 && (
               <div className="row">
                 <InvoicesTable
                   invoices={invoices}
@@ -234,8 +227,15 @@ class Invoices extends Component {
                 />
               </div>
             )}
+            {!invoices.length && (
+              <div className="text-center mt-5 mb-5">
+                <h5>
+                  No existen registros con el criterio de búsqueda especificado
+                </h5>
+              </div>
+            )}
 
-            {!this.state.loading && (
+            {!this.state.loading && invoices.length > 0 && (
               <div className="row">
                 <div>
                   <Pagination
@@ -255,20 +255,6 @@ class Invoices extends Component {
                 </p>
               </div>
             )}
-
-            {/* {!this.state.loading && (
-              <div className="row">
-                <Pagination
-                  itemsCount={totalInvoices}
-                  pageSize={pageSize}
-                  currentPage={currentPage}
-                  onPageChange={this.handlePageChange}
-                />
-                <p className="text-muted ml-3 mt-2">
-                  Mostrando {invoices.length} facturas de {totalInvoices}
-                </p>
-              </div>
-            )} */}
           </div>
         </div>
       </div>

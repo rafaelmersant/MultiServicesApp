@@ -14,24 +14,21 @@ class CompanyForm extends Form {
       rnc: "",
       address: "",
       createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString()
+      creationDate: new Date().toISOString(),
     },
     errors: {},
-    action: "Nueva Compañía"
+    action: "Nueva Compañía",
   };
 
   schema = {
     id: Joi.number(),
-    name: Joi.string()
-      .required()
-      .min(3)
-      .label("Nombre de Compañía"),
+    name: Joi.string().required().min(3).label("Nombre de Compañía"),
     email: Joi.optional().label("Email"),
     phoneNumber: Joi.optional().label("Teléfono"),
     rnc: Joi.optional(),
     address: Joi.optional().label("Dirección"),
     createdUser: Joi.string(),
-    creationDate: Joi.string()
+    creationDate: Joi.string(),
   };
 
   async populateCompany() {
@@ -43,7 +40,7 @@ class CompanyForm extends Form {
 
       this.setState({
         data: this.mapToViewModel(company),
-        action: "Editar Compañía"
+        action: "Editar Compañía",
       });
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
@@ -66,7 +63,7 @@ class CompanyForm extends Form {
       createdUser: company[0].createdUser
         ? company[0].createdUser
         : getCurrentUser().email,
-      creationDate: company[0].creationDate
+      creationDate: company[0].creationDate,
     };
   }
 
@@ -78,8 +75,8 @@ class CompanyForm extends Form {
 
   render() {
     return (
-      <div className="container pull-left col-6 ml-3 shadow p-3 mb-5 bg-white rounded">
-        <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+      <div className="container-fluid">
+        <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
             {this.renderInput("name", "Nombre")}

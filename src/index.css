@@ -23,19 +23,51 @@ code {
 }
 
 .font-receipt {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: sans-serif;
 }
 
 .font-receipt-small {
-  font-size: 16px;
+  font-size: 22px;
+}
+
+.font-receipt-small-2 {
+  font-size: 17px;
+}
+
+.font-receipt-small-F {
+  font-size: 23px;
 }
 
 .font-receipt-medium {
-  font-size: 20px;
+  font-size: 22px;
 }
 
 .font-receipt-big {
-  font-size: 26px;
+  font-size: 28px;
+}
+
+.font-receipt-small-slogan {
+  font-size: 15px;
+}
+
+.font-receipt-small-invoice {
+  font-size: 19px;
+}
+
+.font-receipt-small-2-invoice {
+  font-size: 15px;
+}
+
+.font-receipt-small-F-invoice {
+  font-size: 21px;
+}
+
+.font-receipt-medium-invoice {
+  font-size: 19px;
+}
+
+.font-receipt-big-invoice {
+  font-size: 23px;
 }
 
 table a {
@@ -52,4 +84,24 @@ div[disabled] {
   background-color: #28a745 !important;
   border-color: #28a745 !important;
   color: white !important;
+}
+
+.color-local {
+  color: #440000 !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.border-none {
+  border: none !important;
+}
+
+.list-header {
+  padding: 4px 8px !important;
+}
+
+.trash-size {
+  font-size: 19px !important;
 }

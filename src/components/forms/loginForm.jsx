@@ -9,16 +9,12 @@ import { getCompany } from "../../services/companyService";
 class LoginForm extends Form {
   state = {
     data: { email: "", password: "" },
-    errors: {}
+    errors: {},
   };
 
   schema = {
-    email: Joi.string()
-      .required()
-      .label("Email"),
-    password: Joi.string()
-      .required()
-      .label("Contraseña")
+    email: Joi.string().required().label("Email"),
+    password: Joi.string().required().label("Contraseña"),
   };
 
   doSubmit = async () => {
@@ -32,7 +28,7 @@ class LoginForm extends Form {
       localStorage.setItem("ms_companyName", company[0].name);
 
       const { state } = this.props.location;
-      window.location = state ? state.from.pathname : "/";
+      window.location = state ? state.from.pathname : "/invoice/new";
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         toast.error("Email/Contraseña incorrecto.");
@@ -49,7 +45,7 @@ class LoginForm extends Form {
     if (auth.getCurrentUser()) return <Redirect to="/" />;
 
     return (
-      <div className="container col-lg-4 col-md-6 col-sm-11 shadow p-3 mb-5 bg-white rounded">
+      <div className="container col-lg-5 col-md-12 col-sm-12 shadow p-3 mb-5 bg-white rounded">
         <h2 className="bg-secondary text-light pl-2 pr-2">Login</h2>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>

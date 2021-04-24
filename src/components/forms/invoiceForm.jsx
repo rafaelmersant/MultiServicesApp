@@ -36,6 +36,11 @@ import {
 import InvoiceDetailTable from "../tables/invoiceDetailTable";
 import _ from "lodash";
 import NewInvoiceModal from "../modals/newInvoiceModal";
+import * as Sentry from "@sentry/react";
+import {
+  mapToViewInvoiceDetail,
+  mapToViewInvoiceHeader,
+} from "../mappers/mapInvoice";
 
 registerLocale("es", es);
 
@@ -50,6 +55,7 @@ class InvoiceForm extends Form {
       customer_id: "",
       paymentMethod: "CASH",
       paid: false,
+      printed: false,
       reference: "",
       subtotal: 0,
       itbis: 0,
@@ -60,6 +66,7 @@ class InvoiceForm extends Form {
       creationDate: new Date().toISOString(),
       serverDate: new Date().toISOString(),
     },
+    disabledSave: false,
     invoiceDate: new Date(),
     products: [],
     details: [],
@@ -98,6 +105,7 @@ class InvoiceForm extends Form {
     },
     createdUserName: "",
     action: "Nueva Factura",
+    clearSearchProduct: false,
     hideSearchProduct: false,
     hideSearchCustomer: false,
     searchCustomerText: "",
@@ -114,6 +122,7 @@ class InvoiceForm extends Form {
     customer_id: Joi.number().label("Cliente"),
     paymentMethod: Joi.optional(),
     paid: Joi.optional(),
+    printed: Joi.optional(),
     reference: Joi.optional(),
     subtotal: Joi.number().min(1),
     itbis: Joi.optional(),
@@ -255,13 +264,13 @@ class InvoiceForm extends Form {
       );
 
       this.setState({
-        data: this.mapToViewInvoiceHeader(invoiceHeader),
-        details: this.mapToViewInvoiceDetail(invoiceDetail),
+        data: mapToViewInvoiceHeader(invoiceHeader),
+        details: mapToViewInvoiceDetail(invoiceDetail),
         invoiceDate: new Date(invoiceHeader[0].creationDate),
         searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
         hideSearchCustomer: true,
         ncf: invoiceHeader[0].ncf.length,
-        action: "Detalle de Factura",
+        action: "Detalle de Factura No. ",
         serializedInvoiceHeader: invoiceHeader,
         serializedInvoiceDetail: invoiceDetail,
         createdUserName: createdUserData[0].name,
@@ -276,56 +285,20 @@ class InvoiceForm extends Form {
 
       if (sessionStorage["newInvoice"] === "y") {
         sessionStorage["newInvoice"] = null;
-        this.raiseNewInvoiceModal.click();
+        //this.raiseNewInvoiceModal.click();
       }
     } catch (ex) {
       sessionStorage["newInvoice"] = null;
 
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log(ex);
+      }
+
       if (ex.response && ex.response.status === 404)
         return this.props.history.replace("/not-found");
     }
-  }
-
-  mapToViewInvoiceHeader(invoiceHeader) {
-    return {
-      id: invoiceHeader[0].id,
-      sequence: parseFloat(invoiceHeader[0].sequence),
-      customer_id: invoiceHeader[0].customer.id,
-      ncf: invoiceHeader[0].ncf,
-      paymentMethod: invoiceHeader[0].paymentMethod,
-      paid: invoiceHeader[0].paid,
-      reference: invoiceHeader[0].reference ? invoiceHeader[0].reference : "",
-      subtotal: invoiceHeader[0].subtotal,
-      itbis: invoiceHeader[0].itbis,
-      discount: invoiceHeader[0].discount,
-      company_id: invoiceHeader[0].company.id,
-      createdUser: invoiceHeader[0].createdByUser
-        ? invoiceHeader[0].createdByUser
-        : getCurrentUser().email,
-      creationDate: invoiceHeader[0].creationDate,
-    };
-  }
-
-  mapToViewInvoiceDetail(invoiceDetail) {
-    let details = [];
-    invoiceDetail.forEach((item) => {
-      details.push({
-        id: item.id,
-        invoice_id: item.invoice.id,
-        product_id: item.product.id,
-        product: item.product.description,
-        quantity: item.quantity,
-        price: item.price,
-        cost: item.cost,
-        itbis: item.itbis,
-        discount: item.discount,
-        total:
-          Math.round(parseFloat(item.price) * parseFloat(item.quantity) * 100) /
-          100,
-      });
-    });
-
-    return details;
   }
 
   handleChangeInvoiceDate = (date) => {
@@ -339,6 +312,10 @@ class InvoiceForm extends Form {
       e.preventDefault();
     };
     handler(window.event);
+
+    this.setState({ clearSearchProduct: false });
+
+    console.log("product selected:", product);
 
     if (product.id === 0) {
       this.raiseProductModal.click();
@@ -425,6 +402,7 @@ class InvoiceForm extends Form {
         details,
         currentProduct: {},
         searchProductText: "",
+        clearSearchProduct: true,
       });
 
       this.updateTotals();
@@ -433,18 +411,28 @@ class InvoiceForm extends Form {
   };
 
   handleDeleteDetail = (detail, soft = false) => {
-    const detailsToDelete = [...this.state.detailsToDelete];
-    if (!soft) detailsToDelete.push(detail);
+    let answer = true;
 
-    const details = this.state.details.filter(
-      (d) => d.product_id !== detail.product_id
-    );
+    if (!soft) {
+      answer = window.confirm(
+        `Seguro que desea eliminar el producto: \n ${detail.product}`
+      );
+    }
 
-    this.setState({ details, detailsToDelete });
+    if (answer) {
+      const detailsToDelete = [...this.state.detailsToDelete];
+      if (!soft) detailsToDelete.push(detail);
 
-    setTimeout(() => {
-      this.updateTotals();
-    });
+      const details = this.state.details.filter(
+        (d) => d.product_id !== detail.product_id
+      );
+
+      this.setState({ details, detailsToDelete });
+
+      setTimeout(() => {
+        this.updateTotals();
+      });
+    }
   };
 
   handleEditDetail = async (detail) => {
@@ -482,16 +470,7 @@ class InvoiceForm extends Form {
     this.setNCF(input.value);
   };
 
-  handleChangeQuantity = ({ currentTarget: input }) => {
-    const line = { ...this.state.line };
-    line[input.name] = input.value;
-    this.setState({ line });
-
-    if (this.state.currentProduct.length)
-      this.updateLine(this.state.currentProduct);
-  };
-
-  handleChangeDiscount = ({ currentTarget: input }) => {
+  handleChangeQtyDisc = ({ currentTarget: input }) => {
     const line = { ...this.state.line };
     line[input.name] = input.value;
     this.setState({ line });
@@ -583,8 +562,18 @@ class InvoiceForm extends Form {
   async componentDidMount() {
     this._isMounted = true;
 
-    await this.populateProducts();
-    await this.populateInvoice(false);
+    try {
+      await this.populateProducts();
+      await this.populateInvoice(false);
+
+      console.log("data (didMount):", this.state.data);
+    } catch (ex) {
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log(ex);
+      }
+    }
 
     if (!this.state.data.id) {
       await this.refreshNextInvoiceSequence();
@@ -603,55 +592,88 @@ class InvoiceForm extends Form {
     if (this.state.line.quantity > 0) return false;
   }
 
+  async invoicePrinted() {
+    const { data } = { ...this.state };
+    data.printed = true;
+    this.setState({ data });
+
+    try {
+      await saveInvoiceHeader(this.state.data);
+    } catch (ex) {
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log(ex);
+      }
+      console.log("Exception for printed invoice --> " + ex);
+    }
+  }
+
   doSubmit = async () => {
     try {
-      //console.log("doSubmit - state", this.state);
-      if (this.state.data.typeDoc !== "0") this.getNextNCF();
+      if (this.state.disabledSave) return false;
 
-      setTimeout(async () => {
-        if (!this.state.data.id) await this.refreshNextInvoiceSequence();
-        console.log("invoiceHeader", this.state.data);
-        const { data: invoiceHeader } = await saveInvoiceHeader(
-          this.state.data
-        );
+      this.setState({ disabledSave: true });
 
-        this.state.details.forEach(async (item) => {
-          const detail = {
-            id: item.id,
-            invoice_id: invoiceHeader.id,
-            product_id: item.product_id,
-            quantity: item.quantity,
-            price: item.price,
-            itbis: item.itbis,
-            discount: item.discount,
-            creationDate: new Date().toISOString(),
-          };
+      if (!this.state.data.id && this.state.data.typeDoc !== "0")
+        this.getNextNCF();
 
-          await saveInvoiceDetail(detail);
+      if (!this.state.data.id) await this.refreshNextInvoiceSequence();
+      console.log("invoiceHeader", this.state.data);
+      const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
+
+      for (const item of this.state.details) {
+        const detail = {
+          id: item.id,
+          invoice_id: invoiceHeader.id,
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price: item.price,
+          itbis: item.itbis,
+          discount: item.discount,
+          creationDate: new Date().toISOString(),
+        };
+
+        await saveInvoiceDetail(detail);
+        if (!this.state.data.id)
           await saveInvoiceSequence(this.state.invoiceSequence);
 
-          try {
-            await this.updateInventory(detail);
-          } catch (ex) {
-            console.log("Exception for updateInventory --> " + ex);
-          }
-        });
-
         try {
-          this.state.detailsToDelete.forEach(async (item) => {
-            await deleteInvoiceDetail(item.id);
-          });
+          await this.updateInventory(detail);
         } catch (ex) {
-          console.log("Exception for deleteInvoiceDetail --> " + ex);
+          try {
+            Sentry.captureException(ex);
+          } catch (_ex) {
+            console.log(ex);
+          }
+          console.log("Exception for updateInventory --> " + ex);
         }
-      }, 100);
+      }
 
-      setTimeout(() => {
-        //sessionStorage["printInvoice"] = "y";
-        sessionStorage["newInvoice"] = "y";
-        window.location = `/invoice/${this.state.data.sequence}`;
-      }, this.state.details.length * 390);
+      try {
+        for (const item of this.state.detailsToDelete) {
+          await deleteInvoiceDetail(item.id);
+        }
+      } catch (ex) {
+        try {
+          Sentry.captureException(ex);
+        } catch (_ex) {
+          console.log(ex);
+        }
+        console.log("Exception for deleteInvoiceDetail --> " + ex);
+      }
+
+      this.setState({ disabledSave: false });
+
+      sessionStorage["newInvoice"] = "y";
+      window.location = `/invoice/${this.state.data.sequence}`;
     } catch (ex) {
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log(ex);
+      }
+
       if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
         toast.error("Hubo un error en la información enviada.");
 
@@ -673,32 +695,20 @@ class InvoiceForm extends Form {
 
     return (
       <React.Fragment>
-        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 shadow-sm p-3 mb-5 bg-white rounded border border-secondary">
-          <h2 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h2>
+        <div className="container-fluid">
+          <h4 className="bg-dark text-light pl-2 pr-2 list-header">
+            {this.state.action}
+            {this.state.data.sequence > 0 &&
+              !this.state.action.includes("Nueva") &&
+              this.state.data.sequence}
+          </h4>
           <div
             className="col-12 pb-3 bg-light"
             disabled={!this.isInvoiceEditable()}
           >
             <form onSubmit={this.handleSubmit}>
-              <div className="row pull-right">
-                <label className="mr-1">Fecha</label>
-                <div
-                  className="mr-3"
-                  disabled={
-                    getCurrentUser().role !== "Admin" ||
-                    getCurrentUser().role !== "Owner"
-                  }
-                >
-                  <DatePicker
-                    selected={this.state.invoiceDate}
-                    onChange={(date) => this.handleChangeInvoiceDate(date)}
-                    dateFormat="dd/MM/yyyy"
-                  />
-                </div>
-              </div>
-
               <div className="row">
-                <div className="col-8" style={{ paddingLeft: "0" }}>
+                <div className="col-8">
                   <SearchCustomer
                     onSelect={this.handleSelectCustomer}
                     onFocus={() => this.handleFocusCustomer(false)}
@@ -723,6 +733,24 @@ class InvoiceForm extends Form {
                     />
                   </div>
                 )}
+
+                <div className="col-2">
+                  <label className="mr-1">Fecha</label>
+                  <div
+                    className="mr-3"
+                    disabled={
+                      getCurrentUser().role !== "Admin" &&
+                      getCurrentUser().role !== "Owner"
+                    }
+                  >
+                    <DatePicker
+                      className="form-control form-control-sm"
+                      selected={this.state.invoiceDate}
+                      onChange={(date) => this.handleChangeInvoiceDate(date)}
+                      dateFormat="dd/MM/yyyy hh:mm aa"
+                    />
+                  </div>
+                </div>
 
                 {this.state.data.ncf.length > 0 && this.state.data.id > 0 && (
                   <div className="col-2">
@@ -773,24 +801,25 @@ class InvoiceForm extends Form {
               </div>
 
               <div className="row mr-0 ml-0 pr-0 pl-0">
+                <div className="col-5 mr-0 ml-0 pr-0 pl-0">
+                  <SearchProduct
+                    onSelect={this.handleSelectProduct}
+                    onFocus={() => this.handleFocusProduct(false)}
+                    onBlur={() => this.handleFocusProduct(true)}
+                    clearSearchProduct={this.state.clearSearchProduct}
+                    hide={this.state.hideSearchProduct}
+                    companyId={getCurrentUser().companyId}
+                    value={this.state.searchProductText}
+                    label="Producto"
+                  />
+                </div>
                 <div className="col-1 mr-0 ml-0 pr-0 pl-0">
                   <Input
                     type="text"
                     name="quantity"
                     value={this.state.line.quantity}
                     label="Cant."
-                    onChange={this.handleChangeQuantity}
-                  />
-                </div>
-                <div className="col-5 mr-0 ml-0 pr-0 pl-0">
-                  <SearchProduct
-                    onSelect={this.handleSelectProduct}
-                    onFocus={() => this.handleFocusProduct(false)}
-                    onBlur={() => this.handleFocusProduct(true)}
-                    hide={this.state.hideSearchProduct}
-                    companyId={getCurrentUser().companyId}
-                    value={this.state.searchProductText}
-                    label="Producto"
+                    onChange={this.handleChangeQtyDisc}
                   />
                 </div>
 
@@ -820,7 +849,7 @@ class InvoiceForm extends Form {
                     name="discount"
                     value={this.state.line.discount}
                     label="Desc/Unidad"
-                    onChange={this.handleChangeDiscount}
+                    onChange={this.handleChangeQtyDisc}
                     onBlur={this.handleBlurDiscount}
                   />
                 </div>
@@ -829,7 +858,7 @@ class InvoiceForm extends Form {
                   style={{ marginTop: "1.98em" }}
                 >
                   <button
-                    className="btn btn-info"
+                    className="btn btn-info btn-sm ml-1 pl-3 pr-3"
                     onClick={this.handleAddDetail}
                     disabled={this.validateLine()}
                   >
@@ -868,20 +897,41 @@ class InvoiceForm extends Form {
           <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
           <ProductModal setNewProduct={this.handleSetNewProduct} />
 
-          {this.state.data.id > 0 &&
-            (getCurrentUser().role === "Admin" ||
+          <div className="container-fluid mt-3">
+            {(getCurrentUser().role === "Admin" ||
               getCurrentUser().role === "Owner") && (
-              <ReactToPrint
-                trigger={() => (
-                  <button
-                    ref={(button) => (this.printButton = button)}
-                    className="fa fa-print text-success pull-right"
-                    style={{ fontSize: "30px" }}
-                  ></button>
-                )}
-                content={() => this.componentRef}
-              />
+              <NavLink className="btn btn-secondary" to="/invoices">
+                {"<-"} Ir al listado
+              </NavLink>
             )}
+
+            <button
+              className="btn btn-success mb-3 pull-right"
+              onClick={this.newInvoice}
+            >
+              Nueva Factura
+            </button>
+          </div>
+
+          <div className="d-flex justify-content-end w-100 pr-3 mb-3">
+            {this.state.data.id > 0 &&
+              (getCurrentUser().role === "Admin" ||
+                getCurrentUser().role === "Owner") && (
+                <ReactToPrint
+                  trigger={() => (
+                    <span
+                      ref={(button) => (this.printButton = button)}
+                      className="fa fa-print text-success cursor-pointer"
+                      style={{ fontSize: "35px" }}
+                    ></span>
+                  )}
+                  content={() => this.componentRef}
+                  onAfterPrint={() => this.invoicePrinted()}
+                  //onBeforePrint={() => this.invoicePrinted()}
+                />
+              )}
+          </div>
+
           <div hidden="hidden">
             <PrintInvoice
               ref={(el) => (this.componentRef = el)}
@@ -895,18 +945,6 @@ class InvoiceForm extends Form {
           </div>
         </div>
 
-        <div className="container pull-left col-lg-9 col-md-11 col-sm-11 ml-3 mb-5">
-          <NavLink className="btn btn-secondary" to="/invoices">
-            {"<-"} Ir al listado
-          </NavLink>
-
-          <button
-            className="btn button-local mb-3 pull-right"
-            onClick={this.newInvoice}
-          >
-            Nueva Factura
-          </button>
-        </div>
         <div className="col-1 ml-0 pl-0">
           <button
             hidden

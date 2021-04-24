@@ -15,7 +15,7 @@ class InventoriesFull extends Component {
     pageSize: 10,
     totalEntries: 0,
     searchQuery: "",
-    sortColumn: { path: "creationDate", order: "desc" }
+    sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
@@ -38,11 +38,11 @@ class InventoriesFull extends Component {
     this.setState({
       prodTrackingsHeader: entries.results,
       totalEntries: entries.count,
-      loading: false
+      loading: false,
     });
   }
 
-  handlePageChange = async page => {
+  handlePageChange = async (page) => {
     this.setState({ currentPage: page });
 
     await this.getInventoryRecords(
@@ -52,7 +52,7 @@ class InventoriesFull extends Component {
     );
   };
 
-  handleSearch = async query => {
+  handleSearch = async (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
 
     await this.getInventoryRecords(
@@ -62,7 +62,7 @@ class InventoriesFull extends Component {
     );
   };
 
-  handleSort = async sortColumn => {
+  handleSort = async (sortColumn) => {
     this.setState({ sortColumn });
 
     await this.getInventoryRecords(
@@ -79,18 +79,18 @@ class InventoriesFull extends Component {
       totalEntries,
       pageSize,
       currentPage,
-      searchQuery
+      searchQuery,
     } = this.state;
     const user = getCurrentUser();
     const total = prodTrackingsHeader ? prodTrackingsHeader.length : 0;
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
-            <h5 className="pull-left text-info mt-2">
+            <h4 className="pull-left text-info list-header">
               Entradas de Inventario por Proveedor
-            </h5>
+            </h4>
             <NewButton label="Nueva Entrada" to="/inventoryFull/new" />
 
             <SearchBox

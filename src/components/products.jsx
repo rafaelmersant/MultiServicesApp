@@ -12,19 +12,22 @@ import {
 import { getCurrentUser } from "../services/authService";
 import { getProductInInvoice } from "../services/invoiceServices";
 import ProductsTable from "./tables/productsTable";
+import _ from "lodash";
 
 class Products extends Component {
   state = {
     loading: true,
     products: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 50,
     searchQuery: "",
     totalProducts: 0,
     sortColumn: { path: "description", order: "asc" },
   };
 
   async componentDidMount() {
+    this.defaultProducts = [];
+
     const currentPage = parseInt(sessionStorage["currentPage"] ?? 0);
     if (currentPage > 1) this.setState({ currentPage: currentPage });
 
@@ -36,30 +39,40 @@ class Products extends Component {
     const descrp = query.toUpperCase().split(" ").join("%20");
 
     try {
-      if (query === "") {
-        const { data: prods } = await getProducts(
-          getCurrentUser().companyId,
-          page,
-          sortColumn
-        );
-        products = prods;
-      } else {
+      if (descrp.length >= 3) {
         const { data: prods } = await getProductsByDescription(
           getCurrentUser().companyId,
           descrp,
           page,
           sortColumn
         );
+
         products = prods;
+      } else {
+        if (!this.defaultProducts.count) {
+          const { data: prods } = await getProducts(
+            getCurrentUser().companyId,
+            page,
+            sortColumn
+          );
+          this.defaultProducts = prods;
+          products = prods;
+        } else {
+          products = this.defaultProducts;
+        }
       }
 
+      const productsFiltered = _.orderBy(
+        products.results,
+        ["ocurrences"],
+        ["desc"]
+      );
+
       this.setState({
-        products: products.results,
+        products: productsFiltered,
         totalProducts: products.count,
         loading: false,
       });
-
-      this.forceUpdate();
     } catch (ex) {
       sessionStorage["currentPage"] = 1;
       console.log(ex);
@@ -99,14 +112,23 @@ class Products extends Component {
     this.setState({ currentPage: page });
     sessionStorage["currentPage"] = parseInt(page);
 
-    if (this.state.searchQuery)
+    if (this.state.searchQuery) {
       await this.populateProducts(this.state.searchQuery, parseInt(page));
-    else await this.populateProducts("", parseInt(page));
+    } else await this.populateProducts("", parseInt(page));
   };
 
-  handleSearch = (query) => {
+  handleSearch = async (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
-    this.populateProducts(query, this.state.currentPage, this.state.sortColumn);
+
+    setTimeout(async () => {
+      if (query === this.state.searchQuery) {
+        await this.populateProducts(
+          query,
+          this.state.currentPage,
+          this.state.sortColumn
+        );
+      }
+    }, 400);
   };
 
   handleSort = async (sortColumn) => {
@@ -131,7 +153,7 @@ class Products extends Component {
     const user = getCurrentUser();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <h5 className="pull-left text-info mt-2">Listado de Productos</h5>

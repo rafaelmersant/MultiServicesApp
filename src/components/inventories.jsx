@@ -155,7 +155,7 @@ class Inventories extends Component {
     const user = getCurrentUser();
 
     return (
-      <div className="container">
+      <div className="container-fluid">
         <div className="row">
           <div className="col">
             <h5 className="text-info mt-2">Movimientos de Inventario</h5>

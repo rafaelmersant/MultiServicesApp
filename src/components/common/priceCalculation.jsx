@@ -1,14 +1,15 @@
 import React, { Component } from "react";
 import Input from "./input";
+import { formatNumber } from '../../utils/custom';
 
 class PriceCalculation extends Component {
   state = {
     data: {
-      priceC1: 0,
+      costGross: 0,
       discount: 0,
-      cost: 0,
+      costNet: 0,
       itbis: 0,
-      priceC2: 0,
+      costPlusITBIS: 0,
       percentage: 0,
       priceSales: 0,
     },
@@ -28,11 +29,11 @@ class PriceCalculation extends Component {
   resetValues = () => {
     const { data } = { ...this.state };
 
-    data.priceC1 = 0;
+    data.costGross = 0;
     data.discount = 0;
-    data.cost = 0;
+    data.costNet = 0;
     data.itbis = 0;
-    data.priceC2 = 0;
+    data.costPlusITBIS = 0;
     data.percentage = 0;
     data.priceSales = 0;
 
@@ -43,21 +44,29 @@ class PriceCalculation extends Component {
   calculatePrice = () => {
     const data = { ...this.state.data };
     const discount =
-      Math.round((data.discount / 100) * data.priceC1 * 100) / 100;
-    const cost = Math.round((data.priceC1 - discount) * 100) / 100;
-    data.cost = cost;
+      Math.round((data.discount / 100) * data.costGross * 100) / 100;
+    const costNet = Math.round((data.costGross - discount) * 100) / 100;
+    
+    data.costNet = costNet;
 
     if (this.state.itbis) {
-      data.itbis = Math.round(cost * 0.18 * 100) / 100;
-      data.priceC2 = Math.round(cost * 1.18 * 100) / 100;
+      data.itbis = Math.round(costNet * 0.18 * 100) / 100;
+      data.costPlusITBIS = Math.round(costNet * 1.18 * 100) / 100;
     } else {
-      data.priceC2 = cost;
+      data.costPlusITBIS = costNet;
     }
 
-    const percent = data.priceC2 * (data.percentage / 100 + 1);
-    const pricePercent = Math.round(percent * 100) / 100;
-    data.priceSales = pricePercent;
+    // OLD FORMULA
+    // const percent = data.costPlusITBIS * (data.percentage / 100 + 1);
+    // const pricePercent = Math.round(percent * 100) / 100;
+    // data.priceSales = pricePercent;
 
+    if (data.priceSales >= data.costPlusITBIS) {
+      let percent = (data.priceSales - data.costPlusITBIS) / data.costPlusITBIS;
+      percent = parseFloat(percent) * 100
+      data.percentage = percent;
+    }
+    
     this.setState({ data });
   };
 
@@ -82,17 +91,6 @@ class PriceCalculation extends Component {
 
       this.props.onChange(this.state.data);
     }, 300);
-
-    //const { data } = { ...this.state };
-
-    // if (!this.state.itbis) {
-    //   if (data.cost > 0)
-    //     data.itbis = Math.round(parseFloat(data.cost * 1.18) * 100) / 100;
-    // } else {
-    //   data.itbis = 0;
-    // }
-
-    //this.setState({ data, itbis: !this.state.itbis });
   };
 
   render() {
@@ -101,8 +99,8 @@ class PriceCalculation extends Component {
         <div className="col">
           <Input
             type="text"
-            name="priceC1"
-            value={this.state.data.priceC1}
+            name="costGross"
+            value={this.state.data.costGross}
             label="Costo Bruto"
             autoComplete="off"
             onChange={this.handleChangeInput}
@@ -123,8 +121,8 @@ class PriceCalculation extends Component {
         <div className="col">
           <Input
             type="text"
-            name="cost"
-            value={this.state.data.cost}
+            name="costNet"
+            value={this.state.data.costNet}
             label="Costo Neto"
             disabled="disabled"
             onChange={this.handleChangeInput}
@@ -156,21 +154,10 @@ class PriceCalculation extends Component {
         <div className="col">
           <Input
             type="text"
-            name="priceC2"
-            value={this.state.data.priceC2}
+            name="costPlusITBIS"
+            value={this.state.data.costPlusITBIS}
             label="Costo + ITBIS"
             disabled="disabled"
-            onChange={this.handleChangeInput}
-          />
-        </div>
-
-        <div className="col">
-          <Input
-            type="text"
-            name="percentage"
-            value={this.state.data.percentage}
-            label="Porcentaje %"
-            autoComplete="off"
             onChange={this.handleChangeInput}
           />
         </div>
@@ -181,6 +168,17 @@ class PriceCalculation extends Component {
             name="priceSales"
             value={this.state.data.priceSales}
             label="Precio Venta"
+            autoComplete="off"
+            onChange={this.handleChangeInput}
+          />
+        </div>
+
+        <div className="col">
+          <Input
+            type="text"
+            name="percentage"
+            value={formatNumber(this.state.data.percentage)}
+            label="Porcentaje %"
             disabled="disabled"
             onChange={this.handleChangeInput}
           />

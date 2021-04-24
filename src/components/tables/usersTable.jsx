@@ -19,11 +19,11 @@ class UsersTable extends Component {
     key: "delete",
     content: user => (
       <div className="text-center">
-        <button
+        <span
           onClick={() => this.props.onDelete(user)}
-          className="fa fa-trash"
-          style={{ color: "red", fontSize: "16px" }}
-        ></button>
+          className="fa fa-trash text-danger cursor-pointer"
+          style={{ fontSize: "19px" }}
+        ></span>
       </div>
     )
   };
