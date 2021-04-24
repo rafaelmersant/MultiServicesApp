@@ -36,8 +36,17 @@ class ProductsTable extends Component {
         creationDate: new Date().toISOString(),
       };
 
-      await saveProductTracking(inventory);
-      await updateProductStock(inventory);
+      try {
+        await saveProductTracking(inventory);
+      } catch (error) {
+        console.log(error);
+      }
+
+      try {
+        await updateProductStock(inventory);
+      } catch (error) {
+        console.log(error);
+      }
 
       toast.success("La cantidad fue actualizada!");
       window.location.reload();
