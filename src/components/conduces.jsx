@@ -12,7 +12,7 @@ class Conduces extends Component {
     loading: true,
     conduces: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 50,
     sortColumn: { path: "creationDate", order: "desc" },
     // searchParams: {
     //   customerId: 0,
