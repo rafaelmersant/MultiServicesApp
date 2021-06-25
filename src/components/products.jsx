@@ -49,17 +49,18 @@ class Products extends Component {
 
         products = prods;
       } else {
-        if (!this.defaultProducts.count) {
-          const { data: prods } = await getProducts(
-            getCurrentUser().companyId,
-            page,
-            sortColumn
-          );
-          this.defaultProducts = prods;
-          products = prods;
-        } else {
-          products = this.defaultProducts;
-        }
+        console.log("!this.defaultProducts.count", !this.defaultProducts.count);
+        //if (!this.defaultProducts.count) {
+        const { data: prods } = await getProducts(
+          getCurrentUser().companyId,
+          page,
+          sortColumn
+        );
+        this.defaultProducts = prods;
+        products = prods;
+        //} else {
+        //  products = this.defaultProducts;
+        //}
       }
 
       const productsFiltered = _.orderBy(
