@@ -5,13 +5,13 @@ import auth, { getCurrentUser } from "../../services/authService";
 import { formatNumber } from "../../utils/custom";
 import { toast } from "react-toastify";
 import {
+  replaceProductStock,
   saveProductTracking,
-  updateProductStock,
 } from "../../services/inventoryService";
 
 class ProductsTable extends Component {
   state = {
-    values: {},
+    values: [],
   };
 
   handleChange = (event) => {
@@ -43,7 +43,8 @@ class ProductsTable extends Component {
       }
 
       try {
-        await updateProductStock(inventory);
+        //await updateProductStock(inventory);
+        await replaceProductStock(inventory);
       } catch (error) {
         console.log(error);
       }
@@ -55,8 +56,7 @@ class ProductsTable extends Component {
 
   updateInventoryProduct = async (product) => {
     await this.updateInventory(product, this.state.values[product.id]);
-
-    this.props.onRefreshList();
+    //this.props.onRefreshList();
   };
 
   columns = [
@@ -103,7 +103,9 @@ class ProductsTable extends Component {
             <input
               id={item.id}
               type="text"
-              className="form-control form-control-sm"
+              className={`form-control form-control-sm ${
+                item.updated === false ? "bg-white" : "bg-warning"
+              }`}
               value={this.state.values[item.id]}
               onChange={this.handleChange}
             />

@@ -1,7 +1,12 @@
 import http from "./httpService";
 import { getCurrentUser } from "./authService";
 import { apiUrl } from "../config.json";
-import { getPurchaseOrderByProduct, savePurchaseOrder } from "./productService";
+import {
+  getProduct,
+  getPurchaseOrderByProduct,
+  saveProduct,
+  savePurchaseOrder,
+} from "./productService";
 import * as Sentry from "@sentry/react";
 
 const apiEndpointProdTrackingHeader = `${apiUrl}/productsTrackingsHeader`;
@@ -199,6 +204,61 @@ export async function updateProductStock(inventory) {
     }
 
     await saveProductStock(stock);
+  } catch (ex) {
+    Sentry.captureException(ex);
+  }
+}
+
+export async function replaceProductStock(inventory) {
+  try {
+    const { data: productStock } = await getProductsStocks(
+      inventory.product_id
+    );
+    // const quantity =
+    //   inventory.typeTracking === "E"
+    //     ? parseFloat(inventory.quantity)
+    //     : parseFloat(inventory.quantity) * -1;
+
+    const stock = {
+      id: productStock[0].id,
+      product_id: inventory.product_id,
+      quantityAvailable: inventory.quantity,
+      quantityHold: 0,
+      company_id: getCurrentUser().companyId,
+      lastUpdated: new Date().toISOString(),
+      modifiedUser: getCurrentUser().email,
+    };
+
+    await saveProductStock(stock);
+
+    const { data: products } = await getProduct(inventory.product_id);
+
+    const product = {
+      id: products.results[0].id,
+      description: products.results[0].description,
+      descriptionLong: products.results[0].descriptionLong
+        ? products.results[0].descriptionLong
+        : "",
+      price: products.results[0].price,
+      cost: products.results[0].cost ? products.results[0].cost : 0,
+      itbis: products.results[0].itbis ? products.results[0].itbis : 0,
+      measure: products.results[0].measure ? products.results[0].measure : "",
+      model: products.results[0].model ? products.results[0].model : "",
+      category_id: products.results[0].category.id,
+      barcode: products.results[0].barcode ? products.results[0].barcode : "",
+      minimumStock: products.results[0].minimumStock
+        ? products.results[0].minimumStock
+        : "",
+      company_id: products.results[0].company.id,
+      createdUser: products.results[0].createdUser
+        ? products.results[0].createdUser
+        : getCurrentUser().email,
+      creationDate: products.results[0].creationDate,
+      updated: true,
+    };
+
+    console.log("product", product);
+    await saveProduct(product);
   } catch (ex) {
     Sentry.captureException(ex);
   }
