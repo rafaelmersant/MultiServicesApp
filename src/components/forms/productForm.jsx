@@ -36,6 +36,7 @@ class ProductForm extends Form {
       category_id: "",
       barcode: "",
       minimumStock: 0,
+      updated: false,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString(),
@@ -61,6 +62,7 @@ class ProductForm extends Form {
     model: Joi.optional(),
     category_id: Joi.number().label("Categoria"),
     barcode: Joi.optional(),
+    updated: Joi.optional(),
     minimumStock: Joi.number().required().label("Mínimo en Inventario"),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
@@ -226,6 +228,7 @@ class ProductForm extends Form {
       barcode: product[0].barcode ? product[0].barcode : "",
       minimumStock: product[0].minimumStock ? product[0].minimumStock : "",
       company_id: product[0].company.id,
+      updated: product[0].updated ? product[0].updated : false,
       createdUser: product[0].createdUser
         ? product[0].createdUser
         : getCurrentUser().email,
