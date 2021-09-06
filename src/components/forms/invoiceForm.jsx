@@ -77,7 +77,7 @@ class InvoiceForm extends Form {
       invoice_id: 0,
       product_id: 0,
       product: "",
-      quantity: 1,
+      quantity: 0,
       price: 0,
       cost: 0,
       itbis: 0,
@@ -145,7 +145,7 @@ class InvoiceForm extends Form {
     line.id = 0;
     line.product_id = 0;
     line.product = "";
-    line.quantity = 1;
+    line.quantity = 0;
     line.price = 0;
     line.cost = 0;
     line.itbis = 0;
@@ -336,7 +336,7 @@ class InvoiceForm extends Form {
       toast.success(`Cantidad disponible: ${formatNumber(available)}`);
     } else {
       toast.error(`No tiene disponible en inventario`);
-      //return false; //Uncomment this line for blocking the sales without stock
+      return false; //Uncomment this line for blocking the sales without stock
     }
 
     this.updateLine(product);
