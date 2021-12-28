@@ -392,6 +392,14 @@ class InvoiceForm extends Form {
       const details = [...this.state.details];
       const line = { ...this.state.line };
 
+      //Check if quantity is higher than available one
+      if (line.quantity > this.state.currentProduct.quantity) {
+        toast.error(
+          `La cantidad no puede exceder lo disponible: ${this.state.currentProduct.quantity}`
+        );
+        return false;
+      }
+
       line.itbis = Math.round(line.itbis * line.quantity * 100) / 100;
       line.discount = Math.round(line.discount * line.quantity * 100) / 100;
       line.total = Math.round(line.total * 100) / 100;
