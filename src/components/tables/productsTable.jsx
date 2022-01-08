@@ -87,7 +87,7 @@ class ProductsTable extends Component {
       path: "quantity",
       label: "Cantidad / Sumar Cantidad",
       content: (item) => (
-        <div className="d-flex justify-content-start">
+        <div className="d-flex justify-content-start min-quantity-column">
           <div>
             <input
               // id={item.id}
