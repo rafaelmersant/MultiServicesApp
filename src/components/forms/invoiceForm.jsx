@@ -70,6 +70,7 @@ class InvoiceForm extends Form {
     invoiceDate: new Date(),
     products: [],
     details: [],
+    detailsOriginal: [],
     detailsToDelete: [],
     companies: [],
     line: {
@@ -209,14 +210,17 @@ class InvoiceForm extends Form {
     //console.log("UpdateTotals - data", data);
   };
 
-  async updateInventory(entry) {
+  async updateInventory(entry, edited = false) {
+    let typeTracking = entry.quantity > 0 && edited ? "E" : "S";
+    const quantity = Math.abs(entry.quantity);
+
     const inventory = {
       header_id: 1,
       id: 0,
       product_id: entry.product_id,
-      typeTracking: "S",
+      typeTracking: typeTracking,
       concept: "INVO",
-      quantity: entry.quantity,
+      quantity: quantity,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString(),
@@ -266,6 +270,7 @@ class InvoiceForm extends Form {
       this.setState({
         data: mapToViewInvoiceHeader(invoiceHeader),
         details: mapToViewInvoiceDetail(invoiceDetail),
+        detailsOriginal: mapToViewInvoiceDetail(invoiceDetail),
         invoiceDate: new Date(invoiceHeader[0].creationDate),
         searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
         hideSearchCustomer: true,
@@ -647,7 +652,23 @@ class InvoiceForm extends Form {
           await saveInvoiceSequence(this.state.invoiceSequence);
 
         try {
-          await this.updateInventory(detail);
+          if (this.state.detailsOriginal.length) {
+            const _item = this.state.detailsOriginal.find(
+              (__item) => __item.product_id === item.product_id
+            );
+
+            console.log("!this.state.data.id", !this.state.data.id);
+            console.log("_item.quantity", _item.quantity);
+            console.log("item.quantity", item.quantity);
+
+            if (this.state.data.id && _item.quantity !== item.quantity) {
+              const newQuantity = _item.quantity - item.quantity;
+              detail.quantity = newQuantity;
+              await this.updateInventory(detail, true);
+            }
+          }
+
+          if (!this.state.data.id) await this.updateInventory(detail);
         } catch (ex) {
           try {
             Sentry.captureException(ex);
