@@ -534,28 +534,30 @@ class InvoiceForm extends Form {
     }
   }
 
-  async getNextNCF() {
+  async getNCF() {
     const { data: entry } = await getNextNCF(
       this.state.data.typeDoc,
       getCurrentUser().companyId
     );
 
     if (entry.length) {
+      const currentNCF =
+        entry[0].current === 0 ? entry[0].start : entry[0].current + 1;
+
       const nextNCF =
-        entry.length && entry[0].current + 1 <= entry[0].end
-          ? entry[0].current + 1
-          : 0;
+        entry.length && currentNCF <= entry[0].end ? currentNCF : 0;
+      console.log("CURRENT: ", nextNCF);
 
       const data = { ...this.state.data };
-      const sec = `00000000${nextNCF}`.substr(
-        `00000000${nextNCF}`.length - 8,
-        8
+      const sec = `00000000${nextNCF}`.substring(
+        `00000000${nextNCF}`.length - 8
       );
+
       data.ncf = `${entry[0].typeDoc}${sec}`;
       this.setState({ data });
 
       const _entry = { ...entry[0] };
-      _entry.current += 1;
+      _entry.current = currentNCF;
       _entry.company_id = getCurrentUser().companyId;
 
       await saveEntry(_entry);
@@ -628,8 +630,7 @@ class InvoiceForm extends Form {
 
       this.setState({ disabledSave: true });
 
-      if (!this.state.data.id && this.state.data.typeDoc !== "0")
-        this.getNextNCF();
+      if (!this.state.data.id && this.state.data.typeDoc !== "0") this.getNCF();
 
       if (!this.state.data.id) await this.refreshNextInvoiceSequence();
       console.log("invoiceHeader", this.state.data);
