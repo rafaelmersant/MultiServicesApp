@@ -630,9 +630,12 @@ class InvoiceForm extends Form {
 
       this.setState({ disabledSave: true });
 
-      if (!this.state.data.id && this.state.data.typeDoc !== "0") this.getNCF();
+      if (!this.state.data.id) {
+        await this.refreshNextInvoiceSequence();
 
-      if (!this.state.data.id) await this.refreshNextInvoiceSequence();
+        if (this.state.data.typeDoc !== "0") await this.getNCF();
+      }
+
       console.log("invoiceHeader", this.state.data);
       const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
 
