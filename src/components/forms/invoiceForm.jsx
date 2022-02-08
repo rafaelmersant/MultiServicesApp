@@ -474,8 +474,9 @@ class InvoiceForm extends Form {
     data.paid = !data.paid;
     this.setState({ data });
 
-    if (this.state.data.paid && this.state.data.id) {
+    if (this.state.data.id) {
       await saveInvoiceHeader(this.state.data);
+      window.location = `/invoice/${this.state.data.sequence}`;
     }
   };
 
