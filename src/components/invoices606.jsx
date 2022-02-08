@@ -12,7 +12,7 @@ class Invoices606 extends Component {
   state = {
     invoices: [],
     currentPage: 1,
-    pageSize: 4000,
+    pageSize: 400000,
     searchQuery: "",
     sortColumn: { path: "creationDate", order: "desc" },
   };

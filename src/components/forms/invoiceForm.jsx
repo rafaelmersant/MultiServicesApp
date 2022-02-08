@@ -725,6 +725,7 @@ class InvoiceForm extends Form {
 
   render() {
     const { user } = this.props;
+    const role = getCurrentUser().role;
 
     return (
       <React.Fragment>
@@ -930,9 +931,17 @@ class InvoiceForm extends Form {
           <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
           <ProductModal setNewProduct={this.handleSetNewProduct} />
 
+          {!this.isInvoiceEditable() && (role == "Admin" || role == "Owner") && (
+            <button
+              className="btn btn-danger mb-2 ml-3"
+              onClick={this.handleChangePaid}
+            >
+              Re-Abrir factura
+            </button>
+          )}
+
           <div className="container-fluid mt-3">
-            {(getCurrentUser().role === "Admin" ||
-              getCurrentUser().role === "Owner") && (
+            {(role === "Admin" || role === "Owner") && (
               <NavLink className="btn btn-secondary" to="/invoices">
                 {"<-"} Ir al listado
               </NavLink>
@@ -947,22 +956,20 @@ class InvoiceForm extends Form {
           </div>
 
           <div className="d-flex justify-content-end w-100 pr-3 mb-3">
-            {this.state.data.id > 0 &&
-              (getCurrentUser().role === "Admin" ||
-                getCurrentUser().role === "Owner") && (
-                <ReactToPrint
-                  trigger={() => (
-                    <span
-                      ref={(button) => (this.printButton = button)}
-                      className="fa fa-print text-success cursor-pointer"
-                      style={{ fontSize: "35px" }}
-                    ></span>
-                  )}
-                  content={() => this.componentRef}
-                  onAfterPrint={() => this.invoicePrinted()}
-                  //onBeforePrint={() => this.invoicePrinted()}
-                />
-              )}
+            {this.state.data.id > 0 && (role === "Admin" || role === "Owner") && (
+              <ReactToPrint
+                trigger={() => (
+                  <span
+                    ref={(button) => (this.printButton = button)}
+                    className="fa fa-print text-success cursor-pointer"
+                    style={{ fontSize: "35px" }}
+                  ></span>
+                )}
+                content={() => this.componentRef}
+                onAfterPrint={() => this.invoicePrinted()}
+                //onBeforePrint={() => this.invoicePrinted()}
+              />
+            )}
           </div>
 
           <div hidden="hidden">
