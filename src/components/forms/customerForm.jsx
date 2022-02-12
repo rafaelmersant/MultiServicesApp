@@ -37,10 +37,15 @@ class CustomerForm extends Form {
 
   schema = {
     id: Joi.number(),
-    firstName: Joi.string().required().max(100).label("Nombre"),
-    lastName: Joi.string().required().max(100).label("Apellidos"),
+    firstName: Joi.string().required().max(100).alphanum().label("Nombre"),
+    lastName: Joi.string()
+      .required()
+      .min(3)
+      .max(100)
+      .alphanum()
+      .label("Apellidos"),
     email: Joi.optional(),
-    address: Joi.optional(),
+    address: Joi.string().required().min(10).label("Dirección"),
     phoneNumber: Joi.optional(),
     identification: Joi.optional(),
     identificationType: Joi.optional(),
