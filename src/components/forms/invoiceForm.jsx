@@ -70,6 +70,7 @@ class InvoiceForm extends Form {
     invoiceDate: new Date(),
     products: [],
     details: [],
+    detailsOriginal: [],
     detailsToDelete: [],
     companies: [],
     line: {
@@ -77,7 +78,7 @@ class InvoiceForm extends Form {
       invoice_id: 0,
       product_id: 0,
       product: "",
-      quantity: 1,
+      quantity: 0,
       price: 0,
       cost: 0,
       itbis: 0,
@@ -145,7 +146,7 @@ class InvoiceForm extends Form {
     line.id = 0;
     line.product_id = 0;
     line.product = "";
-    line.quantity = 1;
+    line.quantity = 0;
     line.price = 0;
     line.cost = 0;
     line.itbis = 0;
@@ -209,14 +210,17 @@ class InvoiceForm extends Form {
     //console.log("UpdateTotals - data", data);
   };
 
-  async updateInventory(entry) {
+  async updateInventory(entry, edited = false) {
+    let typeTracking = entry.quantity > 0 && edited ? "E" : "S";
+    const quantity = Math.abs(entry.quantity);
+
     const inventory = {
       header_id: 1,
       id: 0,
       product_id: entry.product_id,
-      typeTracking: "S",
+      typeTracking: typeTracking,
       concept: "INVO",
-      quantity: entry.quantity,
+      quantity: quantity,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString(),
@@ -266,6 +270,7 @@ class InvoiceForm extends Form {
       this.setState({
         data: mapToViewInvoiceHeader(invoiceHeader),
         details: mapToViewInvoiceDetail(invoiceDetail),
+        detailsOriginal: mapToViewInvoiceDetail(invoiceDetail),
         invoiceDate: new Date(invoiceHeader[0].creationDate),
         searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
         hideSearchCustomer: true,
@@ -336,7 +341,7 @@ class InvoiceForm extends Form {
       toast.success(`Cantidad disponible: ${formatNumber(available)}`);
     } else {
       toast.error(`No tiene disponible en inventario`);
-      //return false; //Uncomment this line for blocking the sales without stock
+      return false; //Uncomment this line for blocking the sales without stock
     }
 
     this.updateLine(product);
@@ -391,6 +396,14 @@ class InvoiceForm extends Form {
       this.updateLine(this.state.currentProduct);
       const details = [...this.state.details];
       const line = { ...this.state.line };
+
+      //Check if quantity is higher than available one
+      if (line.quantity > this.state.currentProduct.quantity) {
+        toast.error(
+          `La cantidad no puede exceder lo disponible: ${this.state.currentProduct.quantity}`
+        );
+        return false;
+      }
 
       line.itbis = Math.round(line.itbis * line.quantity * 100) / 100;
       line.discount = Math.round(line.discount * line.quantity * 100) / 100;
@@ -461,8 +474,9 @@ class InvoiceForm extends Form {
     data.paid = !data.paid;
     this.setState({ data });
 
-    if (this.state.data.paid && this.state.data.id) {
+    if (this.state.data.id) {
       await saveInvoiceHeader(this.state.data);
+      window.location = `/invoice/${this.state.data.sequence}`;
     }
   };
 
@@ -521,28 +535,30 @@ class InvoiceForm extends Form {
     }
   }
 
-  async getNextNCF() {
+  async getNCF() {
     const { data: entry } = await getNextNCF(
       this.state.data.typeDoc,
       getCurrentUser().companyId
     );
 
     if (entry.length) {
+      const currentNCF =
+        entry[0].current === 0 ? entry[0].start : entry[0].current + 1;
+
       const nextNCF =
-        entry.length && entry[0].current + 1 <= entry[0].end
-          ? entry[0].current + 1
-          : 0;
+        entry.length && currentNCF <= entry[0].end ? currentNCF : 0;
+      console.log("CURRENT: ", nextNCF);
 
       const data = { ...this.state.data };
-      const sec = `00000000${nextNCF}`.substr(
-        `00000000${nextNCF}`.length - 8,
-        8
+      const sec = `00000000${nextNCF}`.substring(
+        `00000000${nextNCF}`.length - 8
       );
+
       data.ncf = `${entry[0].typeDoc}${sec}`;
       this.setState({ data });
 
       const _entry = { ...entry[0] };
-      _entry.current += 1;
+      _entry.current = currentNCF;
       _entry.company_id = getCurrentUser().companyId;
 
       await saveEntry(_entry);
@@ -615,10 +631,12 @@ class InvoiceForm extends Form {
 
       this.setState({ disabledSave: true });
 
-      if (!this.state.data.id && this.state.data.typeDoc !== "0")
-        this.getNextNCF();
+      if (!this.state.data.id) {
+        await this.refreshNextInvoiceSequence();
 
-      if (!this.state.data.id) await this.refreshNextInvoiceSequence();
+        if (this.state.data.typeDoc !== "0") await this.getNCF();
+      }
+
       console.log("invoiceHeader", this.state.data);
       const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
 
@@ -639,7 +657,23 @@ class InvoiceForm extends Form {
           await saveInvoiceSequence(this.state.invoiceSequence);
 
         try {
-          await this.updateInventory(detail);
+          if (this.state.detailsOriginal.length) {
+            const _item = this.state.detailsOriginal.find(
+              (__item) => __item.product_id === item.product_id
+            );
+
+            console.log("!this.state.data.id", !this.state.data.id);
+            console.log("_item.quantity", _item.quantity);
+            console.log("item.quantity", item.quantity);
+
+            if (this.state.data.id && _item.quantity !== item.quantity) {
+              const newQuantity = _item.quantity - item.quantity;
+              detail.quantity = newQuantity;
+              await this.updateInventory(detail, true);
+            }
+          }
+
+          if (!this.state.data.id) await this.updateInventory(detail);
         } catch (ex) {
           try {
             Sentry.captureException(ex);
@@ -692,6 +726,7 @@ class InvoiceForm extends Form {
 
   render() {
     const { user } = this.props;
+    const role = getCurrentUser().role;
 
     return (
       <React.Fragment>
@@ -897,9 +932,17 @@ class InvoiceForm extends Form {
           <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
           <ProductModal setNewProduct={this.handleSetNewProduct} />
 
+          {!this.isInvoiceEditable() && (role == "Admin" || role == "Owner") && (
+            <button
+              className="btn btn-danger mb-2 ml-3"
+              onClick={this.handleChangePaid}
+            >
+              Re-Abrir factura
+            </button>
+          )}
+
           <div className="container-fluid mt-3">
-            {(getCurrentUser().role === "Admin" ||
-              getCurrentUser().role === "Owner") && (
+            {(role === "Admin" || role === "Owner") && (
               <NavLink className="btn btn-secondary" to="/invoices">
                 {"<-"} Ir al listado
               </NavLink>
@@ -914,22 +957,20 @@ class InvoiceForm extends Form {
           </div>
 
           <div className="d-flex justify-content-end w-100 pr-3 mb-3">
-            {this.state.data.id > 0 &&
-              (getCurrentUser().role === "Admin" ||
-                getCurrentUser().role === "Owner") && (
-                <ReactToPrint
-                  trigger={() => (
-                    <span
-                      ref={(button) => (this.printButton = button)}
-                      className="fa fa-print text-success cursor-pointer"
-                      style={{ fontSize: "35px" }}
-                    ></span>
-                  )}
-                  content={() => this.componentRef}
-                  onAfterPrint={() => this.invoicePrinted()}
-                  //onBeforePrint={() => this.invoicePrinted()}
-                />
-              )}
+            {this.state.data.id > 0 && (role === "Admin" || role === "Owner") && (
+              <ReactToPrint
+                trigger={() => (
+                  <span
+                    ref={(button) => (this.printButton = button)}
+                    className="fa fa-print text-success cursor-pointer"
+                    style={{ fontSize: "35px" }}
+                  ></span>
+                )}
+                content={() => this.componentRef}
+                onAfterPrint={() => this.invoicePrinted()}
+                //onBeforePrint={() => this.invoicePrinted()}
+              />
+            )}
           </div>
 
           <div hidden="hidden">
