@@ -53,6 +53,7 @@ class Providers extends Component {
 
       try {
         await deleteProvider(provider.id);
+        toast.success(`El proveedor ${provider.firstName} ${provider.lastName} fue eliminado!`)
       } catch (ex) {
         if (ex.response && ex.response.status === 404)
           toast.error("Este proveedor ya fue eliminado");

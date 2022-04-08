@@ -118,6 +118,10 @@ class InventoryFullForm extends Form {
     });
   };
 
+  handleCleanProduct = async () => {
+    this.setState({product: {}, searchProductText: ""});
+  };
+
   handleFocusProduct = (value) => {
     setTimeout(() => {
       this.setState({ hideSearch: value });
@@ -434,6 +438,27 @@ class InventoryFullForm extends Form {
                             value={this.state.searchProductText}
                             label="Producto"
                           />
+                        </td>
+                        <td>
+                        {Object.keys(this.state.product).length > 0 && (
+                            <div
+                              style={{
+                                marginTop: "-4px",
+                              }}
+                            >
+                              <span
+                                className="fa fa-trash text-danger"
+                                style={{
+                                  fontSize: "24px",
+                                  position: "absolute",
+                                  marginLeft: "-26px",
+                                  cursor: "pointer",
+                                }}
+                                title="Limpiar filtro de producto"
+                                onClick={this.handleCleanProduct}
+                              ></span>
+                            </div>
+                          )}
                         </td>
 
                         <td>

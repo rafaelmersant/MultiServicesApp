@@ -724,6 +724,10 @@ class InvoiceForm extends Form {
     }
   };
 
+  handleCleanProduct = async () => {
+    this.setState({currentProduct: {}, searchProductText: ""});
+  };
+
   render() {
     const { user } = this.props;
     const role = getCurrentUser().role;
@@ -848,6 +852,26 @@ class InvoiceForm extends Form {
                     label="Producto"
                   />
                 </div>
+                {Object.keys(this.state.currentProduct).length > 0  && (
+                  <div
+                    style={{
+                      marginTop: "36px",
+                    }}
+                  >
+                    <span
+                      className="fa fa-trash text-danger"
+                      style={{
+                        fontSize: "24px",
+                        position: "absolute",
+                        marginLeft: "-29px",
+                        cursor: "pointer",
+                      }}
+                      title="Limpiar filtro de producto"
+                      onClick={this.handleCleanProduct}
+                    ></span>
+                  </div>
+                )}
+
                 <div className="col-1 mr-0 ml-0 pr-0 pl-0">
                   <Input
                     type="text"

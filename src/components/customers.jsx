@@ -71,6 +71,7 @@ class Customers extends Component {
 
       try {
         await deleteCustomer(customer.id);
+        toast.success(`El Cliente ${customer.firstName} ${customer.lastName} fue eliminado!`);
       } catch (ex) {
         if (ex.response && ex.response.status === 404)
           toast.error("Este cliente ya fue eliminado");

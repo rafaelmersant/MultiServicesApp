@@ -15,15 +15,15 @@ const apiEndpointProdTrackingLong = `${apiUrl}/productsTrackingsLong`;
 const apiEndpointProdStock = `${apiUrl}/productsStocks`;
 
 function productsTrackingHeaderUrl(id) {
-  return `${apiEndpointProdTrackingHeader}/${id}`;
+  return `${apiEndpointProdTrackingHeader}/${id}/`;
 }
 
 function productsTrackingUrl(id) {
-  return `${apiEndpointProdTracking}/${id}`;
+  return `${apiEndpointProdTracking}/${id}/`;
 }
 
 function productsStockUrl(id) {
-  return `${apiEndpointProdStock}/${id}`;
+  return `${apiEndpointProdStock}/${id}/`;
 }
 
 export function getProductsTrackingsHeader(
@@ -95,7 +95,7 @@ export function getProductsStocksByCompany(companyId) {
 
 export function getProviderInInventory(companyId, providerId) {
   return http.get(
-    `${apiEndpointProdTrackingHeader}/?company=${companyId}&provider_id=${providerId}`
+    `${apiEndpointProdTrackingHeader}/?company=${companyId}&provider=${providerId}`
   );
 }
 
@@ -179,23 +179,28 @@ export async function updateProductStock(inventory) {
       stock.id = productStock[0].id;
       stock.quantityAvailable = newQuantity;
 
-      if (productStock[0].product.minimumStock > newQuantity) {
-        const { data: order } = await getPurchaseOrderByProduct(
-          productStock[0].product.company.id,
-          productStock[0].product.id
-        );
-
-        if (!order.count) {
-          await savePurchaseOrder({
-            id: 0,
-            product_id: productStock[0].product.id,
-            quantity: newQuantity,
-            company_id: getCurrentUser().companyId,
-            creationDate: new Date().toISOString(),
-          });
+      try {
+        if (productStock[0].product.minimumStock > newQuantity) {
+          const { data: order } = await getPurchaseOrderByProduct(
+            productStock[0].product.company_id,
+            productStock[0].product.id
+          );
+  
+          if (!order.count) {
+            await savePurchaseOrder({
+              id: 0,
+              product_id: productStock[0].product.id,
+              quantity: newQuantity,
+              company_id: getCurrentUser().companyId,
+              creationDate: new Date().toISOString(),
+            });
+          }
         }
+      } catch(ex) {
+        Sentry.captureException(ex);
+        console.log(ex);
       }
-
+      
       console.log("productStock", productStock);
       console.log("quantity", quantity);
       console.log("quantityAvailable", quantityAvailable);

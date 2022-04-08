@@ -177,7 +177,7 @@ class Inventories extends Component {
                 {this.state.productSelected > 0 && (
                   <div
                     style={{
-                      marginTop: "32px",
+                      marginTop: "28px",
                     }}
                   >
                     <span

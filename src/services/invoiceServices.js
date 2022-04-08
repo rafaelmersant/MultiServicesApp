@@ -4,27 +4,23 @@ import { apiUrl } from "../config.json";
 const apiEndpointHeader = `${apiUrl}/invoicesHeaders`;
 const apiEndpointDetail = `${apiUrl}/invoicesDetails`;
 const apiEndpointSequence = `${apiUrl}/invoicesSequences`;
+const apiEndpointProductReduced = `${apiUrl}/invoicesDetailsReduced`;
 
 function invoiceHeaderUrl(id) {
-  return `${apiEndpointHeader}/${id}`;
+  return `${apiEndpointHeader}/${id}/`;
 }
 
 function invoiceDetailUrl(id) {
-  return `${apiEndpointDetail}/${id}`;
+  return `${apiEndpointDetail}/${id}/`;
 }
 
 function invoiceSequenceUrl(id) {
-  return `${apiEndpointSequence}/${id}`;
+  return `${apiEndpointSequence}/${id}/`;
 }
 
 export function getInvoiceSequence(companyId) {
   return http.get(`${apiEndpointSequence}/?company=${companyId}`);
 }
-
-//Get Invoices by CompanyId
-// export function getInvoicesHeader(companyId) {
-//   return http.get(`${apiEndpointHeader}/?company=${companyId}`);
-// }
 
 export function getInvoicesHeader(
   companyId,
@@ -66,7 +62,7 @@ export function getInvoiceDetail(invoiceHeaderId) {
 
 export function getProductInInvoice(companyId, productId) {
   return http.get(
-    `${apiEndpointDetail}/?company=${companyId}&product=${productId}`
+    `${apiEndpointProductReduced}/?company=${companyId}&product=${productId}`
   );
 }
 
@@ -97,15 +93,13 @@ export function saveInvoiceDetail(invoiceDetail, invoiceHeaderId) {
 }
 
 export async function saveInvoiceSequence(invoiceSequence) {
-  //if (invoiceSequence.id) {
-  const body = { ...invoiceSequence };
-  delete body.id;
+  if (invoiceSequence.id) {
+    const body = { ...invoiceSequence };
+    delete body.id;
+    return http.put(invoiceSequenceUrl(invoiceSequence.id), body);
+  }
 
-  return http.put(invoiceSequenceUrl(invoiceSequence.id), body);
-  //return http.put(invoiceSequenceUrl(invoiceSequence.id), body);
-  //}
-
-  //return http.post(`${apiEndpointSequence}/`, invoiceSequence);
+  return http.post(`${apiEndpointSequence}/`, invoiceSequence);
 }
 
 export function deleteInvoiceHeader(id) {

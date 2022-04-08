@@ -19,14 +19,14 @@ class ConducesTable extends Component {
       label: "Cliente",
       content: (conduce) => (
         <span>
-          {`${conduce.invoice.customer.firstName} ${conduce.invoice.customer.lastName}`}
+          {`${conduce.customer}`}
         </span>
       ),
     },
     {
       path: "invoice.sequence",
       label: "Factura No.",
-      content: (conduce) => <span>{conduce.invoice.sequence}</span>,
+      content: (conduce) => <span>{conduce.invoice_no}</span>,
     },
     { path: "creationDate", label: "Fecha (m/d/a)" },
   ];

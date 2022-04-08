@@ -11,9 +11,9 @@ class PrintConduce extends Component {
       createdUserName,
     } = this.props;
 
-    console.log("serializer ConduceDetail", invoiceLeadDetail);
-    console.log("serializer H", invoiceHeader);
-    console.log("serializer D", invoiceDetail);
+    console.log("serializer ConduceDetail:", invoiceLeadDetail);
+    console.log("serializer InvoiceHeader:", invoiceHeader);
+    console.log("serializer InvoiceDetail:", invoiceDetail);
 
     invoiceHeader = invoiceHeader.results;
     var conduceDate = new Date();

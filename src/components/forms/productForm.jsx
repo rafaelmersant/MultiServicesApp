@@ -37,6 +37,7 @@ class ProductForm extends Form {
       barcode: "",
       minimumStock: 0,
       updated: false,
+      ocurrences: 0,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString(),
@@ -44,6 +45,8 @@ class ProductForm extends Form {
     providers: [],
     quantity: 0,
     itbis: true,
+    oldITBIS: 0,
+    oldCost: 0,
     companies: [],
     categories: [],
     errors: {},
@@ -64,6 +67,7 @@ class ProductForm extends Form {
     barcode: Joi.optional(),
     updated: Joi.optional(),
     minimumStock: Joi.number().required().label("Mínimo en Inventario"),
+    ocurrences: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
     creationDate: Joi.string(),
@@ -112,7 +116,7 @@ class ProductForm extends Form {
       providers.forEach((item) => {
         if (
           !_providers.some(
-            (p) => p.header.provider.id === item.header.provider.id
+            (p) => p.provider_id === item.provider_id
           )
         )
           _providers.push(item);
@@ -134,7 +138,7 @@ class ProductForm extends Form {
 
       this.getProductStock(productId);
       const { data: product } = await getProduct(productId);
-
+      
       this.setState({
         data: this.mapToViewModel(product.results),
         itbis: product.results[0].itbis > 0,
@@ -167,15 +171,25 @@ class ProductForm extends Form {
 
   handleChangeITBIS = (e) => {
     const { data } = { ...this.state };
+    let { oldITBIS, oldCost } = {...this.state};
+
+    oldCost = oldCost === 0 ? data.cost - data.itbis : oldCost;
+ 
+    // if(oldCost > 0) {
+    //   data.cost = oldCost;
+    // }
 
     if (!this.state.itbis) {
-      if (data.cost > 0)
-        data.itbis = Math.round(parseFloat(data.cost * 0.18) * 100) / 100;
+      if (data.cost > 0) {
+        const cost = oldCost > 0 ? oldCost : data.cost;
+        data.itbis = Math.round(parseFloat(cost * 0.18) * 100) / 100;
+      }
     } else {
+      oldITBIS = data.itbis > 0 ? data.itbis : oldITBIS;
       data.itbis = 0;
     }
 
-    this.setState({ data, itbis: !this.state.itbis });
+    this.setState({ data, itbis: !this.state.itbis, oldITBIS, oldCost });
   };
 
   handleChangeCost = ({ currentTarget: input }) => {
@@ -219,14 +233,15 @@ class ProductForm extends Form {
       descriptionLong: product[0].descriptionLong
         ? product[0].descriptionLong
         : "",
-      price: product[0].price,
+      price: product[0].price ? product[0].price : 0,
       cost: product[0].cost ? product[0].cost : 0,
       itbis: product[0].itbis ? product[0].itbis : 0,
       measure: product[0].measure ? product[0].measure : "",
       model: product[0].model ? product[0].model : "",
       category_id: product[0].category.id,
       barcode: product[0].barcode ? product[0].barcode : "",
-      minimumStock: product[0].minimumStock ? product[0].minimumStock : "",
+      minimumStock: product[0].minimumStock ? product[0].minimumStock : 0,
+      ocurrences: product[0].ocurrences ? product[0].ocurrences : 0,
       company_id: product[0].company.id,
       updated: product[0].updated ? product[0].updated : false,
       createdUser: product[0].createdUser

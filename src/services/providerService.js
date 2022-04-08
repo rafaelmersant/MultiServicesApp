@@ -4,7 +4,7 @@ import { apiUrl } from "../config.json";
 const apiEndpoint = `${apiUrl}/providers`;
 
 function providerUrl(id) {
-  return `${apiEndpoint}/${id}`;
+  return `${apiEndpoint}/${id}/`;
 }
 
 export function getProviders(companyId) {

@@ -47,7 +47,6 @@ class Invoices607 extends Component {
     let result = [];
 
     data.forEach((item) => {
-      console.log("item", item, "identification", item.customer);
       result.push({
         id: item.id,
         identification:

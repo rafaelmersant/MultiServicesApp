@@ -66,11 +66,11 @@ export function mapToViewInvoiceLeadHeader(invoiceLeadHeader, invoiceNo, data) {
     if (invoiceLeadHeader.length) {
       return {
         id: invoiceLeadHeader[0].id,
-        invoice: invoiceLeadHeader[0].invoice.sequence,
-        company_id: invoiceLeadHeader[0].company.id,
-        createdUser: invoiceLeadHeader[0].createdByUser
-          ? invoiceLeadHeader[0].createdByUser
-          : getCurrentUser().email,
+        invoice: invoiceLeadHeader[0].invoice_no,
+        company_id: invoiceLeadHeader[0].company_id,
+        // createdUser: invoiceLeadHeader[0].createdByUser
+        //   ? invoiceLeadHeader[0].createdByUser
+        //   : getCurrentUser().email,
         creationDate: invoiceLeadHeader[0].creationDate,
       };
     }

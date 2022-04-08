@@ -50,7 +50,7 @@ class ProductsTable extends Component {
       }
 
       toast.success("La cantidad fue actualizada!");
-      window.location.reload();
+      //window.location.reload();
     }
   }
 
