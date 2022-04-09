@@ -63,12 +63,15 @@ class Invoices extends Component {
       _sortColumn
     );
 
+    const pageSize = customerId ? invoices.count : this.state.pageSize;
+
     this.setState({
       invoices: invoices.results,
       totalInvoices: invoices.count,
       loading: false,
       currentPage: _currentPage,
       sortColumn: _sortColumn,
+      pageSize
     });
   }
 
@@ -148,7 +151,7 @@ class Invoices extends Component {
     const { searchParams } = { ...this.state };
     searchParams.invoiceNo = invoiceNo;
 
-    this.setState({ searchParams });
+    this.setState({ searchParams, loading: true });
     this.populateInvoices();
   };
 
@@ -162,7 +165,7 @@ class Invoices extends Component {
     searchParams.customerId = customer.id;
     searchParams.invoiceNo = "";
 
-    this.setState({ searchParams });
+    this.setState({ searchParams, loading: true });
     this.populateInvoices(null, 1);
   };
 
@@ -176,7 +179,7 @@ class Invoices extends Component {
     searchParams.paymentMethod = paymentMethod;
     searchParams.invoiceNo = "";
 
-    this.setState({ searchParams });
+    this.setState({ searchParams, loading: true });
     this.populateInvoices();
   };
 
