@@ -4,6 +4,7 @@ import { apiUrl } from "../config.json";
 const apiEndpointHeader = `${apiUrl}/invoicesHeaders`;
 const apiEndpointDetail = `${apiUrl}/invoicesDetails`;
 const apiEndpointSequence = `${apiUrl}/invoicesSequences`;
+const apiEndpointDetailSimple = `${apiUrl}/InvoicesDetailSimple`;
 const apiEndpointProductReduced = `${apiUrl}/invoicesDetailsReduced`;
 
 function invoiceHeaderUrl(id) {
@@ -56,8 +57,12 @@ export function getInvoiceHeader(companyId, sequence) {
   );
 }
 
+// export function getInvoiceDetail(invoiceHeaderId) {
+//   return http.get(`${apiEndpointDetail}/?invoice=${invoiceHeaderId}`);
+// }
+
 export function getInvoiceDetail(invoiceHeaderId) {
-  return http.get(`${apiEndpointDetail}/?invoice=${invoiceHeaderId}`);
+  return http.get(`${apiEndpointDetailSimple}/?invoice=${invoiceHeaderId}`);
 }
 
 export function getProductInInvoice(companyId, productId) {

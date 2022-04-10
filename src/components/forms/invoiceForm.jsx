@@ -8,6 +8,7 @@ import Input from "../common/input";
 import Select from "../common/select";
 import SearchProduct from "../common/searchProduct";
 import SearchCustomer from "../common/searchCustomer";
+import Loading from "../common/loading";
 import { formatNumber } from "../../utils/custom";
 import CustomerModal from "../modals/customerModal";
 import ProductModal from "../modals/productModal";
@@ -66,6 +67,7 @@ class InvoiceForm extends Form {
       creationDate: new Date().toISOString(),
       serverDate: new Date().toISOString(),
     },
+    loading: true,
     disabledSave: false,
     invoiceDate: new Date(),
     products: [],
@@ -267,18 +269,22 @@ class InvoiceForm extends Form {
         this.state.data.createdUser
       );
 
+      const invoiceHeaderMapped = mapToViewInvoiceHeader(invoiceHeader);
+      console.log('MAPPEDDDD::::', invoiceHeaderMapped)
+
       this.setState({
-        data: mapToViewInvoiceHeader(invoiceHeader),
+        data: invoiceHeaderMapped,
         details: mapToViewInvoiceDetail(invoiceDetail),
         detailsOriginal: mapToViewInvoiceDetail(invoiceDetail),
         invoiceDate: new Date(invoiceHeader[0].creationDate),
-        searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
+        searchCustomerText: `${invoiceHeader[0].customer_firstName} ${invoiceHeader[0].customer_lastName}`,
         hideSearchCustomer: true,
         ncf: invoiceHeader[0].ncf.length,
         action: "Detalle de Factura No. ",
         serializedInvoiceHeader: invoiceHeader,
         serializedInvoiceDetail: invoiceDetail,
         createdUserName: createdUserData[0].name,
+        loading: false
       });
 
       this.forceUpdate();
@@ -662,10 +668,6 @@ class InvoiceForm extends Form {
               (__item) => __item.product_id === item.product_id
             );
 
-            console.log("!this.state.data.id", !this.state.data.id);
-            console.log("_item.quantity", _item.quantity);
-            console.log("item.quantity", item.quantity);
-
             if (this.state.data.id && _item.quantity !== item.quantity) {
               const newQuantity = _item.quantity - item.quantity;
               detail.quantity = newQuantity;
@@ -926,13 +928,19 @@ class InvoiceForm extends Form {
                 </div>
               </div>
 
-              <InvoiceDetailTable
+              {this.state.loading && (
+              <div className="d-flex justify-content-center">
+                <Loading />
+              </div>
+              )}
+              
+              {!this.state.loading && (<InvoiceDetailTable
                 invoiceHeader={this.state.data}
                 details={this.state.details}
                 user={user}
                 onDelete={this.handleDeleteDetail}
                 onEdit={this.handleEditDetail}
-              />
+              />)}
 
               {this.isInvoiceEditable() && this.renderButton("Guardar")}
             </form>
