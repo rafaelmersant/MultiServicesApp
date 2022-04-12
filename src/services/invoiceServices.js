@@ -45,8 +45,8 @@ export function getInvoicesHeader(
   return http.get(urlQuery);
 }
 
-export function getInvoicesHeaderFull(companyId) {
-  let urlQuery = `${apiUrl}/invoicesHeadersFull/?company=${companyId}&ordering=-creationDate`;
+export function getInvoicesHeaderFull(companyId, year) {
+  let urlQuery = `${apiUrl}/invoicesHeadersFull/?company=${companyId}&creationDate__year=${year}&ordering=-creationDate`;
 
   return http.get(urlQuery);
 }

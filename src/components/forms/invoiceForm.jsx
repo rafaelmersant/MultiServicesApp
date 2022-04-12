@@ -251,9 +251,14 @@ class InvoiceForm extends Form {
   }
 
   async populateInvoice() {
+    if (getCurrentUser().role === "Caja") window.location = '/conduces/';
+    
     try {
       const sequence = this.props.match.params.id;
-      if (sequence === "new") return;
+      if (sequence === "new")  {
+        this.setState({ loading: false})
+        return;
+      }
 
       const { data: invoice } = await getInvoiceHeader(
         getCurrentUser().companyId,
@@ -270,7 +275,6 @@ class InvoiceForm extends Form {
       );
 
       const invoiceHeaderMapped = mapToViewInvoiceHeader(invoiceHeader);
-      console.log('MAPPEDDDD::::', invoiceHeaderMapped)
 
       this.setState({
         data: invoiceHeaderMapped,
@@ -325,8 +329,6 @@ class InvoiceForm extends Form {
     handler(window.event);
 
     this.setState({ clearSearchProduct: false });
-
-    console.log("product selected:", product);
 
     if (product.id === 0) {
       this.raiseProductModal.click();
@@ -588,7 +590,6 @@ class InvoiceForm extends Form {
       await this.populateProducts();
       await this.populateInvoice(false);
 
-      console.log("data (didMount):", this.state.data);
     } catch (ex) {
       try {
         Sentry.captureException(ex);
@@ -643,7 +644,6 @@ class InvoiceForm extends Form {
         if (this.state.data.typeDoc !== "0") await this.getNCF();
       }
 
-      console.log("invoiceHeader", this.state.data);
       const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
 
       for (const item of this.state.details) {

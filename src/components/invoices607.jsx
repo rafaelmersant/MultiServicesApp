@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import _ from "lodash";
-import Pagination from "./common/pagination";
-import SearchBox from "./common/searchBox";
+import Input from "./common/input";
+import Loading from "./common/loading";
 import { paginate } from "../utils/paginate";
 import { getCurrentUser } from "../services/authService";
 import { getInvoicesHeaderFull } from "../services/invoiceServices";
@@ -10,56 +10,69 @@ import ExportInvoices607 from "./reports/exportInvoices607";
 
 class Invoices607 extends Component {
   state = {
+    loading: true,
     invoices: [],
+    invoicesExcel: [],
+    totalCount: 0,
     currentPage: 1,
-    pageSize: 4000,
+    pageSize: 999999,
     searchQuery: "",
+    searchYear: new Date().getFullYear(),
     sortColumn: { path: "creationDate", order: "desc" },
   };
 
   async componentDidMount() {
-    this.populateInvoices();
+    this.populateInvoices(this.state.searchYear);
   }
 
-  async populateInvoices() {
+  async populateInvoices(year) {
     const companyId = getCurrentUser().companyId;
 
-    let { data: invoices } = await getInvoicesHeaderFull(companyId);
+    let { data: invoices } = await getInvoicesHeaderFull(companyId, year);
 
-    invoices = this.mapToModel(invoices);
-
-    this.setState({ invoices });
+    this.setState({ invoices, loading: false });
   }
 
   handlePageChange = (page) => {
     this.setState({ currentPage: page });
   };
 
-  handleSearch = (query) => {
-    this.setState({ searchQuery: query, currentPage: 1 });
+  handleSearch = ({ currentTarget: input }) => {
+    this.setState({ searchQuery: input.value });
+  };
+
+  handleSearchYear = ({ currentTarget: input }) => {
+    this.setState({ searchYear: input.value });
+  };
+
+  handleSearchButton = () => {
+    this.populateInvoices(this.state.searchYear);
   };
 
   handleSort = (sortColumn) => {
     this.setState({ sortColumn });
   };
 
-  mapToModel = (data) => {
-    let result = [];
+  mapToExcelView = (data) => {
+    console.log("mapping for excel");
+    let invoicesExcel = [];
 
     data.forEach((item) => {
-      result.push({
-        id: item.id,
-        identification:
-          item.customer && item.customer.identification
+      invoicesExcel.push({
+        creationDate: new Date(item.creationDate).toLocaleDateString(),
+        rnc:
+          item.customer.identificationType == "R"
             ? item.customer.identification
             : "",
         ncf: item.ncf,
-        subtotal: item.subtotal,
-        creationDate: new Date(item.creationDate),
+        amount: item.subtotal - item.discount - item.itbis,
+        // discount: item.discount,
+        itbis: item.itbis,
+        subtotal: item.subtotal - item.discount,
       });
     });
 
-    return result;
+    this.setState({ invoicesExcel });
   };
 
   getPagedData = () => {
@@ -68,6 +81,7 @@ class Invoices607 extends Component {
       currentPage,
       sortColumn,
       searchQuery,
+      searchYear,
       invoices: allInvoices,
     } = this.state;
 
@@ -77,18 +91,21 @@ class Invoices607 extends Component {
         `${m.ncf.toLowerCase()}`.includes(searchQuery.toLocaleLowerCase())
       );
 
-    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+    if (searchYear)
+      filtered = allInvoices.filter(
+        (m) => new Date(m.creationDate).getFullYear() == searchYear
+      );
 
-    let invoices = paginate(sorted, currentPage, pageSize);
+    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+    const invoices = paginate(sorted, currentPage, pageSize);
+
+    this.mapToExcelView(invoices);
 
     return { totalCount: filtered.length, invoices };
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
     const { user } = this.props;
-
-    const { totalCount, invoices } = this.getPagedData();
 
     return (
       <div className="container-fluid">
@@ -97,35 +114,58 @@ class Invoices607 extends Component {
             <h2 className="pull-right text-info">Reporte 607</h2>
 
             <ExportInvoices607
-              data={this.mapToModel(invoices)}
+              data={this.state.invoicesExcel}
               sheetName="Reporte607"
             />
 
-            <SearchBox
-              value={searchQuery}
-              onChange={this.handleSearch}
-              placeholder="Buscar NCF..."
-            />
+            <div className="d-flex flex-row">
+              <div className="form-group">
+                <Input
+                  name="searchQuery"
+                  value={this.state.searchQuery}
+                  onChange={this.handleSearch}
+                  placeholder="Buscar NCF..."
+                />
+              </div>
 
-            <Invoices607Table
-              invoices={invoices}
-              user={user}
-              sortColumn={sortColumn}
-              onDelete={this.handleDelete}
-              onSort={this.handleSort}
-            />
+              <div className="form-group">
+                <Input
+                  name="searchYear"
+                  value={this.state.searchYear}
+                  onChange={this.handleSearchYear}
+                  placeholder="Filtrar año..."
+                />
+              </div>
 
-            <div className="row">
-              <Pagination
-                itemsCount={totalCount}
-                pageSize={pageSize}
-                currentPage={currentPage}
-                onPageChange={this.handlePageChange}
-              />
-              <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} registros</em>
-              </p>
+              <div className="form-group">
+                <button
+                  className="btn btn-info ml-2 my-4"
+                  style={{ maxHeight: 36 }}
+                  onClick={this.handleSearchButton}
+                >
+                  Filtrar
+                </button>
+              </div>
             </div>
+
+            {this.state.loading && (
+              <div>
+                <p className="text-center">Cargando...</p>
+                <div className="d-flex justify-content-center mb-3">
+                  <Loading />
+                </div>
+              </div>
+            )}
+
+            {!this.state.loading && (
+              <Invoices607Table
+                invoices={this.state.invoices}
+                user={user}
+                sortColumn={this.state.sortColumn}
+                // onDelete={this.handleDelete}
+                // onSort={this.handleSort}
+              />
+            )}
           </div>
         </div>
       </div>

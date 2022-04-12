@@ -1,7 +1,6 @@
 import { getCurrentUser } from "../../services/authService";
 
 export function mapToViewInvoiceHeader(invoiceHeader) {
-  console.log('BEFORE MAPP:', invoiceHeader)
   return {
     id: invoiceHeader[0].id,
     sequence: parseFloat(invoiceHeader[0].sequence),

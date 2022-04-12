@@ -11,17 +11,16 @@ class ExportInvoices606 extends Component {
 
     return (
       <ExcelFile
-        filename="Reporte606"
+        filename="Reporte607"
         element={
           <button className="btn button-local"> Exportar a Excel </button>
         }
       >
         <ExcelSheet data={data} name={sheetName}>
-          <ExcelColumn label="Fecha" value="creationDate" />
+          <ExcelColumn label="RNC/Cédula" value="identification" />
           <ExcelColumn label="NCF" value="ncf" />
-          <ExcelColumn label="Descuento" value="discount" />
-          <ExcelColumn label="ITBIS" value="itbis" />
-          <ExcelColumn label="Total" value="subtotal" />
+          <ExcelColumn label="Monto Facturado" value="subtotal" />
+          <ExcelColumn label="Fecha de Retención" value="creationDate" />
         </ExcelSheet>
       </ExcelFile>
     );

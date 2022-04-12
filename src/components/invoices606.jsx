@@ -7,14 +7,12 @@ import { getCurrentUser } from "../services/authService";
 import { getInvoicesHeaderFull } from "../services/invoiceServices";
 import Invoices606Table from "./tables/invoices606Table";
 import ExportInvoices606 from "./reports/exportInvoices606";
-import Loading from "./common/loading";
 
 class Invoices606 extends Component {
   state = {
-    loading: true,
     invoices: [],
     currentPage: 1,
-    pageSize: 400000,
+    pageSize: 999999,
     searchQuery: "",
     sortColumn: { path: "creationDate", order: "desc" },
   };
@@ -28,7 +26,9 @@ class Invoices606 extends Component {
 
     let { data: invoices } = await getInvoicesHeaderFull(companyId);
 
-    this.setState({ invoices, loading: false });
+    invoices = this.mapToModel(invoices);
+
+    this.setState({ invoices });
   }
 
   handlePageChange = (page) => {
@@ -43,16 +43,19 @@ class Invoices606 extends Component {
     this.setState({ sortColumn });
   };
 
-  mapToExcelView = (data) => {
+  mapToModel = (data) => {
     let result = [];
 
     data.forEach((item) => {
       result.push({
-        creationDate: new Date(item.creationDate).toLocaleDateString(),
+        id: item.id,
+        identification:
+          item.customer && item.customer.identification
+            ? item.customer.identification
+            : "",
         ncf: item.ncf,
-        discount: item.discount,
-        itbis: item.itbis,
         subtotal: item.subtotal,
+        creationDate: new Date(item.creationDate),
       });
     });
 
@@ -76,7 +79,7 @@ class Invoices606 extends Component {
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-    const invoices = paginate(sorted, currentPage, pageSize);
+    let invoices = paginate(sorted, currentPage, pageSize);
 
     return { totalCount: filtered.length, invoices };
   };
@@ -94,7 +97,7 @@ class Invoices606 extends Component {
             <h2 className="pull-right text-info">Reporte 606</h2>
 
             <ExportInvoices606
-              data={this.mapToExcelView(invoices)}
+              data={this.mapToModel(invoices)}
               sheetName="Reporte606"
             />
 
@@ -104,41 +107,25 @@ class Invoices606 extends Component {
               placeholder="Buscar NCF..."
             />
 
-            {this.state.loading && (
-              <div>
-                <p className="text-center">
-                  Cargando...
-                </p>
-                <div className="d-flex justify-content-center mb-3">
-                  <Loading />
-                </div>
-              </div>
-            )}
+            <Invoices606Table
+              invoices={invoices}
+              user={user}
+              sortColumn={sortColumn}
+              onDelete={this.handleDelete}
+              onSort={this.handleSort}
+            />
 
-            {!this.state.loading && (
-              <Invoices606Table
-                invoices={invoices}
-                user={user}
-                sortColumn={sortColumn}
-                onDelete={this.handleDelete}
-                onSort={this.handleSort}
+            <div className="row">
+              <Pagination
+                itemsCount={totalCount}
+                pageSize={pageSize}
+                currentPage={currentPage}
+                onPageChange={this.handlePageChange}
               />
-            )}
-
-            {!this.state.loading && (
-              <div className="row">
-                <Pagination
-                  itemsCount={totalCount}
-                  pageSize={pageSize}
-                  currentPage={currentPage}
-                  onPageChange={this.handlePageChange}
-                />
-                <p className="text-muted ml-3 mt-2">
-                  <em>Mostrando {totalCount} facturas</em>
-                </p>
-              </div>
-            )}
-
+              <p className="text-muted ml-3 mt-2">
+                <em>Mostrando {totalCount} registros</em>
+              </p>
+            </div>
           </div>
         </div>
       </div>

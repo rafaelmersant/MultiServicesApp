@@ -4,27 +4,69 @@ import { formatNumber } from "../../utils/custom";
 
 class Invoices607Table extends Component {
   columns = [
-    {
-      path: "identification",
-      label: "RNC/Cédula"
-    },
+    { path: "creationDate", label: "Fecha (m/d/a)" },
     { path: "ncf", label: "NCF" },
     {
-      path: "subtotal",
-      label: "Monto Facturado",
-      align: "text-right",
+      path: "rnc",
+      label: "RNC",
+      align: "text-left",
       content: item => (
-        <div className="text-right">
-          <span>{formatNumber(item.subtotal)}</span>
+        <div className="text-left">
+          {item.customer.identificationType == "R" && <span>{item.customer.identification}</span>}
         </div>
       )
     },
-    { path: "creationDate", label: "Fecha de Retención(m/d/a)" }
+    {
+      path: "amount",
+      label: "Monto",
+      align: "text-right",
+      content: item => (
+        <div className="text-right">
+          <span>{formatNumber(item.subtotal - item.discount - item.itbis)}</span>
+        </div>
+      )
+    },
+    // {
+    //   path: "discount",
+    //   label: "Descuento",
+    //   align: "text-right",
+    //   content: item => (
+    //     <div className="text-right">
+    //       <span>{formatNumber(item.discount)}</span>
+    //     </div>
+    //   )
+    // },
+    {
+      path: "itbis",
+      label: "ITBIS",
+      align: "text-right",
+      content: item => (
+        <div className="text-right">
+          <span>{formatNumber(item.itbis)}</span>
+        </div>
+      )
+    },
+    {
+      path: "subtotal",
+      label: "Total",
+      align: "text-right",
+      content: item => (
+        <div className="text-right">
+          <span>{formatNumber(item.subtotal - item.discount)}</span>
+        </div>
+      )
+    }
   ];
+
+  
+  constructor() {
+    super();
+    console.log('RENDERING TABLE')
+  }
 
   render() {
     const { invoices, sortColumn, onSort } = this.props;
-    console.log("invoices", invoices);
+    
     return (
       <Table
         columns={this.columns}
