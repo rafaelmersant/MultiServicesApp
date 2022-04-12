@@ -35,10 +35,14 @@ class InventoriesFull extends Component {
       query
     );
 
+    console.log("QUERY", query.length)
+    const pageSize = query.length > 0 ? entries.count : 10;
+
     this.setState({
       prodTrackingsHeader: entries.results,
       totalEntries: entries.count,
       loading: false,
+      pageSize
     });
   }
 

@@ -2,6 +2,11 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 const NavBarSide = ({ user }) => {
+  const classesForCaja =
+    user && user.role === "Caja"
+      ? "list-group-item list-group-item-action bg-light"
+      : "list-group-item list-group-item-action bg-light border-none";
+
   return (
     <div className="bg-light border-right" id="sidebar-wrapper">
       <div className="sidebar-heading text-center">
@@ -41,10 +46,7 @@ const NavBarSide = ({ user }) => {
           (user.role === "Admin" ||
             user.role === "Owner" ||
             user.role === "Caja") && (
-            <NavLink
-              className="list-group-item list-group-item-action bg-light border-none"
-              to="/conduces"
-            >
+            <NavLink className={classesForCaja} to="/conduces">
               <span className="fa fa-truck mr-2 color-local" />
               Conduces
             </NavLink>
