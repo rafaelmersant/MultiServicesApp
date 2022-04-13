@@ -208,13 +208,14 @@ class InvoiceLeadForm extends Form {
         invoiceHeader.results[0].sequence,
         { ...this.state.data }
       );
-
+      
       const _invoiceHeader = mapToViewInvoiceHeader(invoiceHeader.results);
-
+      
       const _invoiceDetail = mapToViewInvoiceDetailWithConduces(
         invoiceDetail,
         invoiceLeadDetail
       );
+      console.log('invoiceDetailMapped', _invoiceDetail)
 
       if (!(invoiceNo > 0)) {
         const index = this.columns.indexOf(this.quantityToDeliver);
