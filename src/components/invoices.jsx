@@ -37,7 +37,7 @@ class Invoices extends Component {
 
     this.intervalInvoiceId = setInterval(async () => {
       await this.populateInvoices();
-    }, 3000);
+    }, 8000);
   }
 
   componentWillUnmount() {

@@ -42,6 +42,8 @@ export function getInvoicesHeader(
   if (customerId) urlQuery += `&customer=${customerId}`;
   if (paymentMethod !== "ALL") urlQuery += `&paymentMethod=${paymentMethod}`;
 
+  if (customerId) urlQuery = urlQuery.replace("invoicesHeaders","invoicesHeadersCustomer");
+
   return http.get(urlQuery);
 }
 
