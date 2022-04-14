@@ -5,7 +5,6 @@ import { formatNumber } from "../../utils/custom";
 class Invoices607Table extends Component {
   columns = [
     { path: "creationDate", label: "Fecha (m/d/a)" },
-    { path: "ncf", label: "NCF" },
     {
       path: "rnc",
       label: "RNC",
@@ -16,6 +15,7 @@ class Invoices607Table extends Component {
         </div>
       )
     },
+    { path: "ncf", label: "NCF" },
     {
       path: "amount",
       label: "Monto",

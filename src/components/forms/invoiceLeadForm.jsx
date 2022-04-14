@@ -215,8 +215,7 @@ class InvoiceLeadForm extends Form {
         invoiceDetail,
         invoiceLeadDetail
       );
-      console.log('invoiceDetailMapped', _invoiceDetail)
-
+      
       if (!(invoiceNo > 0)) {
         const index = this.columns.indexOf(this.quantityToDeliver);
         this.columns.splice(index, 1);

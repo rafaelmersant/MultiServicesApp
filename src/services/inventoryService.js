@@ -42,6 +42,15 @@ export function getProductsTrackingsHeader(
   );
 }
 
+export function getProductsTrackingsHeaderByYear(
+  companyId,
+  year
+) {
+  return http.get(
+    `${apiEndpointProdTrackingHeader}/?company=${companyId}&year=${year}`
+  );
+}
+
 export function getProductsTrackingsHeaderById(id) {
   return http.get(`${apiEndpointProdTrackingHeader}/?id=${id}`);
 }

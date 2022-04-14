@@ -42,13 +42,13 @@ export function getInvoicesHeader(
   if (customerId) urlQuery += `&customer=${customerId}`;
   if (paymentMethod !== "ALL") urlQuery += `&paymentMethod=${paymentMethod}`;
 
-  if (customerId) urlQuery = urlQuery.replace("invoicesHeaders","invoicesHeadersCustomer");
+  if (customerId || invoiceNo) urlQuery = urlQuery.replace("invoicesHeaders","invoicesHeadersCustomer");
 
   return http.get(urlQuery);
 }
 
 export function getInvoicesHeaderFull(companyId, year) {
-  let urlQuery = `${apiUrl}/invoicesHeadersFull/?company=${companyId}&creationDate__year=${year}&ordering=-creationDate`;
+  let urlQuery = `${apiUrl}/invoicesHeadersFull/?company=${companyId}&year=${year}&ordering=-creationDate`;
 
   return http.get(urlQuery);
 }

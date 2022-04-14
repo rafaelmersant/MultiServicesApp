@@ -37,8 +37,7 @@ export function mapToViewInvoiceDetailWithConduces(
   invoiceLeadDetail
 ) {
   let details = [];
-console.log('invoiceDetail_XXX:', invoiceDetail)
-console.log('invoiceLeadDetail_XXX:', invoiceLeadDetail)
+
   try {
     invoiceDetail.forEach((item) => {
       const delivered = _.sumBy(invoiceLeadDetail, (detail) => {

@@ -1,19 +1,21 @@
 import React, { Component } from "react";
 import _ from "lodash";
-import Pagination from "./common/pagination";
-import SearchBox from "./common/searchBox";
+import Input from "./common/input";
+import Loading from "./common/loading";
 import { paginate } from "../utils/paginate";
 import { getCurrentUser } from "../services/authService";
-import { getInvoicesHeaderFull } from "../services/invoiceServices";
 import Invoices606Table from "./tables/invoices606Table";
 import ExportInvoices606 from "./reports/exportInvoices606";
+import { getProductsTrackingsHeaderByYear } from "../services/inventoryService";
 
 class Invoices606 extends Component {
   state = {
+    loading: true,
     invoices: [],
     currentPage: 1,
     pageSize: 999999,
     searchQuery: "",
+    searchYear: new Date().getFullYear(),
     sortColumn: { path: "creationDate", order: "desc" },
   };
 
@@ -22,17 +24,27 @@ class Invoices606 extends Component {
   }
 
   async populateInvoices() {
+    this.setState({ loading: true });
+    this.forceUpdate();
+
     const companyId = getCurrentUser().companyId;
 
-    let { data: invoices } = await getInvoicesHeaderFull(companyId);
+    let { data: invoices } = await getProductsTrackingsHeaderByYear(
+      companyId,
+      this.state.searchYear
+    );
 
-    invoices = this.mapToModel(invoices);
+    invoices = this.mapToModel(invoices.results);
 
-    this.setState({ invoices });
+    this.setState({ invoices, loading: false });
   }
 
   handlePageChange = (page) => {
     this.setState({ currentPage: page });
+  };
+
+  handleSearchYear = ({ currentTarget: input }) => {
+    this.setState({ searchYear: input.value });
   };
 
   handleSearch = (query) => {
@@ -43,18 +55,21 @@ class Invoices606 extends Component {
     this.setState({ sortColumn });
   };
 
+  handleSearchButton = () => {
+    this.populateInvoices(this.state.searchYear);
+  };
+
   mapToModel = (data) => {
     let result = [];
 
     data.forEach((item) => {
       result.push({
         id: item.id,
-        identification:
-          item.customer && item.customer.identification
-            ? item.customer.identification
-            : "",
+        rnc: item.provider ? item.provider.rnc : "",
         ncf: item.ncf,
-        subtotal: item.subtotal,
+        amount: item.totalAmount - item.itbis,
+        itbis: item.itbis,
+        subtotal: item.totalAmount,
         creationDate: new Date(item.creationDate),
       });
     });
@@ -85,7 +100,7 @@ class Invoices606 extends Component {
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
+    const { pageSize, currentPage, sortColumn } = this.state;
     const { user } = this.props;
 
     const { totalCount, invoices } = this.getPagedData();
@@ -101,21 +116,56 @@ class Invoices606 extends Component {
               sheetName="Reporte606"
             />
 
-            <SearchBox
-              value={searchQuery}
-              onChange={this.handleSearch}
-              placeholder="Buscar NCF..."
-            />
+            <div className="d-flex flex-row">
+              <div className="form-group">
+                <Input
+                  name="searchQuery"
+                  value={this.state.searchQuery}
+                  onChange={this.handleSearch}
+                  placeholder="Buscar NCF..."
+                />
+              </div>
 
-            <Invoices606Table
-              invoices={invoices}
-              user={user}
-              sortColumn={sortColumn}
-              onDelete={this.handleDelete}
-              onSort={this.handleSort}
-            />
+              <div className="form-group">
+                <Input
+                  name="searchYear"
+                  value={this.state.searchYear}
+                  onChange={this.handleSearchYear}
+                  placeholder="Filtrar año..."
+                />
+              </div>
 
-            <div className="row">
+              <div className="form-group">
+                <button
+                  className="btn btn-info ml-2 my-4"
+                  style={{ maxHeight: 36 }}
+                  onClick={this.handleSearchButton}
+                >
+                  Filtrar
+                </button>
+              </div>
+            </div>
+
+            {this.state.loading && (
+              <div>
+                <p className="text-center">Cargando...</p>
+                <div className="d-flex justify-content-center mb-3">
+                  <Loading />
+                </div>
+              </div>
+            )}
+
+            {!this.state.loading && (
+              <Invoices606Table
+                invoices={invoices}
+                user={user}
+                sortColumn={sortColumn}
+                onDelete={this.handleDelete}
+                onSort={this.handleSort}
+              />
+            )}
+
+            {/* <div className="row">
               <Pagination
                 itemsCount={totalCount}
                 pageSize={pageSize}
@@ -125,7 +175,7 @@ class Invoices606 extends Component {
               <p className="text-muted ml-3 mt-2">
                 <em>Mostrando {totalCount} registros</em>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

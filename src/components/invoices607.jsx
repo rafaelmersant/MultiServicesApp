@@ -26,9 +26,14 @@ class Invoices607 extends Component {
   }
 
   async populateInvoices(year) {
+    this.setState({loading: true});
+    this.forceUpdate();
+
     const companyId = getCurrentUser().companyId;
 
     let { data: invoices } = await getInvoicesHeaderFull(companyId, year);
+
+    await this.mapToExcelView(invoices);
 
     this.setState({ invoices, loading: false });
   }
@@ -53,8 +58,7 @@ class Invoices607 extends Component {
     this.setState({ sortColumn });
   };
 
-  mapToExcelView = (data) => {
-    console.log("mapping for excel");
+  mapToExcelView = async (data) => {
     let invoicesExcel = [];
 
     data.forEach((item) => {
@@ -75,7 +79,7 @@ class Invoices607 extends Component {
     this.setState({ invoicesExcel });
   };
 
-  getPagedData = () => {
+  getPagedData = async () => {
     const {
       pageSize,
       currentPage,
@@ -99,7 +103,7 @@ class Invoices607 extends Component {
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
     const invoices = paginate(sorted, currentPage, pageSize);
 
-    this.mapToExcelView(invoices);
+    await this.mapToExcelView(invoices);
 
     return { totalCount: filtered.length, invoices };
   };
