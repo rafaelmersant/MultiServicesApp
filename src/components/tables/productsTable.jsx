@@ -113,6 +113,7 @@ class ProductsTable extends Component {
 
           <div>
             <a
+              id={item.id}
               href="#"
               className="fa fa-save text-danger ml-2"
               style={{ fontSize: "29px", textDecoration: "none" }}

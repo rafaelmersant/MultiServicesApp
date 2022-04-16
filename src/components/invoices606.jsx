@@ -12,8 +12,6 @@ class Invoices606 extends Component {
   state = {
     loading: true,
     invoices: [],
-    currentPage: 1,
-    pageSize: 999999,
     searchQuery: "",
     searchYear: new Date().getFullYear(),
     sortColumn: { path: "creationDate", order: "desc" },
@@ -79,8 +77,6 @@ class Invoices606 extends Component {
 
   getPagedData = () => {
     const {
-      pageSize,
-      currentPage,
       sortColumn,
       searchQuery,
       invoices: allInvoices,
@@ -94,16 +90,16 @@ class Invoices606 extends Component {
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
-    let invoices = paginate(sorted, currentPage, pageSize);
+    let invoices = paginate(sorted, 1, 9999999);
 
     return { totalCount: filtered.length, invoices };
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn } = this.state;
+    const { sortColumn } = this.state;
     const { user } = this.props;
 
-    const { totalCount, invoices } = this.getPagedData();
+    const { invoices } = this.getPagedData();
 
     return (
       <div className="container-fluid">
@@ -165,17 +161,6 @@ class Invoices606 extends Component {
               />
             )}
 
-            {/* <div className="row">
-              <Pagination
-                itemsCount={totalCount}
-                pageSize={pageSize}
-                currentPage={currentPage}
-                onPageChange={this.handlePageChange}
-              />
-              <p className="text-muted ml-3 mt-2">
-                <em>Mostrando {totalCount} registros</em>
-              </p>
-            </div> */}
           </div>
         </div>
       </div>

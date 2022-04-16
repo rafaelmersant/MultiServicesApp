@@ -11,7 +11,7 @@ class Invoices607Table extends Component {
       align: "text-left",
       content: item => (
         <div className="text-left">
-          {item.customer.identificationType == "R" && <span>{item.customer.identification}</span>}
+          {item.customer.identificationType === "R" && <span>{item.customer.identification}</span>}
         </div>
       )
     },

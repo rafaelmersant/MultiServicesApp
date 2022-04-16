@@ -12,8 +12,6 @@ class PrintInvoice extends Component {
       createdUserName,
     } = this.props;
 
-    console.log("invoiceHeader print REACHED::::", invoiceHeader);
-
     if (invoiceHeader.length) {
       var _date = Date.parse(invoiceHeader[0].creationDate);
       var invoiceDate = new Date(_date);

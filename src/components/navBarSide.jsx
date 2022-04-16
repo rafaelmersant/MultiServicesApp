@@ -112,7 +112,7 @@ const NavBarSide = ({ user }) => {
         {user &&
           (user.role === "Admin" ||
             user.role === "Owner" ||
-            user.role == "Caja") && (
+            user.role === "Caja") && (
             <React.Fragment>
               <NavLink
                 className="list-group-item list-group-item-action bg-light border-none"

@@ -42,7 +42,7 @@ export function getInvoicesHeader(
   if (customerId) urlQuery += `&customer=${customerId}`;
   if (paymentMethod !== "ALL") urlQuery += `&paymentMethod=${paymentMethod}`;
 
-  if (customerId || invoiceNo) urlQuery = urlQuery.replace("invoicesHeaders","invoicesHeadersCustomer");
+  if (customerId || invoiceNo) urlQuery = urlQuery.replace("invoicesHeaders","invoicesHeadersSearch");
 
   return http.get(urlQuery);
 }

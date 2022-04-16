@@ -49,8 +49,6 @@ class Products extends Component {
 
         products = prods;
       } else {
-        console.log("!this.defaultProducts.count", !this.defaultProducts.count);
-        //if (!this.defaultProducts.count) {
         const { data: prods } = await getProducts(
           getCurrentUser().companyId,
           page,
@@ -58,9 +56,6 @@ class Products extends Component {
         );
         this.defaultProducts = prods;
         products = prods;
-        //} else {
-        //  products = this.defaultProducts;
-        //}
       }
 
       const productsFiltered = _.orderBy(
