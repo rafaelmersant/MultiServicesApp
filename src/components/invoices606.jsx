@@ -18,10 +18,10 @@ class Invoices606 extends Component {
   };
 
   async componentDidMount() {
-    this.populateInvoices();
+    this.populateInvoices(this.state.searchYear);
   }
 
-  async populateInvoices() {
+  async populateInvoices(year) {
     this.setState({ loading: true });
     this.forceUpdate();
 
@@ -29,7 +29,7 @@ class Invoices606 extends Component {
 
     let { data: invoices } = await getProductsTrackingsHeaderByYear(
       companyId,
-      this.state.searchYear
+      year
     );
 
     invoices = this.mapToModel(invoices.results);
@@ -156,8 +156,6 @@ class Invoices606 extends Component {
                 invoices={invoices}
                 user={user}
                 sortColumn={sortColumn}
-                onDelete={this.handleDelete}
-                onSort={this.handleSort}
               />
             )}
 

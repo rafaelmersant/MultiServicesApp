@@ -14,8 +14,6 @@ class Invoices607 extends Component {
     invoices: [],
     invoicesExcel: [],
     totalCount: 0,
-    currentPage: 1,
-    pageSize: 999999,
     searchQuery: "",
     searchYear: new Date().getFullYear(),
     sortColumn: { path: "creationDate", order: "desc" },
@@ -33,7 +31,7 @@ class Invoices607 extends Component {
 
     let { data: invoices } = await getInvoicesHeaderFull(companyId, year);
 
-    await this.mapToExcelView(invoices);
+    invoices = this.mapToModel(invoices);
 
     this.setState({ invoices, loading: false });
   }
@@ -58,14 +56,15 @@ class Invoices607 extends Component {
     this.setState({ sortColumn });
   };
 
-  mapToExcelView = async (data) => {
-    let invoicesExcel = [];
+  mapToModel = (data) => {
+    let result = [];
 
     data.forEach((item) => {
-      invoicesExcel.push({
+      result.push({
+        id: item.id,
         creationDate: new Date(item.creationDate).toLocaleDateString(),
         rnc:
-          item.customer.identificationType == "R"
+          item.customer && item.customer.identificationType == "R"
             ? item.customer.identification
             : "",
         ncf: item.ncf,
@@ -76,16 +75,13 @@ class Invoices607 extends Component {
       });
     });
 
-    this.setState({ invoicesExcel });
+    return result;
   };
 
-  getPagedData = async () => {
+  getPagedData = () => {
     const {
-      pageSize,
-      currentPage,
       sortColumn,
       searchQuery,
-      searchYear,
       invoices: allInvoices,
     } = this.state;
 
@@ -95,21 +91,17 @@ class Invoices607 extends Component {
         `${m.ncf.toLowerCase()}`.includes(searchQuery.toLocaleLowerCase())
       );
 
-    if (searchYear)
-      filtered = allInvoices.filter(
-        (m) => new Date(m.creationDate).getFullYear() == searchYear
-      );
-
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
-    const invoices = paginate(sorted, currentPage, pageSize);
-
-    await this.mapToExcelView(invoices);
+    const invoices = paginate(sorted, 1, 9999999);
 
     return { totalCount: filtered.length, invoices };
   };
 
   render() {
+    const { sortColumn } = this.state;
     const { user } = this.props;
+
+    const { invoices } = this.getPagedData();
 
     return (
       <div className="container-fluid">
@@ -118,7 +110,7 @@ class Invoices607 extends Component {
             <h2 className="pull-right text-info">Reporte 607</h2>
 
             <ExportInvoices607
-              data={this.state.invoicesExcel}
+              data={this.mapToModel(invoices)}
               sheetName="Reporte607"
             />
 
@@ -165,9 +157,7 @@ class Invoices607 extends Component {
               <Invoices607Table
                 invoices={this.state.invoices}
                 user={user}
-                sortColumn={this.state.sortColumn}
-                // onDelete={this.handleDelete}
-                // onSort={this.handleSort}
+                sortColumn={sortColumn}
               />
             )}
           </div>

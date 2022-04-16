@@ -9,22 +9,26 @@ class Invoices607Table extends Component {
       path: "rnc",
       label: "RNC",
       align: "text-left",
-      content: item => (
+      content: (item) => (
         <div className="text-left">
-          {item.customer.identificationType === "R" && <span>{item.customer.identification}</span>}
+          {item.customer && item.customer.identificationType === "R" && (
+            <span>{item.customer.identification}</span>
+          )}
         </div>
-      )
+      ),
     },
     { path: "ncf", label: "NCF" },
     {
       path: "amount",
       label: "Monto",
       align: "text-right",
-      content: item => (
+      content: (item) => (
         <div className="text-right">
-          <span>{formatNumber(item.subtotal - item.discount - item.itbis)}</span>
+          <span>
+            {formatNumber(item.amount)}
+          </span>
         </div>
-      )
+      ),
     },
     // {
     //   path: "discount",
@@ -40,33 +44,32 @@ class Invoices607Table extends Component {
       path: "itbis",
       label: "ITBIS",
       align: "text-right",
-      content: item => (
+      content: (item) => (
         <div className="text-right">
           <span>{formatNumber(item.itbis)}</span>
         </div>
-      )
+      ),
     },
     {
       path: "subtotal",
       label: "Total",
       align: "text-right",
-      content: item => (
+      content: (item) => (
         <div className="text-right">
-          <span>{formatNumber(item.subtotal - item.discount)}</span>
+          <span>{formatNumber(item.subtotal)}</span>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
-  
   constructor() {
     super();
-    console.log('RENDERING TABLE')
+    console.log("RENDERING TABLE");
   }
 
   render() {
     const { invoices, sortColumn, onSort } = this.props;
-    
+
     return (
       <Table
         columns={this.columns}
