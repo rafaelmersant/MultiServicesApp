@@ -91,7 +91,7 @@ class Invoices606 extends Component {
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
 
     let invoices = paginate(sorted, 1, 9999999);
-
+    
     return { totalCount: filtered.length, invoices };
   };
 
@@ -108,7 +108,7 @@ class Invoices606 extends Component {
             <h2 className="pull-right text-info">Reporte 606</h2>
 
             <ExportInvoices606
-              data={this.mapToModel(invoices)}
+              data={invoices}
               sheetName="Reporte606"
             />
 

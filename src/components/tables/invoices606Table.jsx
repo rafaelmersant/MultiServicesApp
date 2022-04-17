@@ -44,7 +44,7 @@ class Invoices606Table extends Component {
 
   render() {
     const { invoices, sortColumn, onSort } = this.props;
-    console.log("invoices", invoices);
+    
     return (
       <Table
         columns={this.columns}

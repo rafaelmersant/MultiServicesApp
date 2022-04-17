@@ -64,7 +64,7 @@ class Invoices607 extends Component {
         id: item.id,
         creationDate: new Date(item.creationDate).toLocaleDateString(),
         rnc:
-          item.customer && item.customer.identificationType == "R"
+          item.customer && item.customer.identificationType === "R"
             ? item.customer.identification
             : "",
         ncf: item.ncf,
@@ -110,7 +110,7 @@ class Invoices607 extends Component {
             <h2 className="pull-right text-info">Reporte 607</h2>
 
             <ExportInvoices607
-              data={this.mapToModel(invoices)}
+              data={invoices}
               sheetName="Reporte607"
             />
 

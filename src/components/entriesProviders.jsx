@@ -12,7 +12,7 @@ class EntriesProviders extends Component {
   state = {
     entries: [],
     currentPage: 1,
-    pageSize: 1000,
+    pageSize: 999999,
     searchQuery: "",
     sortColumn: { path: "creationDate", order: "desc" },
   };
@@ -27,7 +27,7 @@ class EntriesProviders extends Component {
       companyId,
       this.state.currentPage,
       this.state.sortColumn,
-      ""
+      this.state.searchQuery
     );
     entries = entries.results;
 
@@ -83,7 +83,7 @@ class EntriesProviders extends Component {
   };
 
   render() {
-    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
+    const { sortColumn, searchQuery } = this.state;
     const { user } = this.props;
 
     const { totalCount, entries } = this.getPagedData();
@@ -109,11 +109,11 @@ class EntriesProviders extends Component {
               entries={entries}
               user={user}
               sortColumn={sortColumn}
-              onDelete={this.handleDelete}
-              onSort={this.handleSort}
+              // onDelete={this.handleDelete}
+              // onSort={this.handleSort}
             />
 
-            <div className="row">
+            {/* <div className="row">
               <Pagination
                 itemsCount={totalCount}
                 pageSize={pageSize}
@@ -123,7 +123,7 @@ class EntriesProviders extends Component {
               <p className="text-muted ml-3 mt-2">
                 <em>Mostrando {totalCount} registros</em>
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

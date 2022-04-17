@@ -964,7 +964,7 @@ class InvoiceForm extends Form {
           <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
           <ProductModal setNewProduct={this.handleSetNewProduct} />
 
-          {!this.isInvoiceEditable() && (role == "Admin" || role == "Owner") && (
+          {!this.isInvoiceEditable() && (role === "Admin" || role === "Owner") && (
             <button
               className="btn btn-danger mb-2 ml-3"
               onClick={this.handleChangePaid}

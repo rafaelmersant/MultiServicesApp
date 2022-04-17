@@ -127,7 +127,7 @@ export function saveProductTracking(entry) {
     delete body.id;
     return http.put(productsTrackingUrl(entry.id), body);
   }
-  console.log("tracking::", tracking);
+  
   return http.post(`${apiEndpointProdTracking}/`, tracking);
 }
 
@@ -177,7 +177,6 @@ export async function updateProductStock(inventory) {
       modifiedUser: getCurrentUser().email,
     };
 
-    console.log("productStock:::", productStock);
     if (productStock.length) {
       const quantityAvailable = parseFloat(
         productStock[0].quantityAvailable ?? 0
@@ -228,10 +227,6 @@ export async function replaceProductStock(inventory) {
     const { data: productStock } = await getProductsStocks(
       inventory.product_id
     );
-    // const quantity =
-    //   inventory.typeTracking === "E"
-    //     ? parseFloat(inventory.quantity)
-    //     : parseFloat(inventory.quantity) * -1;
 
     const stock = {
       id: productStock[0].id,
@@ -271,7 +266,6 @@ export async function replaceProductStock(inventory) {
       updated: true,
     };
 
-    console.log("product", product);
     await saveProduct(product);
   } catch (ex) {
     Sentry.captureException(ex);

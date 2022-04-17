@@ -62,11 +62,6 @@ class Invoices607Table extends Component {
     },
   ];
 
-  constructor() {
-    super();
-    console.log("RENDERING TABLE");
-  }
-
   render() {
     const { invoices, sortColumn, onSort } = this.props;
 
