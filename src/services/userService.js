@@ -4,7 +4,7 @@ import { apiUrl } from "../config.json";
 const apiEndpoint = `${apiUrl}/users`;
 
 function userUrl(id) {
-  return `${apiEndpoint}/${id}`;
+  return `${apiEndpoint}/${id}/`;
 }
 
 export function getUsers() {
