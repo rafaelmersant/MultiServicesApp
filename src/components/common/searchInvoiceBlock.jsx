@@ -111,7 +111,7 @@ class SearchInvoiceBlock extends Component {
           {this.state.searchCustomerText && (
             <div
               style={{
-                marginTop: "38px",
+                marginTop: "36px",
               }}
             >
               <span

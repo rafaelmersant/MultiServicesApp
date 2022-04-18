@@ -11,9 +11,9 @@ class PrintConduce extends Component {
       createdUserName,
     } = this.props;
 
-    console.log("serializer ConduceDetail", invoiceLeadDetail);
-    console.log("serializer H", invoiceHeader);
-    console.log("serializer D", invoiceDetail);
+    console.log("serializer ConduceDetail:", invoiceLeadDetail);
+    console.log("serializer InvoiceHeader:", invoiceHeader);
+    console.log("serializer InvoiceDetail:", invoiceDetail);
 
     invoiceHeader = invoiceHeader.results;
     var conduceDate = new Date();
@@ -63,24 +63,24 @@ class PrintConduce extends Component {
             </div>
             <div className="text-center">
               <span className="font-receipt font-receipt-small">
-                {invoiceHeader[0].company.address}
+                {invoiceHeader[0].company_address}
               </span>
             </div>
             <div className="text-center">
               <span className="font-receipt font-receipt-small">
-                {invoiceHeader[0].company.phoneNumber}
+                {invoiceHeader[0].company_phoneNumber}
               </span>
             </div>
             <div className="text-center">
               <span className="font-receipt font-receipt-small">
-                {invoiceHeader[0].company.email}
+                {invoiceHeader[0].company_email}
               </span>
             </div>
 
-            {invoiceHeader[0].company.rnc.length > 0 && (
+            {invoiceHeader[0].company_rnc.length > 0 && (
               <div className="text-center">
                 <span className="font-receipt font-receipt-small">
-                  RNC: {invoiceHeader[0].company.rnc}
+                  RNC: {invoiceHeader[0].company_rnc}
                 </span>
               </div>
             )}
@@ -99,18 +99,19 @@ class PrintConduce extends Component {
             )}
 
             <span className="font-receipt font-receipt-small d-block">
-              Cliente: {invoiceHeader[0].customer.firstName}{" "}
-              {invoiceHeader[0].customer.lastName}
+              Cliente: {invoiceHeader[0].customer_firstName}{" "}
+              {invoiceHeader[0].customer_lastName}
             </span>
 
-            {invoiceHeader[0].customer.identification.length > 0 && (
+            {invoiceHeader[0].customer_identification.length > 0 && (
               <span className="font-receipt font-receipt-small d-block">
-                Cédula/RNC: {invoiceHeader[0].customer.identification}
+                Cédula/RNC: {invoiceHeader[0].customer_identification}
               </span>
             )}
-            {invoiceHeader[0].customer.address.length > 0 && (
+            
+            {invoiceHeader[0].customer_address.length > 0 && (
               <span className="font-receipt font-receipt-small d-block">
-                Dirección: {invoiceHeader[0].customer.address}
+                Dirección: {invoiceHeader[0].customer_address}
               </span>
             )}
           </div>

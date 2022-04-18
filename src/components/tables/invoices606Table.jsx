@@ -4,15 +4,19 @@ import { formatNumber } from "../../utils/custom";
 
 class Invoices606Table extends Component {
   columns = [
-    { path: "creationDate", label: "Fecha (m/d/a)" },
+    { path: "creationDate", label: "Fecha de Retención(m/d/a)" },
+    {
+      path: "rnc",
+      label: "RNC/Cédula"
+    },
     { path: "ncf", label: "NCF" },
     {
-      path: "discount",
-      label: "Descuento",
+      path: "amount",
+      label: "Monto",
       align: "text-right",
       content: item => (
         <div className="text-right">
-          <span>{formatNumber(item.discount)}</span>
+          <span>{formatNumber(item.amount)}</span>
         </div>
       )
     },
@@ -40,7 +44,7 @@ class Invoices606Table extends Component {
 
   render() {
     const { invoices, sortColumn, onSort } = this.props;
-
+    
     return (
       <Table
         columns={this.columns}

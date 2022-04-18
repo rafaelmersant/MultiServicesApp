@@ -11,7 +11,6 @@ class PrintInvoice extends Component {
       discountTotal,
       createdUserName,
     } = this.props;
-    console.log("invoiceHeader print", invoiceHeader);
 
     if (invoiceHeader.length) {
       var _date = Date.parse(invoiceHeader[0].creationDate);
@@ -67,24 +66,24 @@ class PrintInvoice extends Component {
 
             <div className="text-center">
               <span className="font-receipt font-receipt-small-invoice">
-                {invoiceHeader[0].company.address}
+                {invoiceHeader[0].company_address}
               </span>
             </div>
             <div className="text-center">
               <span className="font-receipt font-receipt-small-invoice">
-                {invoiceHeader[0].company.phoneNumber}
+                {invoiceHeader[0].company_phoneNumber}
               </span>
             </div>
             <div className="text-center">
               <span className="font-receipt font-receipt-small-invoice">
-                {invoiceHeader[0].company.email}
+                {invoiceHeader[0].company_email}
               </span>
             </div>
 
-            {invoiceHeader[0].company.rnc.length > 0 && (
+            {invoiceHeader[0].company_rnc.length > 0 && (
               <div className="text-center">
                 <span className="font-receipt font-receipt-small-invoice">
-                  RNC: {invoiceHeader[0].company.rnc}
+                  RNC: {invoiceHeader[0].company_rnc}
                 </span>
               </div>
             )}
@@ -103,18 +102,18 @@ class PrintInvoice extends Component {
             )}
 
             <span className="font-receipt font-receipt-small-invoice d-block">
-              Cliente: {invoiceHeader[0].customer.firstName}{" "}
-              {invoiceHeader[0].customer.lastName}
+              Cliente: {invoiceHeader[0].customer_firstName}{" "}
+              {invoiceHeader[0].customer_lastName}
             </span>
 
-            {invoiceHeader[0].customer.identification.length > 0 && (
+            {invoiceHeader[0].customer_identification.length > 0 && (
               <span className="font-receipt font-receipt-small-invoice d-block">
-                Cédula/RNC: {invoiceHeader[0].customer.identification}
+                Cédula/RNC: {invoiceHeader[0].customer_identification}
               </span>
             )}
-            {invoiceHeader[0].customer.address.length > 0 && (
+            {invoiceHeader[0].customer_address.length > 0 && (
               <span className="font-receipt font-receipt-small-invoice d-block">
-                Dirección: {invoiceHeader[0].customer.address}
+                Dirección: {invoiceHeader[0].customer_address}
               </span>
             )}
           </div>
@@ -128,7 +127,7 @@ class PrintInvoice extends Component {
           <div className="text-center">
             <span className="font-receipt font-receipt-small-2-invoice">
               {invoiceHeader.length &&
-                !invoiceHeader[0].ncf.includes("B01") &&
+                !invoiceHeader[0].ncf.includes("B02") &&
                 "FACTURA PARA CONSUMIDOR FINAL"}
             </span>
 
@@ -171,15 +170,15 @@ class PrintInvoice extends Component {
                   <tr key={"M" + item.id}>
                     <td colSpan="3">
                       <span className="font-receipt font-receipt-small-invoice">
-                        {item.product.description}
+                        {item.product_description}
                       </span>
                     </td>
                   </tr>
 
-                  <tr key={item.product.id}>
+                  <tr key={item.product_id}>
                     <td>
                       <span className="font-receipt font-receipt-small-invoice">
-                        {item.quantity} x {formatNumber(item.product.price)}
+                        {item.quantity} x {formatNumber(item.price)}
                       </span>
                     </td>
                     <td className="text-right">
@@ -189,13 +188,13 @@ class PrintInvoice extends Component {
                     </td>
                     <td className="text-right">
                       <span className="font-receipt font-receipt-small-invoice">
-                        {formatNumber(item.quantity * item.product.price)}
+                        {formatNumber(item.quantity * item.price)}
                       </span>
                     </td>
                   </tr>
 
                   {item.discount > 0 && (
-                    <tr key={"D" + item.product.id}>
+                    <tr key={"D" + item.product_id}>
                       <td colSpan="2">
                         <span className="font-receipt font-receipt-small-invoice">
                           {"DESCUENTO"}

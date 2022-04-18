@@ -8,6 +8,7 @@ import Input from "../common/input";
 import Select from "../common/select";
 import SearchProduct from "../common/searchProduct";
 import SearchCustomer from "../common/searchCustomer";
+import Loading from "../common/loading";
 import { formatNumber } from "../../utils/custom";
 import CustomerModal from "../modals/customerModal";
 import ProductModal from "../modals/productModal";
@@ -66,6 +67,7 @@ class InvoiceForm extends Form {
       creationDate: new Date().toISOString(),
       serverDate: new Date().toISOString(),
     },
+    loading: true,
     disabledSave: false,
     invoiceDate: new Date(),
     products: [],
@@ -249,9 +251,14 @@ class InvoiceForm extends Form {
   }
 
   async populateInvoice() {
+    //if (getCurrentUser().role === "Caja") window.location = '/conduces/';
+    
     try {
       const sequence = this.props.match.params.id;
-      if (sequence === "new") return;
+      if (sequence === "new")  {
+        this.setState({ loading: false})
+        return;
+      }
 
       const { data: invoice } = await getInvoiceHeader(
         getCurrentUser().companyId,
@@ -267,18 +274,21 @@ class InvoiceForm extends Form {
         this.state.data.createdUser
       );
 
+      const invoiceHeaderMapped = mapToViewInvoiceHeader(invoiceHeader);
+
       this.setState({
-        data: mapToViewInvoiceHeader(invoiceHeader),
+        data: invoiceHeaderMapped,
         details: mapToViewInvoiceDetail(invoiceDetail),
         detailsOriginal: mapToViewInvoiceDetail(invoiceDetail),
         invoiceDate: new Date(invoiceHeader[0].creationDate),
-        searchCustomerText: `${invoiceHeader[0].customer.firstName} ${invoiceHeader[0].customer.lastName}`,
+        searchCustomerText: `${invoiceHeader[0].customer_firstName} ${invoiceHeader[0].customer_lastName}`,
         hideSearchCustomer: true,
         ncf: invoiceHeader[0].ncf.length,
         action: "Detalle de Factura No. ",
         serializedInvoiceHeader: invoiceHeader,
         serializedInvoiceDetail: invoiceDetail,
         createdUserName: createdUserData[0].name,
+        loading: false
       });
 
       this.forceUpdate();
@@ -319,8 +329,6 @@ class InvoiceForm extends Form {
     handler(window.event);
 
     this.setState({ clearSearchProduct: false });
-
-    console.log("product selected:", product);
 
     if (product.id === 0) {
       this.raiseProductModal.click();
@@ -582,7 +590,6 @@ class InvoiceForm extends Form {
       await this.populateProducts();
       await this.populateInvoice(false);
 
-      console.log("data (didMount):", this.state.data);
     } catch (ex) {
       try {
         Sentry.captureException(ex);
@@ -637,7 +644,6 @@ class InvoiceForm extends Form {
         if (this.state.data.typeDoc !== "0") await this.getNCF();
       }
 
-      console.log("invoiceHeader", this.state.data);
       const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
 
       for (const item of this.state.details) {
@@ -661,10 +667,6 @@ class InvoiceForm extends Form {
             const _item = this.state.detailsOriginal.find(
               (__item) => __item.product_id === item.product_id
             );
-
-            console.log("!this.state.data.id", !this.state.data.id);
-            console.log("_item.quantity", _item.quantity);
-            console.log("item.quantity", item.quantity);
 
             if (this.state.data.id && _item.quantity !== item.quantity) {
               const newQuantity = _item.quantity - item.quantity;
@@ -722,6 +724,10 @@ class InvoiceForm extends Form {
         console.log("errors", this.state.errors);
       }
     }
+  };
+
+  handleCleanProduct = async () => {
+    this.setState({currentProduct: {}, searchProductText: ""});
   };
 
   render() {
@@ -848,6 +854,26 @@ class InvoiceForm extends Form {
                     label="Producto"
                   />
                 </div>
+                {Object.keys(this.state.currentProduct).length > 0  && (
+                  <div
+                    style={{
+                      marginTop: "36px",
+                    }}
+                  >
+                    <span
+                      className="fa fa-trash text-danger"
+                      style={{
+                        fontSize: "24px",
+                        position: "absolute",
+                        marginLeft: "-29px",
+                        cursor: "pointer",
+                      }}
+                      title="Limpiar filtro de producto"
+                      onClick={this.handleCleanProduct}
+                    ></span>
+                  </div>
+                )}
+
                 <div className="col-1 mr-0 ml-0 pr-0 pl-0">
                   <Input
                     type="text"
@@ -886,6 +912,7 @@ class InvoiceForm extends Form {
                     label="Desc/Unidad"
                     onChange={this.handleChangeQtyDisc}
                     onBlur={this.handleBlurDiscount}
+                    disabled={role !== "Admin" && role !== "Owner"}
                   />
                 </div>
                 <div
@@ -902,13 +929,19 @@ class InvoiceForm extends Form {
                 </div>
               </div>
 
-              <InvoiceDetailTable
+              {this.state.loading && (
+              <div className="d-flex justify-content-center">
+                <Loading />
+              </div>
+              )}
+              
+              {!this.state.loading && (<InvoiceDetailTable
                 invoiceHeader={this.state.data}
                 details={this.state.details}
                 user={user}
                 onDelete={this.handleDeleteDetail}
                 onEdit={this.handleEditDetail}
-              />
+              />)}
 
               {this.isInvoiceEditable() && this.renderButton("Guardar")}
             </form>
@@ -932,7 +965,7 @@ class InvoiceForm extends Form {
           <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
           <ProductModal setNewProduct={this.handleSetNewProduct} />
 
-          {!this.isInvoiceEditable() && (role == "Admin" || role == "Owner") && (
+          {!this.isInvoiceEditable() && (role === "Admin" || role === "Owner") && (
             <button
               className="btn btn-danger mb-2 ml-3"
               onClick={this.handleChangePaid}
@@ -942,7 +975,7 @@ class InvoiceForm extends Form {
           )}
 
           <div className="container-fluid mt-3">
-            {(role === "Admin" || role === "Owner") && (
+            {(role === "Admin" || role === "Owner" || role === "Caja") && (
               <NavLink className="btn btn-secondary" to="/invoices">
                 {"<-"} Ir al listado
               </NavLink>
@@ -957,7 +990,7 @@ class InvoiceForm extends Form {
           </div>
 
           <div className="d-flex justify-content-end w-100 pr-3 mb-3">
-            {this.state.data.id > 0 && (role === "Admin" || role === "Owner") && (
+            {this.state.data.id > 0 && (role === "Admin" || role === "Owner" || role === "Caja") && (
               <ReactToPrint
                 trigger={() => (
                   <span

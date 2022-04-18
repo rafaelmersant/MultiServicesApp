@@ -4,7 +4,7 @@ import { apiUrl } from "../config.json";
 const apiEndpoint = `${apiUrl}/fiscalGov`;
 
 function entryUrl(id) {
-  return `${apiEndpoint}/${id}`;
+  return `${apiEndpoint}/${id}/`;
 }
 
 export function getEntries(typeDoc, companyId) {

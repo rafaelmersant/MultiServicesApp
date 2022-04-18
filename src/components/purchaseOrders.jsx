@@ -15,7 +15,7 @@ class PurchaseOrders extends Component {
     loading: true,
     orders: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 20,
     searchQuery: "",
     totalOrders: 0,
     sortColumn: { path: "creationDate", order: "desc" },

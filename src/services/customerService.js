@@ -4,7 +4,7 @@ import { apiUrl } from "../config.json";
 const apiEndpoint = `${apiUrl}/customers`;
 
 function customerUrl(id) {
-  return `${apiEndpoint}/${id}`;
+  return `${apiEndpoint}/${id}/`;
 }
 
 export function getCustomers(companyId, sortColumn, currentPage, searchQuery) {
@@ -43,6 +43,8 @@ export function saveCustomer(customer) {
   if (customer.id) {
     const body = { ...customer };
     delete body.id;
+    delete body.creationDate;
+    console.log('BEFORE SAVE CUSTOMER:', body)
     return http.put(customerUrl(customer.id), body);
   }
 

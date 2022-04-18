@@ -2,6 +2,11 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 const NavBarSide = ({ user }) => {
+  const classesForCaja =
+    user && user.role === "Caja"
+      ? "list-group-item list-group-item-action bg-light"
+      : "list-group-item list-group-item-action bg-light border-none";
+
   return (
     <div className="bg-light border-right" id="sidebar-wrapper">
       <div className="sidebar-heading text-center">
@@ -14,32 +19,41 @@ const NavBarSide = ({ user }) => {
         </NavLink>
       </div>
       <div className="list-group list-group-flush">
-        <NavLink
-          className="list-group-item list-group-item-action bg-light"
-          to="/invoice/new"
-        >
-          <span className="fa fa-money mr-2 color-local" />
-          Facturación
-        </NavLink>
+        {user &&
+          (user.role === "Admin" ||
+            user.role === "Owner" ||
+            user.role === "Level1") && (
+            <React.Fragment>
+              <NavLink
+                className="list-group-item list-group-item-action bg-light"
+                to="/invoice/new"
+              >
+                <span className="fa fa-money mr-2 color-local" />
+                Facturación
+              </NavLink>
 
-        {user && (user.role === "Admin" || user.role === "Owner") && (
-          <React.Fragment>
-            <NavLink
-              className="list-group-item list-group-item-action bg-light border-none"
-              to="/conduces"
-            >
+              <NavLink
+                className="list-group-item list-group-item-action bg-light border-none"
+                to="/quotations"
+              >
+                <span className="fa fa-book mr-2 color-local" />
+                Cotizaciones
+              </NavLink>
+            </React.Fragment>
+          )}
+
+        {user &&
+          (user.role === "Admin" ||
+            user.role === "Owner" ||
+            user.role === "Caja") && (
+            <NavLink className={classesForCaja} to="/conduces">
               <span className="fa fa-truck mr-2 color-local" />
               Conduces
             </NavLink>
+          )}
 
-            <NavLink
-              className="list-group-item list-group-item-action bg-light border-none"
-              to="/quotations"
-            >
-              <span className="fa fa-book mr-2 color-local" />
-              Cotizaciones
-            </NavLink>
-
+        {user && (user.role === "Admin" || user.role === "Owner") && (
+          <React.Fragment>
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
               to="/inventoriesFull"
@@ -92,22 +106,50 @@ const NavBarSide = ({ user }) => {
               <span className="fa fa-credit-card mr-2 color-local" />
               NCF
             </NavLink>
-            <NavLink
-              className="list-group-item list-group-item-action bg-light border-none"
-              to="/invoices"
-            >
-              <span className="fa fa-list mr-2 color-local" />
-              Listado de Facturas
-            </NavLink>
+          </React.Fragment>
+        )}
 
-            <NavLink
-              className="list-group-item list-group-item-action bg-light border-none"
-              to="/reports/report607"
-            >
-              <span className="fa fa-list mr-2 color-local" />
-              Facturas 607
-            </NavLink>
+        {user &&
+          (user.role === "Admin" ||
+            user.role === "Owner" ||
+            user.role === "Caja") && (
+            <React.Fragment>
+              <NavLink
+                className="list-group-item list-group-item-action bg-light border-none"
+                to="/invoices"
+              >
+                <span className="fa fa-list mr-2 color-local" />
+                Listado de Facturas
+              </NavLink>
 
+              <NavLink
+                className="list-group-item list-group-item-action bg-light border-none"
+                to="/reports/report607"
+              >
+                <span className="fa fa-list mr-2 color-local" />
+                Reporte 607 (Ventas)
+              </NavLink>
+
+              <NavLink
+                className="list-group-item list-group-item-action bg-light border-none"
+                to="/reports/report606"
+              >
+                <span className="fa fa-list mr-2 color-local" />
+                Reporte 606 (Compras)
+              </NavLink>
+
+              <NavLink
+                className="list-group-item list-group-item-action bg-light border-none"
+                to="/reports/purchaseOrders"
+              >
+                <span className="fa fa-book mr-2 color-local" />
+                Ordenes de Compra
+              </NavLink>
+            </React.Fragment>
+          )}
+
+        {user && (user.role === "Admin" || user.role === "Owner") && (
+          <React.Fragment>
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
               to="/inventory/report"
@@ -115,26 +157,13 @@ const NavBarSide = ({ user }) => {
               <span className="fa fa-list mr-2 color-local" />
               Inventario
             </NavLink>
-            <NavLink
-              className="list-group-item list-group-item-action bg-light border-none"
-              to="/reports/report606"
-            >
-              <span className="fa fa-list mr-2 color-local" />
-              Reporte 606
-            </NavLink>
+
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none"
               to="/reports/entrtiesProvider"
             >
               <span className="fa fa-list mr-2 color-local" />
               Entradas por Proveedor
-            </NavLink>
-            <NavLink
-              className="list-group-item list-group-item-action bg-light border-none"
-              to="/reports/purchaseOrders"
-            >
-              <span className="fa fa-book mr-2 color-local" />
-              Ordenes de Compra
             </NavLink>
           </React.Fragment>
         )}

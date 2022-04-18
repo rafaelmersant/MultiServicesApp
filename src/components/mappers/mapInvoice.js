@@ -4,7 +4,7 @@ export function mapToViewInvoiceHeader(invoiceHeader) {
   return {
     id: invoiceHeader[0].id,
     sequence: parseFloat(invoiceHeader[0].sequence),
-    customer_id: invoiceHeader[0].customer.id,
+    customer_id: invoiceHeader[0].customer_id,
     ncf: invoiceHeader[0].ncf,
     paymentMethod: invoiceHeader[0].paymentMethod,
     paid: invoiceHeader[0].paid,
@@ -13,7 +13,7 @@ export function mapToViewInvoiceHeader(invoiceHeader) {
     subtotal: invoiceHeader[0].subtotal,
     itbis: invoiceHeader[0].itbis,
     discount: invoiceHeader[0].discount,
-    company_id: invoiceHeader[0].company.id,
+    company_id: invoiceHeader[0].company_id,
     createdUser: invoiceHeader[0].createdByUser
       ? invoiceHeader[0].createdByUser
       : getCurrentUser().email,
@@ -26,9 +26,9 @@ export function mapToViewInvoiceDetail(invoiceDetail) {
   for (const item of invoiceDetail) {
     details.push({
       id: item.id,
-      invoice_id: item.invoice.id,
-      product_id: item.product.id,
-      product: item.product.description,
+      invoice_id: item.invoice_id,
+      product_id: item.product_id,
+      product: item.product_description,
       quantity: item.quantity,
       price: item.price,
       cost: item.cost,

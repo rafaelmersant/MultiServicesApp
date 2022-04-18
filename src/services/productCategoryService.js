@@ -4,7 +4,7 @@ import { apiUrl } from "../config.json";
 const apiEndpoint = `${apiUrl}/productCategories`;
 
 function prodCategoryUrl(id) {
-  return `${apiEndpoint}/${id}`;
+  return `${apiEndpoint}/${id}/`;
 }
 
 export function getProductsCategories(companyId) {

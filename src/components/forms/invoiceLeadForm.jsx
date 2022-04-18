@@ -139,7 +139,7 @@ class InvoiceLeadForm extends Form {
 
     if (conduceNo) {
       const { data: result } = await getInvoiceLeadHeaderById(conduceNo);
-      invoiceNo = result.results[0].invoice.sequence;
+      invoiceNo = result.results[0].invoice_no;
     }
 
     const { data: invoiceHeader } = await getInvoiceHeader(
@@ -170,7 +170,7 @@ class InvoiceLeadForm extends Form {
 
     if (invoiceLeadHeader.count) {
       for (const item of invoiceLeadHeader.results) {
-        const { data: result } = await getInvoiceLeadDetail(item);
+        const { data: result } = await getInvoiceLeadDetail(item);  
         for (const detail of result) {
           invoiceLeadDetail.push(detail);
         }
@@ -208,14 +208,14 @@ class InvoiceLeadForm extends Form {
         invoiceHeader.results[0].sequence,
         { ...this.state.data }
       );
-
+      
       const _invoiceHeader = mapToViewInvoiceHeader(invoiceHeader.results);
-
+      
       const _invoiceDetail = mapToViewInvoiceDetailWithConduces(
         invoiceDetail,
         invoiceLeadDetail
       );
-
+      
       if (!(invoiceNo > 0)) {
         const index = this.columns.indexOf(this.quantityToDeliver);
         this.columns.splice(index, 1);
@@ -292,6 +292,10 @@ class InvoiceLeadForm extends Form {
     return true;
   };
 
+  newConduce = () => {
+    window.location = `/conduce/new`;
+  };
+
   doSubmit = async () => {
     try {
       console.log("Saving the details...");
@@ -317,7 +321,11 @@ class InvoiceLeadForm extends Form {
 
       toast.success("El conduce fue realizado con exito!");
 
-      this.populateInvoiceLead(0, result.id);
+      setTimeout(() => {
+        window.location = `/conduce/${result.id}`;
+      }, 700);
+      
+      // this.populateInvoiceLead(0, result.id);
     } catch (ex) {
       Sentry.captureException(ex);
 
@@ -347,6 +355,14 @@ class InvoiceLeadForm extends Form {
     return (
       <React.Fragment>
         <div className="container-fluid">
+          {this.state.action.includes("Detalle") && 
+            <div className="row mb-2">
+              <div className="col">
+                <button className="btn button-local pull-right" onClick={this.newConduce}>Nuevo Conduce</button>
+              </div>
+            </div>
+          } 
+
           <h4 className="bg-dark text-light list-header">
             {this.state.action}
           </h4>

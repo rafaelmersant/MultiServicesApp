@@ -4,7 +4,7 @@ import ReactExport from "react-export-excel";
 class ExportInvoices606 extends Component {
   render() {
     const { sheetName, data } = this.props;
-
+    
     const ExcelFile = ReactExport.ExcelFile;
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -17,9 +17,10 @@ class ExportInvoices606 extends Component {
         }
       >
         <ExcelSheet data={data} name={sheetName}>
-          <ExcelColumn label="Fecha" value="creationDate" />
+        <ExcelColumn label="Fecha de Retención" value="creationDate" />
+          <ExcelColumn label="RNC/Cédula" value="identification" />
           <ExcelColumn label="NCF" value="ncf" />
-          <ExcelColumn label="Descuento" value="discount" />
+          <ExcelColumn label="Monto" value="amount" />
           <ExcelColumn label="ITBIS" value="itbis" />
           <ExcelColumn label="Total" value="subtotal" />
         </ExcelSheet>

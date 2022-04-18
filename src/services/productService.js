@@ -5,7 +5,7 @@ const apiEndpoint = `${apiUrl}/products`;
 const apiEndpointPurchaseOrder = `${apiUrl}/purchaseOrders`;
 
 function productUrl(id) {
-  return `${apiEndpoint}/${id}`;
+  return `${apiEndpoint}/${id}/`;
 }
 
 export function getProducts(companyId, currentPage, sortColumn) {
@@ -103,7 +103,7 @@ export function savePurchaseOrder(order) {
   if (order.id) {
     const body = { ...order };
     delete body.id;
-    return http.put(`${apiEndpointPurchaseOrder}/${order.id}`, body);
+    return http.put(`${apiEndpointPurchaseOrder}/${order.id}/`, body);
   }
 
   return http.post(`${apiEndpointPurchaseOrder}/`, order);

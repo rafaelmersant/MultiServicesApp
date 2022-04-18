@@ -49,8 +49,8 @@ class ProductProvidersModal extends Component {
               <tbody>
                 {this.props.data &&
                   this.props.data.map((item) => (
-                    <tr key={item.product_id || item.id}>
-                      <td key={item.id}>{item.header.provider.firstName}</td>
+                    <tr key={item.id}>
+                      <td key={item.id}>{item.firstName}</td>
                       <td>{item.price}</td>
                       <td>{this.formatDateWithoutTime(item.creationDate)}</td>
                     </tr>
