@@ -29,7 +29,7 @@ class PrintInvoice extends Component {
                   fontWeight: "bold",
                 }}
               >
-                FERRIN
+                Comercial Fanitsa
               </span>
               <span
                 style={{
@@ -37,18 +37,14 @@ class PrintInvoice extends Component {
                   fontSize: "3em",
                   fontWeight: "bold",
                 }}
-              >
-                M
-              </span>
+              ></span>
               <span
                 style={{
                   fontFamily: "Calisto MT",
                   fontSize: "2.4em",
                   fontWeight: "bold",
                 }}
-              >
-                AS
-              </span>
+              ></span>
               {/* <img
                 width="210px"
                 src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}

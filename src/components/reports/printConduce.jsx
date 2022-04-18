@@ -31,36 +31,41 @@ class PrintConduce extends Component {
               <span
                 style={{
                   fontFamily: "Calisto MT",
-                  fontSize: "1.9em",
+                  fontSize: "2.4em",
                   fontWeight: "bold",
                 }}
               >
-                FERRIN
+                Comercial Fanitsa
               </span>
               <span
                 style={{
                   fontFamily: "Calisto MT",
-                  fontSize: "2.5em",
+                  fontSize: "3em",
                   fontWeight: "bold",
                 }}
-              >
-                M
-              </span>
+              ></span>
               <span
                 style={{
                   fontFamily: "Calisto MT",
-                  fontSize: "1.9em",
+                  fontSize: "2.4em",
                   fontWeight: "bold",
                 }}
-              >
-                AS
-              </span>
+              ></span>
               {/* <img
                 width="210px"
                 src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
                 alt="FERRINMAS"
               /> */}
+              <div
+                className="font-receipt font-receipt-small-slogan"
+                style={{ marginTop: "-18px" }}
+              >
+                <span style={{ marginRight: "-27px" }}>
+                  CONSTRUYENDO CONFIANZA
+                </span>
+              </div>
             </div>
+
             <div className="text-center">
               <span className="font-receipt font-receipt-small">
                 {invoiceHeader[0].company_address}
@@ -108,7 +113,7 @@ class PrintConduce extends Component {
                 Cédula/RNC: {invoiceHeader[0].customer_identification}
               </span>
             )}
-            
+
             {invoiceHeader[0].customer_address.length > 0 && (
               <span className="font-receipt font-receipt-small d-block">
                 Dirección: {invoiceHeader[0].customer_address}
