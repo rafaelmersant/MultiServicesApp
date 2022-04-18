@@ -251,7 +251,7 @@ class InvoiceForm extends Form {
   }
 
   async populateInvoice() {
-    if (getCurrentUser().role === "Caja") window.location = '/conduces/';
+    //if (getCurrentUser().role === "Caja") window.location = '/conduces/';
     
     try {
       const sequence = this.props.match.params.id;
@@ -912,6 +912,7 @@ class InvoiceForm extends Form {
                     label="Desc/Unidad"
                     onChange={this.handleChangeQtyDisc}
                     onBlur={this.handleBlurDiscount}
+                    disabled={role !== "Admin" && role !== "Owner"}
                   />
                 </div>
                 <div
@@ -974,7 +975,7 @@ class InvoiceForm extends Form {
           )}
 
           <div className="container-fluid mt-3">
-            {(role === "Admin" || role === "Owner") && (
+            {(role === "Admin" || role === "Owner" || role === "Caja") && (
               <NavLink className="btn btn-secondary" to="/invoices">
                 {"<-"} Ir al listado
               </NavLink>
@@ -989,7 +990,7 @@ class InvoiceForm extends Form {
           </div>
 
           <div className="d-flex justify-content-end w-100 pr-3 mb-3">
-            {this.state.data.id > 0 && (role === "Admin" || role === "Owner") && (
+            {this.state.data.id > 0 && (role === "Admin" || role === "Owner" || role === "Caja") && (
               <ReactToPrint
                 trigger={() => (
                   <span
