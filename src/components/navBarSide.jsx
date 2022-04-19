@@ -4,12 +4,12 @@ import { NavLink } from "react-router-dom";
 const NavBarSide = ({ user }) => {
   const classesForCaja =
     user && user.role === "Caja"
-      ? "list-group-item list-group-item-action bg-light"
+      ? "list-group-item list-group-item-action bg-light border-none"
       : "list-group-item list-group-item-action bg-light border-none";
 
   return (
     <div className="bg-light border-right" id="sidebar-wrapper">
-      <div className="sidebar-heading text-center">
+      <div className="sidebar-heading text-center border-bottom">
         <NavLink className="" to="/invoice/new">
           <img
             style={{ width: "150px", padding: "5px", margin: "0" }}
@@ -22,10 +22,11 @@ const NavBarSide = ({ user }) => {
         {user &&
           (user.role === "Admin" ||
             user.role === "Owner" ||
+            user.role === "Caja" ||
             user.role === "Level1") && (
             <React.Fragment>
               <NavLink
-                className="list-group-item list-group-item-action bg-light"
+                className="list-group-item list-group-item-action bg-light border-none"
                 to="/invoice/new"
               >
                 <span className="fa fa-money mr-2 color-local" />
