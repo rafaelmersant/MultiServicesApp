@@ -1014,7 +1014,6 @@ class InvoiceForm extends Form {
               itbisTotal={this.state.data.itbis}
               valorTotal={this.state.data.subtotal}
               discountTotal={this.state.data.discount}
-              createdUserName={this.state.createdUserName}
             />
           </div>
         </div>
