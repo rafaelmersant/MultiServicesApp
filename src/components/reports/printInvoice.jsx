@@ -9,7 +9,6 @@ class PrintInvoice extends Component {
       itbisTotal,
       valorTotal,
       discountTotal,
-      createdUserName,
     } = this.props;
 
     if (invoiceHeader.length) {
@@ -300,7 +299,7 @@ class PrintInvoice extends Component {
         </div>
         <div>
           <span className="font-receipt font-receipt-small-F-invoice">
-            Le atendió: {createdUserName}
+            Le atendió: {invoiceHeader.length && invoiceHeader[0].created_user_name}
           </span>
         </div>
         <div className="mt-4 text-center">GRACIAS POR SU COMPRA!</div>
