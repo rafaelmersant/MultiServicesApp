@@ -55,6 +55,7 @@ import ExportStockToExcel from "./components/reports/exportStockToExcel";
 import NavBarSide from "./components/navBarSide";
 import NavBarTop from "./components/navBarTop";
 import Quotations from "./components/quotations";
+import QuotationForm from "./components/forms/quotationForm";
 
 class App extends Component {
   state = {
@@ -104,6 +105,7 @@ class App extends Component {
                     path="/conduce/:id"
                     component={InvoiceLeadForm}
                   />
+                  <ProtectedRoute path="/quotation/:id" component={QuotationForm} />
 
                   <ProtectedRoute path="/inventories" component={Inventories} />
                   <ProtectedRoute

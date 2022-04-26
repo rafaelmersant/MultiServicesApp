@@ -14,6 +14,7 @@ import * as Sentry from "@sentry/react";
 
 Sentry.init({
   dsn: "https://1a9d594c9d87452ba6c80b093b44a7b1@o273632.ingest.sentry.io/5630248",
+  environment: "DEV"
 });
 
 ReactDOM.render(
