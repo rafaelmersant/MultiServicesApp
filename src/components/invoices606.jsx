@@ -126,7 +126,7 @@ class Invoices606 extends Component {
             <h2 className="pull-right text-info">Reporte 606</h2>
 
             <ExportInvoices606
-              data={invoices}
+              data={this.invoicesExportFormat(invoices)}
               sheetName="Reporte606"
             />
 
