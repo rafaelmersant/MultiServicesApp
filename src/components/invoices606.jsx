@@ -101,11 +101,11 @@ class Invoices606 extends Component {
     data.forEach((item) => {
       result.push({
         id: item.id,
-        rnc: item.provider ? item.provider.rnc : "",
+        rnc: item.provider,
         ncf: item.ncf,
-        amount: item.totalAmount - item.itbis,
+        amount: item.amount,
         itbis: item.itbis,
-        subtotal: item.totalAmount,
+        subtotal: item.subtotal,
         creationDate: new Date(item.creationDate).toLocaleDateString(),
       });
     });

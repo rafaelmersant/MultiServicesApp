@@ -104,14 +104,11 @@ class Invoices607 extends Component {
       result.push({
         id: item.id,
         creationDate: new Date(item.creationDate).toLocaleDateString(),
-        rnc:
-          item.customer && item.customer.identificationType === "R"
-            ? item.customer.identification
-            : "",
+        rnc: item.rnc,
         ncf: item.ncf,
-        amount: item.subtotal - item.discount - item.itbis,
+        amount: item.amount,
         itbis: item.itbis,
-        subtotal: item.subtotal - item.discount,
+        subtotal: item.subtotal,
       });
     });
 
