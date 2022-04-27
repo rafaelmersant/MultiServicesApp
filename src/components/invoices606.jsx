@@ -68,7 +68,7 @@ class Invoices606 extends Component {
         amount: item.totalAmount - item.itbis,
         itbis: item.itbis,
         subtotal: item.totalAmount,
-        creationDate: new Date(item.creationDate),
+        creationDate: item.creationDate,
       });
     });
 
@@ -93,6 +93,24 @@ class Invoices606 extends Component {
     let invoices = paginate(sorted, 1, 9999999);
     
     return { totalCount: filtered.length, invoices };
+  };
+
+  invoicesExportFormat = (data) => {
+    let result = [];
+
+    data.forEach((item) => {
+      result.push({
+        id: item.id,
+        rnc: item.provider ? item.provider.rnc : "",
+        ncf: item.ncf,
+        amount: item.totalAmount - item.itbis,
+        itbis: item.itbis,
+        subtotal: item.totalAmount,
+        creationDate: new Date(item.creationDate).toLocaleDateString(),
+      });
+    });
+
+    return result;
   };
 
   render() {
