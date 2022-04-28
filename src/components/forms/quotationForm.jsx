@@ -767,8 +767,8 @@ class QuotationForm extends Form {
           <div hidden="hidden">
             <PrintQuotation
               ref={(el) => (this.componentRef = el)}
-              invoiceHeader={this.state.serializedInvoiceHeader}
-              invoiceDetail={this.state.serializedInvoiceDetail}
+              quotationHeader={this.state.serializedQuotationHeader}
+              quotationDetail={this.state.serializedQuotationDetail}
               itbisTotal={this.state.data.itbis}
               valorTotal={this.state.data.subtotal}
               discountTotal={this.state.data.discount}
