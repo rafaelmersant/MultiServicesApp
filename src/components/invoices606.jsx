@@ -101,7 +101,7 @@ class Invoices606 extends Component {
     data.forEach((item) => {
       result.push({
         id: item.id,
-        rnc: item.provider,
+        rnc: item.rnc,
         ncf: item.ncf,
         amount: item.amount,
         itbis: item.itbis,
