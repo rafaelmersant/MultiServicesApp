@@ -18,7 +18,7 @@ class ExportInvoices606 extends Component {
       >
         <ExcelSheet data={data} name={sheetName}>
         <ExcelColumn label="Fecha de Retención" value="creationDate" />
-          <ExcelColumn label="RNC/Cédula" value="identification" />
+          <ExcelColumn label="RNC/Cédula" value="rnc" />
           <ExcelColumn label="NCF" value="ncf" />
           <ExcelColumn label="Monto" value="amount" />
           <ExcelColumn label="ITBIS" value="itbis" />
