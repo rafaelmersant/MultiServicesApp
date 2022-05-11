@@ -30,12 +30,19 @@ export function getProductsTrackingsHeader(
   companyId,
   currentPage,
   sortColumn,
-  providerName
+  providerName,
+  all
 ) {
   const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
   const column =
     sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
   const page = currentPage ? currentPage : 1;
+
+  if (all) {
+    return http.get(
+      `${apiEndpointProdTrackingHeader}/?company=${companyId}&ordering=${order}${column}&page=${page}&all=${all}`
+    );
+  }
 
   return http.get(
     `${apiEndpointProdTrackingHeader}/?company=${companyId}&ordering=${order}${column}&page=${page}&provider_name=${providerName}`

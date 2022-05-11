@@ -27,7 +27,8 @@ class EntriesProviders extends Component {
       companyId,
       this.state.currentPage,
       this.state.sortColumn,
-      this.state.searchQuery
+      this.state.searchQuery,
+      "all"
     );
     entries = entries.results;
 

@@ -43,8 +43,8 @@ class QuotationDetailTable extends Component {
   render() {
     const { details, quotationHeader } = this.props;
 
-    if (quotationHeader.id)
-      this.columns = this.columns.filter(c => c.path !== "delete");
+    // if (quotationHeader.id)
+    //   this.columns = this.columns.filter(c => c.path !== "delete");
 
     return (
       <React.Fragment>
@@ -68,7 +68,8 @@ class QuotationDetailTable extends Component {
                 <th>{formatNumber(quotationHeader.itbis)}</th>
                 <th>{formatNumber(quotationHeader.discount)}</th>
                 <th>{formatNumber(quotationHeader.subtotal - quotationHeader.discount)}</th>
-                {(!quotationHeader.id) && <th></th>}
+                <th></th>
+                {/* {(!quotationHeader.id) && <th></th>} */}
               </tr>
             </tfoot>
           )}
