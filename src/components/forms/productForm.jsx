@@ -213,10 +213,10 @@ class ProductForm extends Form {
   handleChangeCalculation = (e) => {
     const data = { ...this.state.data };
     data.cost = e.costPlusITBIS;
-    data.price = e.priceSales;
-    data.itbis = e.itbis > 0 ? e.itbis : 0;
+    data.price = e.priceSalesFinal; //e.priceSales;
+    data.itbis = e.itbisSales > 0 ? e.itbisSales : 0;
 
-    this.setState({ data, itbis: e.itbis > 0 });
+    this.setState({ data, itbis: e.itbisSales > 0 });
   };
 
   async componentDidMount() {
