@@ -171,25 +171,16 @@ class ProductForm extends Form {
 
   handleChangeITBIS = (e) => {
     const { data } = { ...this.state };
-    let { oldITBIS, oldCost } = {...this.state};
+    let { oldITBIS } = {...this.state};
 
-    oldCost = oldCost === 0 ? data.cost - data.itbis : oldCost;
- 
-    // if(oldCost > 0) {
-    //   data.cost = oldCost;
-    // }
+    oldITBIS = data.itbis > 0 ? data.itbis : oldITBIS;
 
-    if (!this.state.itbis) {
-      if (data.cost > 0) {
-        const cost = oldCost > 0 ? oldCost : data.cost;
-        data.itbis = Math.round(parseFloat(cost * 0.18) * 100) / 100;
-      }
-    } else {
-      oldITBIS = data.itbis > 0 ? data.itbis : oldITBIS;
+    data.itbis = oldITBIS;
+
+    if (this.state.itbis) 
       data.itbis = 0;
-    }
-
-    this.setState({ data, itbis: !this.state.itbis, oldITBIS, oldCost });
+    
+    this.setState({ data, itbis: !this.state.itbis, oldITBIS });
   };
 
   handleChangeCost = ({ currentTarget: input }) => {

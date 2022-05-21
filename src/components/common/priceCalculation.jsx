@@ -218,7 +218,7 @@ class PriceCalculation extends Component {
             type="text"
             name="percentage"
             value={formatNumber(this.state.data.percentage)}
-            label="Porcentaje"
+            label="Porcentaje %"
             disabled="disabled"
             onChange={this.handleChangeInput}
             classForLabel="font-calculation"
