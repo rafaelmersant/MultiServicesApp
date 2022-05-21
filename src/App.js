@@ -44,6 +44,7 @@ import CustomerForm from "./components/forms/customerForm";
 // Reports
 import PurchaseOrders from "./components/purchaseOrders";
 import EntriesProviders from "./components/entriesProviders";
+import Cuadre from "./components/reports/cuadre";
 
 import ProtectedRoute from "./components/common/protectedRoute";
 import auth from "./services/authService";
@@ -127,6 +128,10 @@ class App extends Component {
                   <ProtectedRoute
                     path="/inventoryFull/:id"
                     component={InventoryFullForm}
+                  />
+                  <ProtectedRoute
+                    path="/reports/cuadre"
+                    component={Cuadre}
                   />
                   <ProtectedRoute
                     path="/reports/report606"

@@ -130,6 +130,14 @@ const NavBarSide = ({ user }) => {
                 <span className="fa fa-book mr-2 color-local" />
                 Ordenes de Compra
               </NavLink>
+
+              <NavLink
+                className="list-group-item list-group-item-action bg-light border-none"
+                to="/reports/cuadre"
+              >
+                <span className="fa fa-book mr-2 color-local" />
+                Reporte de Cuadre
+              </NavLink>
             </React.Fragment>
           )}
 

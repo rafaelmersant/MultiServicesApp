@@ -59,6 +59,12 @@ export function getInvoiceHeader(companyId, sequence) {
   );
 }
 
+export function getInvoicesHeaderByRange(start_date, end_date) {
+  return http.get(
+    `${apiEndpointHeader}/?start_date=${start_date}&end_date=${end_date}&ordering=-created_date`
+  );
+}
+
 // export function getInvoiceDetail(invoiceHeaderId) {
 //   return http.get(`${apiEndpointDetail}/?invoice=${invoiceHeaderId}`);
 // }
