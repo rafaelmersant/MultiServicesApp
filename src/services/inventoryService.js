@@ -263,7 +263,7 @@ export async function replaceProductStock(inventory) {
         ? products.results[0].createdUser
         : getCurrentUser().email,
       creationDate: products.results[0].creationDate,
-      updated: true,
+      updated: !products.results[0].updated,
     };
 
     await saveProduct(product);
