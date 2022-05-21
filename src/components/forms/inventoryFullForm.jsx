@@ -406,15 +406,18 @@ class InventoryFullForm extends Form {
                     {this.renderInput("reference", "Factura/Referencia")}
                   </div>
 
-                  <div className="col">
-                    <label htmlFor="docDate">Fecha Documento</label>
-                    <DatePicker
-                      className="form-control form-control-sm"
-                      selected={this.state.docDate}
-                      onChange={(date) => this.handleChangeDocDate(date)}
-                      dateFormat="dd/MM/yyyy"
-                    />
+                  <div className="col-2">
+                    <label className="mr-1">Fecha Documento</label>
+                    <div className="mr-3">
+                      <DatePicker
+                        className="form-control form-control-sm"
+                        selected={this.state.docDate}
+                        onChange={(date) => this.handleChangeDocDate(date)}
+                        dateFormat="dd/MM/yyyy"
+                      />
+                    </div>
                   </div>
+
                 </div>
 
                 {this.renderButton(this.state.buttonAction)}

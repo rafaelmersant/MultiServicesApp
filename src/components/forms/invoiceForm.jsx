@@ -54,7 +54,8 @@ class InvoiceForm extends Form {
       sequence: 0,
       ncf: "",
       customer_id: "",
-      paymentMethod: "CASH",
+      paymentMethod: "",
+      invoiceType: "CASH",
       paid: false,
       printed: false,
       reference: "",
@@ -88,8 +89,12 @@ class InvoiceForm extends Form {
       total: 0,
     },
     paymentMethods: [
-      { id: "CASH", name: "Efectivo" },
-      { id: "CARD", name: "Tarjeta de Credito" },
+      // { id: "", name: "Ninguno" },
+      { id: "TRANS", name: "Transferencia" },
+      { id: "CREDIT", name: "Crédito" },
+    ],
+    invoiceTypes: [
+      { id: "CASH", name: "Contado" },
       { id: "CREDIT", name: "Crédito" },
     ],
     typeDoc: [
@@ -124,6 +129,7 @@ class InvoiceForm extends Form {
     sequence: Joi.number().label("No. Factura"),
     customer_id: Joi.number().label("Cliente"),
     paymentMethod: Joi.optional(),
+    invoiceType: Joi.optional(),
     paid: Joi.optional(),
     printed: Joi.optional(),
     reference: Joi.optional(),
@@ -252,11 +258,11 @@ class InvoiceForm extends Form {
 
   async populateInvoice() {
     //if (getCurrentUser().role === "Caja") window.location = '/conduces/';
-    
+
     try {
       const sequence = this.props.match.params.id;
-      if (sequence === "new")  {
-        this.setState({ loading: false})
+      if (sequence === "new") {
+        this.setState({ loading: false });
         return;
       }
 
@@ -288,7 +294,7 @@ class InvoiceForm extends Form {
         serializedInvoiceHeader: invoiceHeader,
         serializedInvoiceDetail: invoiceDetail,
         createdUserName: createdUserData[0].name,
-        loading: false
+        loading: false,
       });
 
       this.forceUpdate();
@@ -589,7 +595,6 @@ class InvoiceForm extends Form {
     try {
       await this.populateProducts();
       await this.populateInvoice(false);
-
     } catch (ex) {
       try {
         Sentry.captureException(ex);
@@ -727,7 +732,7 @@ class InvoiceForm extends Form {
   };
 
   handleCleanProduct = async () => {
-    this.setState({currentProduct: {}, searchProductText: ""});
+    this.setState({ currentProduct: {}, searchProductText: "" });
   };
 
   render() {
@@ -808,14 +813,22 @@ class InvoiceForm extends Form {
               </div>
 
               <div className="row">
-                <div className="col-4">
+                <div className="col-3">
+                  {this.renderSelect(
+                    "invoiceType",
+                    "Tipo de Factura",
+                    this.state.invoiceTypes,
+                    true
+                  )}
+                </div>
+                <div className="col-3">
                   {this.renderSelect(
                     "paymentMethod",
                     "Metodo de Pago",
                     this.state.paymentMethods
                   )}
                 </div>
-                <div className="col-6">
+                <div className="col-5">
                   {this.renderInput(
                     "reference",
                     "Referencia",
@@ -854,7 +867,7 @@ class InvoiceForm extends Form {
                     label="Producto"
                   />
                 </div>
-                {Object.keys(this.state.currentProduct).length > 0  && (
+                {Object.keys(this.state.currentProduct).length > 0 && (
                   <div
                     style={{
                       marginTop: "36px",
@@ -930,18 +943,20 @@ class InvoiceForm extends Form {
               </div>
 
               {this.state.loading && (
-              <div className="d-flex justify-content-center">
-                <Loading />
-              </div>
+                <div className="d-flex justify-content-center">
+                  <Loading />
+                </div>
               )}
-              
-              {!this.state.loading && (<InvoiceDetailTable
-                invoiceHeader={this.state.data}
-                details={this.state.details}
-                user={user}
-                onDelete={this.handleDeleteDetail}
-                onEdit={this.handleEditDetail}
-              />)}
+
+              {!this.state.loading && (
+                <InvoiceDetailTable
+                  invoiceHeader={this.state.data}
+                  details={this.state.details}
+                  user={user}
+                  onDelete={this.handleDeleteDetail}
+                  onEdit={this.handleEditDetail}
+                />
+              )}
 
               {this.isInvoiceEditable() && this.renderButton("Guardar")}
             </form>
@@ -990,20 +1005,21 @@ class InvoiceForm extends Form {
           </div>
 
           <div className="d-flex justify-content-end w-100 pr-3 mb-3">
-            {this.state.data.id > 0 && (role === "Admin" || role === "Owner" || role === "Caja") && (
-              <ReactToPrint
-                trigger={() => (
-                  <span
-                    ref={(button) => (this.printButton = button)}
-                    className="fa fa-print text-success cursor-pointer"
-                    style={{ fontSize: "35px" }}
-                  ></span>
-                )}
-                content={() => this.componentRef}
-                onAfterPrint={() => this.invoicePrinted()}
-                //onBeforePrint={() => this.invoicePrinted()}
-              />
-            )}
+            {this.state.data.id > 0 &&
+              (role === "Admin" || role === "Owner" || role === "Caja") && (
+                <ReactToPrint
+                  trigger={() => (
+                    <span
+                      ref={(button) => (this.printButton = button)}
+                      className="fa fa-print text-success cursor-pointer"
+                      style={{ fontSize: "35px" }}
+                    ></span>
+                  )}
+                  content={() => this.componentRef}
+                  onAfterPrint={() => this.invoicePrinted()}
+                  //onBeforePrint={() => this.invoicePrinted()}
+                />
+              )}
           </div>
 
           <div hidden="hidden">
