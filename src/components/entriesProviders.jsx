@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import _ from "lodash";
-import Pagination from "./common/pagination";
 import SearchBox from "./common/searchBox";
 import { paginate } from "../utils/paginate";
 import EntriesProviderTable from "./tables/entriesProviderTable";
@@ -87,7 +86,7 @@ class EntriesProviders extends Component {
     const { sortColumn, searchQuery } = this.state;
     const { user } = this.props;
 
-    const { totalCount, entries } = this.getPagedData();
+    const { entries } = this.getPagedData();
 
     return (
       <div className="container-fluid">

@@ -23,6 +23,7 @@ class Cuadre extends Component {
     invoicesExcel: [],
     totalCount: 0,
     totalAmount: 0,
+    totalITBIS: 0,
     start_date: new Date().toISOString().substring(0, 10),
     end_date: new Date().toISOString().substring(0, 10),
     sortColumn: { path: "creationDate", order: "desc" },
@@ -80,6 +81,8 @@ class Cuadre extends Component {
         id: item.id,
         creationDate: item.creationDate,
         subtotal: item.subtotal,
+        amountWithoutITBIS: item.subtotal - item.itbis,
+        itbis: item.itbis
       });
     });
 
@@ -89,10 +92,11 @@ class Cuadre extends Component {
   getPagedData = () => {
     const { sortColumn, invoices: allInvoices } = this.state;
     const totalAmount = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal))
+    const totalITBIS = _.sumBy(allInvoices, (item) => parseFloat(item.itbis))
     const sorted = _.orderBy(allInvoices, [sortColumn.path], [sortColumn.order]);
     const invoices = paginate(sorted, 1, 9999999);
 
-    return { totalCount: allInvoices.length, totalAmount, invoices };
+    return { totalCount: allInvoices.length, totalAmount, totalITBIS, invoices };
   };
 
   invoicesExportFormat = (data) => {
@@ -103,6 +107,8 @@ class Cuadre extends Component {
         id: item.id,
         creationDate: new Date(item.creationDate).toLocaleDateString(),
         subtotal: item.subtotal,
+        amountWithoutITBIS: item.subtotal - item.itbis,
+        itbis: item.itbis
       });
     });
 
@@ -113,7 +119,7 @@ class Cuadre extends Component {
     const { sortColumn } = this.state;
     const { user } = this.props;
 
-    const { invoices, totalAmount } = this.getPagedData();
+    const { invoices, totalAmount, totalITBIS } = this.getPagedData();
 
     return (
       <div className="container-fluid">
@@ -171,11 +177,16 @@ class Cuadre extends Component {
               </div>
             )}
 
-            {!this.state.loading && (
-              <div className="col-5">
+            {invoices.length === 0 && (
+              <h5>No existen registros para este rango de fecha</h5>
+            )}
+
+            {!this.state.loading && invoices.length > 0 && (
+              <div className="col-5 maxHeightCuadre">
                 <CuadreTable
                   invoices={invoices}
                   totalAmount={totalAmount}
+                  totalITBIS={totalITBIS}
                   user={user}
                   sortColumn={sortColumn}
                 />

@@ -108,3 +108,8 @@ div[disabled] {
 .font-calculation {
   font-size: 0.75rem !important;
 }
+
+.maxHeightCuadre {
+  max-height: 500px; 
+  overflow-y: scroll;
+}

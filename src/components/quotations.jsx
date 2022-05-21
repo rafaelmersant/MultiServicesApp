@@ -4,7 +4,7 @@ import Pagination from "react-js-pagination";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
 import { getCurrentUser } from "../services/authService";
-import { deleteQuotationHeader, getQuotationHeader, getQuotationsHeader } from "../services/quotationServices";
+import { deleteQuotationHeader, getQuotationsHeader } from "../services/quotationServices";
 import SearchInvoiceBlock from "./common/searchInvoiceBlock";
 import QuotationsTable from './tables/quotationsTable'
 
