@@ -59,7 +59,10 @@ class PriceCalculation extends Component {
       data.itbisSales = Math.round(data.priceSales * 0.18 * 100) / 100;
       data.priceSalesFinal = parseFloat(data.priceSales) + parseFloat(data.itbisSales);
     } else {
+      data.itbis = 0;
+      data.itbisSales = 0;
       data.costPlusITBIS = costNet;
+      data.priceSalesFinal = data.priceSales;
     }
 
     // OLD FORMULA
@@ -161,7 +164,7 @@ class PriceCalculation extends Component {
             onChange={this.handleChangeITBIS}
           />
         </div>
-        
+
         <div className="col">
           <Input
             type="text"
