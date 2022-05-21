@@ -104,7 +104,7 @@ class ProductsTable extends Component {
               id={item.id}
               type="text"
               className={`form-control form-control-sm ${
-                item.updated === false ? "bg-white" : "bg-warning"
+                item.updated === false ? "bg-success text-white" : "bg-warning"
               }`}
               value={this.state.values[item.id]}
               onChange={this.handleChange}

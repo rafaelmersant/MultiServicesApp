@@ -41,6 +41,7 @@ class InventoryFullForm extends Form {
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
     },
+    currentITBIS: 0,
     inventory: {
       header_id: 1, //Default header
       id: 0,
@@ -211,6 +212,7 @@ class InventoryFullForm extends Form {
     const product = { ...this.state.product };
     product.price = inventory.price;
     product.cost = inventory.cost;
+    product.itbis = this.state.currentITBIS;
     product.category_id = product.category.id;
     product.company_id = product.company.id;
 
@@ -336,7 +338,7 @@ class InventoryFullForm extends Form {
     inventory.cost = e.costNet; //e.costPlusITBIS;
     inventory.price = e.priceSalesFinal;
 
-    this.setState({ inventory });
+    this.setState({ inventory, currentITBIS: e.itbisSales });
   };
 
   render() {
