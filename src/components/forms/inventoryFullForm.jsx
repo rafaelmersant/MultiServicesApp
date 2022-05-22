@@ -8,6 +8,7 @@ import SearchProduct from "../common/searchProduct";
 import Input from "../common/input";
 // import Select from "../common/select";
 import ProductModal from "../modals/productModal";
+import ProviderModal from "../modals/providerModal";
 import { getCurrentUser } from "../../services/authService";
 import { saveProduct } from "../../services/productService";
 import { getProviders } from "../../services/providerService";
@@ -21,6 +22,7 @@ import {
 } from "../../services/inventoryService";
 import ProductsInvTable from "../tables/productsInvTable";
 import PriceCalculation from "../common/priceCalculation";
+import SearchProvider from "../common/searchProvider";
 
 class InventoryFullForm extends Form {
   _isMounted = false;
@@ -67,6 +69,9 @@ class InventoryFullForm extends Form {
     docDate: new Date(),
     creationDate: new Date(),
     action: "Nuevo Registro de Inventario",
+    clearSearchProvider: false,
+    hideSearchProvider: false,
+    searchProviderText: "",
     clearSearchProduct: false,
     hideSearch: false,
     availableStock: 0,
@@ -162,6 +167,8 @@ class InventoryFullForm extends Form {
       this.setState({
         data: this.mapToViewModel(header),
         header: header[0],
+        searchProviderText: `${header[0].provider.firstName} ${header[0].provider.lastName}`,
+        hideSearchProvider: true,
         showDetail: true,
         docDate: new Date(header[0].docDate),
         creationDate: new Date(header[0].creationDate),
@@ -284,6 +291,46 @@ class InventoryFullForm extends Form {
     }
   };
 
+  handleSelectProvider = async (provider) => {
+    const handler = (e) => {
+      e.preventDefault();
+    };
+    handler(window.event);
+
+    this.setState({ clearSearchProvider: false });
+
+    if (provider.id === 0) {
+      this.raiseProviderModal.click();
+      return false;
+    }
+
+    const data = { ...this.state.data };
+    data.provider_id = provider.id;
+
+    this.setState({
+      data,
+      hideSearchProvider: true,
+      searchProviderText: `${provider.firstName} ${provider.lastName}`,
+    });
+  };
+
+  handleFocusProvider = (value) => {
+    setTimeout(() => {
+      this.setState({ hideSearchProvider: value });
+    }, 200);
+  };
+  
+  handleCleanProvider = async () => {
+    const { data } = { ...this.state };
+    data.provider_id = 0;
+    this.setState({ data, searchProviderText: "" });
+  };
+
+  handleSetNewProvider = (e) => {
+    this.setState({ searchProviderText: `${e.firstName} ${e.lastName}` });
+    this.handleSelectProvider(e);
+  };
+
   handleChangeDocDate = (date) => {
     const data = { ...this.state.data };
     data.docDate = date.toISOString();
@@ -358,12 +405,45 @@ class InventoryFullForm extends Form {
               <div className="col-12 pb-3 bg-light">
                 <div className="row">
                   <div className="col">
-                    {this.renderSelect(
+                    {/* {this.renderSelect(
                       "provider_id",
                       "Proveedor",
                       this.state.providers
+                    )} */}
+
+                    <SearchProvider
+                      onSelect={this.handleSelectProvider}
+                      onFocus={() => this.handleFocusProvider(false)}
+                      onBlur={() => this.handleFocusProvider(true)}
+                      clearSearchProvider={this.state.clearSearchProvider}
+                      hide={this.state.hideSearchProvider}
+                      companyId={getCurrentUser().companyId}
+                      value={this.state.searchProviderText}
+                      label="Proveedor"
+                    />
+                  </div>
+                  <div>
+                    {this.state.data.provider_id > 0 && (
+                      <div
+                        style={{
+                          marginTop: "36px",
+                        }}
+                      >
+                        <span
+                          className="fa fa-trash text-danger"
+                          style={{
+                            fontSize: "24px",
+                            position: "absolute",
+                            marginLeft: "-39px",
+                            cursor: "pointer",
+                          }}
+                          title="Limpiar filtro de proveedor"
+                          onClick={this.handleCleanProvider}
+                        ></span>
+                      </div>
                     )}
                   </div>
+
                   <div className="col-3">{this.renderInput("ncf", "NCF")}</div>
                   <div
                     className="col-1"
@@ -417,7 +497,6 @@ class InventoryFullForm extends Form {
                       />
                     </div>
                   </div>
-
                 </div>
 
                 {this.renderButton(this.state.buttonAction)}
@@ -445,7 +524,7 @@ class InventoryFullForm extends Form {
                           />
                         </td>
                         <td>
-                        {Object.keys(this.state.product).length > 0 && (
+                          {Object.keys(this.state.product).length > 0 && (
                             <div
                               style={{
                                 marginTop: "-4px",
@@ -533,7 +612,16 @@ class InventoryFullForm extends Form {
                   ref={(button) => (this.raiseProductModal = button)}
                 ></button>
 
+                <button
+                  type="button"
+                  data-toggle="modal"
+                  data-target="#providerModal"
+                  hidden="hidden"
+                  ref={(button) => (this.raiseProviderModal = button)}
+                ></button>
+
                 <ProductModal setNewProduct={this.handleSetNewProduct} />
+                <ProviderModal setNewProvider={this.handleSetNewProvider} />
               </div>
             </div>
           )}
