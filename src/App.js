@@ -57,6 +57,7 @@ import NavBarSide from "./components/navBarSide";
 import NavBarTop from "./components/navBarTop";
 import Quotations from "./components/quotations";
 import QuotationForm from "./components/forms/quotationForm";
+import EmployeesSales from "./components/reports/employeesSales";
 
 class App extends Component {
   state = {
@@ -140,6 +141,10 @@ class App extends Component {
                   <ProtectedRoute
                     path="/reports/report607"
                     component={Invoices607}
+                  />
+                  <ProtectedRoute
+                    path="/employeesSales"
+                    component={EmployeesSales}
                   />
                   <ProtectedRoute
                     path="/reports/entrtiesProvider"
