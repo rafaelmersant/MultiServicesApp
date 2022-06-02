@@ -76,12 +76,17 @@ class InvoicesTable extends Component {
       align: "text-center",
       content: (invoice) => (
         <div className="text-center">
-          <span>
-            {invoice.paid
-              .toString()
-              .replace(true, "SI")
-              .replace(false, "Pendiente")}
-          </span>
+          {invoice.invoiceStatus === "ANULADA" && (
+            <span className="text-danger">ANULADA</span>
+          )}
+          {invoice.invoiceStatus !== "ANULADA" && (
+            <span>
+              {invoice.paid
+                .toString()
+                .replace(true, "SI")
+                .replace(false, "Pendiente")}
+            </span>
+          )}
         </div>
       ),
     },
@@ -91,10 +96,12 @@ class InvoicesTable extends Component {
     key: "delete",
     content: (invoice) => (
       <div className="text-center">
-        <span
-          onClick={() => this.props.onDelete(invoice)}
-          className="fa fa-trash text-danger cursor-pointer trash-size"
-        ></span>
+        {invoice.invoiceStatus !== "ANULADA" && (
+          <span
+            onClick={() => this.props.onDelete(invoice)}
+            className="fa fa-trash text-danger cursor-pointer trash-size"
+          ></span>
+        )}
       </div>
     ),
   };

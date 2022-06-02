@@ -56,12 +56,14 @@ class InvoiceForm extends Form {
       customer_id: "",
       paymentMethod: "",
       invoiceType: "CASH",
+      invoiceStatus: "",
       paid: false,
       printed: false,
       reference: "",
       subtotal: 0,
       itbis: 0,
       discount: 0,
+      cost: 0,
       typeDoc: "B02",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
@@ -130,12 +132,14 @@ class InvoiceForm extends Form {
     customer_id: Joi.number().label("Cliente"),
     paymentMethod: Joi.optional(),
     invoiceType: Joi.optional(),
+    invoiceStatus: Joi.optional(),
     paid: Joi.optional(),
     printed: Joi.optional(),
     reference: Joi.optional(),
     subtotal: Joi.number().min(1),
     itbis: Joi.optional(),
     discount: Joi.optional(),
+    cost: Joi.optional(),
     typeDoc: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
@@ -183,13 +187,14 @@ class InvoiceForm extends Form {
     const quantity = Math.round(parseFloat(line.quantity) * 100) / 100;
     const price = Math.round(parseFloat(product.price) * 100) / 100;
     const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
+    const cost = Math.round(parseFloat(product.cost) * 100) / 100;
     const total = Math.round(price * quantity * 100) / 100;
 
     line.quantity = quantity;
     line.product_id = product.id;
     line.product = product.description;
     line.price = price;
-    line.cost = Math.round(product.cost * 100) / 100;
+    line.cost = Math.round(cost * 100) / 100;
     line.itbis = Math.round(itbis * 100) / 100;
     line.discount = Math.round(discount * 100) / 100;
     line.total = total;
@@ -202,20 +207,23 @@ class InvoiceForm extends Form {
     data.itbis = 0;
     data.discount = 0;
     data.subtotal = 0;
+    data.cost = 0;
 
     this.state.details.forEach((item) => {
       data.itbis += Math.round(parseFloat(item.itbis) * 100) / 100;
       data.discount += Math.round(parseFloat(item.discount) * 100) / 100;
       data.subtotal += Math.round(parseFloat(item.total) * 100) / 100;
+      data.cost += Math.round(parseFloat(item.cost) * 100) / 100;
     });
 
     data.itbis = Math.round(data.itbis * 100) / 100;
     data.discount = Math.round(data.discount * 100) / 100;
     data.subtotal = Math.round(data.subtotal * 100) / 100;
+    data.cost = Math.round(data.cost * 100) / 100;
 
     this.setState({ data });
 
-    //console.log("UpdateTotals - data", data);
+    // console.log("UpdateTotals - data", data);
   };
 
   async updateInventory(entry, edited = false) {
@@ -357,7 +365,7 @@ class InvoiceForm extends Form {
       toast.error(`No tiene disponible en inventario`);
       return false; //Uncomment this line for blocking the sales without stock
     }
-
+    
     this.updateLine(product);
 
     this.setState({
@@ -420,6 +428,7 @@ class InvoiceForm extends Form {
       }
 
       line.itbis = Math.round(line.itbis * line.quantity * 100) / 100;
+      line.cost = Math.round(line.cost * line.quantity * 100) / 100;
       line.discount = Math.round(line.discount * line.quantity * 100) / 100;
       line.total = Math.round(line.total * 100) / 100;
 
@@ -582,6 +591,7 @@ class InvoiceForm extends Form {
   isInvoiceEditable = () => {
     const isPaid = this.state.data.paid;
     const isNew = this.state.data.id === 0;
+    
     const isUserCapable =
       getCurrentUser().role === "Admin" || getCurrentUser().role === "Owner";
 
@@ -659,6 +669,7 @@ class InvoiceForm extends Form {
           quantity: item.quantity,
           price: item.price,
           itbis: item.itbis,
+          cost: item.cost,
           discount: item.discount,
           creationDate: new Date().toISOString(),
         };
@@ -980,14 +991,17 @@ class InvoiceForm extends Form {
           <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
           <ProductModal setNewProduct={this.handleSetNewProduct} />
 
-          {!this.isInvoiceEditable() && (role === "Admin" || role === "Owner") && (
-            <button
-              className="btn btn-danger mb-2 ml-3"
-              onClick={this.handleChangePaid}
-            >
-              Re-Abrir factura
-            </button>
-          )}
+          {!this.isInvoiceEditable() &&
+            (role === "Admin" || role === "Owner") &&
+            this.state.data.invoiceStatus !==
+              "ANULADA" && (
+                <button
+                  className="btn btn-danger mb-2 ml-3"
+                  onClick={this.handleChangePaid}
+                >
+                  Re-Abrir factura
+                </button>
+              )}
 
           <div className="container-fluid mt-3">
             {(role === "Admin" || role === "Owner" || role === "Caja") && (

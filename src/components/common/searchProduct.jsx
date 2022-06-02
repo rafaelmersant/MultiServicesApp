@@ -49,7 +49,7 @@ const SearchProduct = (props) => {
             id: 0,
             description: "No existe el producto, desea crearlo?",
             category: { id: 0, description: "" },
-            price: 0,
+            price: 0
           },
         ];
       }

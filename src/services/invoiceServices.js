@@ -6,6 +6,7 @@ const apiEndpointDetail = `${apiUrl}/invoicesDetails`;
 const apiEndpointSequence = `${apiUrl}/invoicesSequences`;
 const apiEndpointDetailSimple = `${apiUrl}/InvoicesDetailSimple`;
 const apiEndpointProductReduced = `${apiUrl}/invoicesDetailsReduced`;
+const apiEndpointCancelInvoice = `${apiUrl}/cancelInvoice`;
 
 function invoiceHeaderUrl(id) {
   return `${apiEndpointHeader}/${id}/`;
@@ -121,4 +122,8 @@ export function deleteInvoiceHeader(id) {
 
 export function deleteInvoiceDetail(id) {
   return http.delete(invoiceDetailUrl(id));
+}
+
+export function cancelInvoiceHeader(invoice) {
+  return http.post(`${apiEndpointCancelInvoice}/${invoice}`);
 }

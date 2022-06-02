@@ -176,6 +176,9 @@ class App extends Component {
                   <ProtectedRoute path="/company/:id" component={CompanyForm} />
                   <ProtectedRoute path="/users" component={Users} />
                   <ProtectedRoute path="/user/:id" component={UserForm} />
+                  
+                  {this.state.user && this.state.user.id && <Redirect to={`/user/${this.state.user.id}`} from="/profile"/>}
+                  
                   <Redirect exact from="/" to="/invoices" />
                   <Route path="/not-found" component={NotFound} />
                   <Redirect to="/not-found" />
