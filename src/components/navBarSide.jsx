@@ -170,6 +170,14 @@ const NavBarSide = ({ user }) => {
             
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none py-2"
+              to="/employeesSales"
+            >
+              <span className="fa fa-list mr-2 color-local" />
+              Reporte por Empleados
+            </NavLink>
+
+            <NavLink
+              className="list-group-item list-group-item-action bg-light border-none py-2"
               to="/inventory/report"
             >
               <span className="fa fa-list mr-2 color-local" />

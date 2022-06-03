@@ -72,6 +72,12 @@ export function getInvoicesCustomersByRange(start_date, end_date) {
   );
 }
 
+export function getEmployeesSalesByRange(start_date, end_date) {
+  return http.get(
+    `${apiUrl}/employeesSales/?start_date=${start_date}&end_date=${end_date}`
+  );
+}
+
 // export function getInvoiceDetail(invoiceHeaderId) {
 //   return http.get(`${apiEndpointDetail}/?invoice=${invoiceHeaderId}`);
 // }
