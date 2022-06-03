@@ -57,6 +57,7 @@ import NavBarSide from "./components/navBarSide";
 import NavBarTop from "./components/navBarTop";
 import Quotations from "./components/quotations";
 import QuotationForm from "./components/forms/quotationForm";
+import InvoicesCustomers from "./components/reports/invoicesCustomers";
 
 class App extends Component {
   state = {
@@ -106,7 +107,10 @@ class App extends Component {
                     path="/conduce/:id"
                     component={InvoiceLeadForm}
                   />
-                  <ProtectedRoute path="/quotation/:id" component={QuotationForm} />
+                  <ProtectedRoute
+                    path="/quotation/:id"
+                    component={QuotationForm}
+                  />
 
                   <ProtectedRoute path="/inventories" component={Inventories} />
                   <ProtectedRoute
@@ -129,10 +133,7 @@ class App extends Component {
                     path="/inventoryFull/:id"
                     component={InventoryFullForm}
                   />
-                  <ProtectedRoute
-                    path="/reports/cuadre"
-                    component={Cuadre}
-                  />
+                  <ProtectedRoute path="/reports/cuadre" component={Cuadre} />
                   <ProtectedRoute
                     path="/reports/report606"
                     component={Invoices606}
@@ -141,6 +142,12 @@ class App extends Component {
                     path="/reports/report607"
                     component={Invoices607}
                   />
+
+                  <ProtectedRoute
+                    path="/invoicesCustomers"
+                    component={InvoicesCustomers}
+                  />
+
                   <ProtectedRoute
                     path="/reports/entrtiesProvider"
                     component={EntriesProviders}
@@ -176,9 +183,14 @@ class App extends Component {
                   <ProtectedRoute path="/company/:id" component={CompanyForm} />
                   <ProtectedRoute path="/users" component={Users} />
                   <ProtectedRoute path="/user/:id" component={UserForm} />
-                  
-                  {this.state.user && this.state.user.id && <Redirect to={`/user/${this.state.user.id}`} from="/profile"/>}
-                  
+
+                  {this.state.user && this.state.user.id && (
+                    <Redirect
+                      to={`/user/${this.state.user.id}`}
+                      from="/profile"
+                    />
+                  )}
+
                   <Redirect exact from="/" to="/invoices" />
                   <Route path="/not-found" component={NotFound} />
                   <Redirect to="/not-found" />

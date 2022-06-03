@@ -159,6 +159,15 @@ const NavBarSide = ({ user }) => {
               Reporte 606 (Compras)
             </NavLink>
 
+
+            <NavLink
+              className="list-group-item list-group-item-action bg-light border-none py-2"
+              to="/invoicesCustomers"
+            >
+              <span className="fa fa-list mr-2 color-local" />
+              Reporte de Clientes
+            </NavLink>
+            
             <NavLink
               className="list-group-item list-group-item-action bg-light border-none py-2"
               to="/inventory/report"
