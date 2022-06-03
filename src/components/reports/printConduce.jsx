@@ -28,38 +28,11 @@ class PrintConduce extends Component {
         {invoiceHeader && (
           <div>
             <div className="text-center">
-              <span
-                style={{
-                  fontFamily: "Calisto MT",
-                  fontSize: "1.9em",
-                  fontWeight: "bold",
-                }}
-              >
-                FERRIN
-              </span>
-              <span
-                style={{
-                  fontFamily: "Calisto MT",
-                  fontSize: "2.5em",
-                  fontWeight: "bold",
-                }}
-              >
-                M
-              </span>
-              <span
-                style={{
-                  fontFamily: "Calisto MT",
-                  fontSize: "1.9em",
-                  fontWeight: "bold",
-                }}
-              >
-                AS
-              </span>
-              {/* <img
+              <img
                 width="210px"
-                src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
-                alt="FERRINMAS"
-              /> */}
+                src={process.env.PUBLIC_URL + "/images/SUPERAVIT_print.png"}
+                alt="SUPERAVIT"
+              />
             </div>
             <div className="text-center">
               <span className="font-receipt font-receipt-small">
@@ -108,7 +81,7 @@ class PrintConduce extends Component {
                 Cédula/RNC: {invoiceHeader[0].customer_identification}
               </span>
             )}
-            
+
             {invoiceHeader[0].customer_address.length > 0 && (
               <span className="font-receipt font-receipt-small d-block">
                 Dirección: {invoiceHeader[0].customer_address}

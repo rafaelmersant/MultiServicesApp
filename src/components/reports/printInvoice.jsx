@@ -21,46 +21,19 @@ class PrintInvoice extends Component {
         {invoiceHeader.length && (
           <div>
             <div className="text-center">
-              <span
-                style={{
-                  fontFamily: "Calisto MT",
-                  fontSize: "2.4em",
-                  fontWeight: "bold",
-                }}
-              >
-                FERRIN
-              </span>
-              <span
-                style={{
-                  fontFamily: "Calisto MT",
-                  fontSize: "3em",
-                  fontWeight: "bold",
-                }}
-              >
-                M
-              </span>
-              <span
-                style={{
-                  fontFamily: "Calisto MT",
-                  fontSize: "2.4em",
-                  fontWeight: "bold",
-                }}
-              >
-                AS
-              </span>
-              {/* <img
+              <img
                 width="210px"
-                src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
-                alt="FERRINMAS"
-              /> */}
-              <div
+                src={process.env.PUBLIC_URL + "/images/SUPERAVIT_print.png"}
+                alt="SUPERAVIT"
+              />
+              {/* <div
                 className="font-receipt font-receipt-small-slogan"
                 style={{ marginTop: "-18px" }}
               >
                 <span style={{ marginRight: "-27px" }}>
                   CONSTRUYENDO CONFIANZA
                 </span>
-              </div>
+              </div> */}
             </div>
 
             <div className="text-center">
@@ -306,7 +279,8 @@ class PrintInvoice extends Component {
             Le atendió: {invoiceHeader.length && invoiceHeader[0].created_user_name}
           </span>
         </div>
-        <div className="mt-4 text-center">GRACIAS POR SU COMPRA!</div>
+        <div className="mt-4 text-center">GRACIAS POR TU COMPRA!</div>
+        <div className="text-center">DIOS TE BENDIGA!</div>
         <div
           className="mt-5 font-receipt-small-F-invoice"
           style={{ height: "55px", fontFamily: "TimesNewRoman" }}

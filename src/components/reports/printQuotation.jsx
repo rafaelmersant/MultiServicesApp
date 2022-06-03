@@ -16,54 +16,27 @@ class PrintQuotation extends Component {
       var quotationDate = new Date(_date);
     }
 
-    console.log('quotationHeader', quotationHeader)
-    console.log('quotationDetail', quotationDetail)
+    console.log("quotationHeader", quotationHeader);
+    console.log("quotationDetail", quotationDetail);
 
     return (
-        <div className="mt-1" style={{ width: "338px" }}>
+      <div className="mt-1" style={{ width: "338px" }}>
         {quotationHeader.length && (
           <div>
             <div className="text-center">
-              <span
-                style={{
-                  fontFamily: "Calisto MT",
-                  fontSize: "2.4em",
-                  fontWeight: "bold",
-                }}
-              >
-                FERRIN
-              </span>
-              <span
-                style={{
-                  fontFamily: "Calisto MT",
-                  fontSize: "3em",
-                  fontWeight: "bold",
-                }}
-              >
-                M
-              </span>
-              <span
-                style={{
-                  fontFamily: "Calisto MT",
-                  fontSize: "2.4em",
-                  fontWeight: "bold",
-                }}
-              >
-                AS
-              </span>
-              {/* <img
+              <img
                 width="210px"
-                src={process.env.PUBLIC_URL + "/images/FERRINMAS_small.jpg"}
-                alt="FERRINMAS"
-              /> */}
-              <div
+                src={process.env.PUBLIC_URL + "/images/SUPERAVIT_print.png"}
+                alt="SUPERAVIT"
+              />
+              {/* <div
                 className="font-receipt font-receipt-small-slogan"
                 style={{ marginTop: "-18px" }}
               >
                 <span style={{ marginRight: "-27px" }}>
                   CONSTRUYENDO CONFIANZA
                 </span>
-              </div>
+              </div> */}
             </div>
 
             <div className="text-center">
@@ -122,8 +95,7 @@ class PrintQuotation extends Component {
 
           <div className="text-center">
             <span className="font-receipt font-receipt-small-2-invoice">
-              {quotationHeader.length &&
-                "COTIZACION" }
+              {quotationHeader.length && "COTIZACION"}
             </span>
           </div>
         </div>
@@ -285,10 +257,10 @@ class PrintQuotation extends Component {
         </div>
         <div>
           <span className="font-receipt font-receipt-small-F-invoice">
-            Creada por: {quotationHeader.length && quotationHeader[0].createdUser}
+            Creada por:{" "}
+            {quotationHeader.length && quotationHeader[0].createdUser}
           </span>
         </div>
-
       </div>
     );
   }

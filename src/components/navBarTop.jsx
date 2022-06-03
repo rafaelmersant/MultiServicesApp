@@ -3,8 +3,8 @@ import { NavLink } from "react-router-dom";
 
 const NavBarTop = ({ user }) => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <button className="btn btn-light" id="menu-toggle">
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark border-bottom text-light">
+      <button className="btn btn-dark text-dark" id="menu-toggle">
         ...
       </button>
 
@@ -38,7 +38,7 @@ const NavBarTop = ({ user }) => {
             <React.Fragment>
               <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li className="nav-item">
-                  <NavLink className="nav-link mr-sm-2 active" to="/profile">
+                  <NavLink className="nav-link mr-sm-2 active text-light" to="/profile">
                     {user.name}
                   </NavLink>
                 </li>
