@@ -1,7 +1,7 @@
 import http from "./httpService";
-import { apiUrl } from "../config.json";
+import { environment } from "../settings";
 
-const apiEndpoint = `${apiUrl}/fiscalGov`;
+const apiEndpoint = `${environment.apiUrl}/fiscalGov`;
 
 function entryUrl(id) {
   return `${apiEndpoint}/${id}/`;

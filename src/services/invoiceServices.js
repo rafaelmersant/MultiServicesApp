@@ -1,12 +1,12 @@
 import http from "./httpService";
-import { apiUrl } from "../config.json";
+import { environment } from "../settings";
 
-const apiEndpointHeader = `${apiUrl}/invoicesHeaders`;
-const apiEndpointDetail = `${apiUrl}/invoicesDetails`;
-const apiEndpointSequence = `${apiUrl}/invoicesSequences`;
-const apiEndpointDetailSimple = `${apiUrl}/InvoicesDetailSimple`;
-const apiEndpointProductReduced = `${apiUrl}/invoicesDetailsReduced`;
-const apiEndpointCancelInvoice = `${apiUrl}/cancelInvoice`;
+const apiEndpointHeader = `${environment.apiUrl}/invoicesHeaders`;
+const apiEndpointDetail = `${environment.apiUrl}/invoicesDetails`;
+const apiEndpointSequence = `${environment.apiUrl}/invoicesSequences`;
+const apiEndpointDetailSimple = `${environment.apiUrl}/InvoicesDetailSimple`;
+const apiEndpointProductReduced = `${environment.apiUrl}/invoicesDetailsReduced`;
+const apiEndpointCancelInvoice = `${environment.apiUrl}/cancelInvoice`;
 
 function invoiceHeaderUrl(id) {
   return `${apiEndpointHeader}/${id}/`;
@@ -49,7 +49,7 @@ export function getInvoicesHeader(
 }
 
 export function getInvoicesHeaderFull(companyId, year) {
-  let urlQuery = `${apiUrl}/invoicesHeadersFull/?company=${companyId}&year=${year}&ordering=-creationDate`;
+  let urlQuery = `${environment.apiUrl}/invoicesHeadersFull/?company=${companyId}&year=${year}&ordering=-creationDate`;
 
   return http.get(urlQuery);
 }
@@ -68,13 +68,13 @@ export function getInvoicesHeaderByRange(start_date, end_date) {
 
 export function getInvoicesCustomersByRange(start_date, end_date) {
   return http.get(
-    `${apiUrl}/invoicesCustomers/?start_date=${start_date}&end_date=${end_date}`
+    `${environment.apiUrl}/invoicesCustomers/?start_date=${start_date}&end_date=${end_date}`
   );
 }
 
 export function getEmployeesSalesByRange(start_date, end_date) {
   return http.get(
-    `${apiUrl}/employeesSales/?start_date=${start_date}&end_date=${end_date}`
+    `${environment.apiUrl}/employeesSales/?start_date=${start_date}&end_date=${end_date}`
   );
 }
 

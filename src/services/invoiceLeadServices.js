@@ -1,8 +1,8 @@
 import http from "./httpService";
-import { apiUrl } from "../config.json";
+import { environment } from "../settings";
 
-const apiEndpointHeader = `${apiUrl}/invoicesLeadHeader`;
-const apiEndpointDetail = `${apiUrl}/invoicesLeadDetail`;
+const apiEndpointHeader = `${environment.apiUrl}/invoicesLeadHeader`;
+const apiEndpointDetail = `${environment.apiUrl}/invoicesLeadDetail`;
 
 function invoiceLeadHeaderUrl(id) {
   return `${apiEndpointHeader}/${id}`;

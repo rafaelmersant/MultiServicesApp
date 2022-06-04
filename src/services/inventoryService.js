@@ -1,6 +1,6 @@
 import http from "./httpService";
 import { getCurrentUser } from "./authService";
-import { apiUrl } from "../config.json";
+import { environment } from "../settings";
 import {
   getProduct,
   getPurchaseOrderByProduct,
@@ -9,10 +9,10 @@ import {
 } from "./productService";
 import * as Sentry from "@sentry/react";
 
-const apiEndpointProdTrackingHeader = `${apiUrl}/productsTrackingsHeader`;
-const apiEndpointProdTracking = `${apiUrl}/productsTrackings`;
-const apiEndpointProdTrackingLong = `${apiUrl}/productsTrackingsLong`;
-const apiEndpointProdStock = `${apiUrl}/productsStocks`;
+const apiEndpointProdTrackingHeader = `${environment.apiUrl}/productsTrackingsHeader`;
+const apiEndpointProdTracking = `${environment.apiUrl}/productsTrackings`;
+const apiEndpointProdTrackingLong = `${environment.apiUrl}/productsTrackingsLong`;
+const apiEndpointProdStock = `${environment.apiUrl}/productsStocks`;
 
 function productsTrackingHeaderUrl(id) {
   return `${apiEndpointProdTrackingHeader}/${id}/`;

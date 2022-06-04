@@ -1,8 +1,8 @@
 import http from "./httpService";
-import { apiUrl } from "../config.json";
+import { environment } from "../settings";
 
-const apiEndpointHeader = `${apiUrl}/quotationsHeaders`;
-const apiEndpointDetail = `${apiUrl}/quotationsDetails`;
+const apiEndpointHeader = `${environment.apiUrl}/quotationsHeaders`;
+const apiEndpointDetail = `${environment.apiUrl}/quotationsDetails`;
 
 function quotationHeaderUrl(id) {
   return `${apiEndpointHeader}/${id}/`;

@@ -1,8 +1,8 @@
 //import jwtDecode from "jwt-decode";
 import http from "./httpService";
-import { apiUrl } from "../config.json";
+import { environment } from "../settings";
 
-const apiEndpoint = `${apiUrl}/auth`;
+const apiEndpoint = `${environment.apiUrl}/auth`;
 const token = {
   userId: "ms_userId",
   email: "ms_email",

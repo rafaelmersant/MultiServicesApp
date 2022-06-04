@@ -1,7 +1,7 @@
 import http from "./httpService";
-import { apiUrl } from "../config.json";
+import { environment } from "../settings";
 
-const apiEndpoint = `${apiUrl}/customers`;
+const apiEndpoint = `${environment.apiUrl}/customers`;
 
 function customerUrl(id) {
   return `${apiEndpoint}/${id}/`;

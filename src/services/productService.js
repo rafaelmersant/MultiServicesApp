@@ -1,8 +1,8 @@
 import http from "./httpService";
-import { apiUrl } from "../config.json";
+import { environment } from "../settings";
 
-const apiEndpoint = `${apiUrl}/products`;
-const apiEndpointPurchaseOrder = `${apiUrl}/purchaseOrders`;
+const apiEndpoint = `${environment.apiUrl}/products`;
+const apiEndpointPurchaseOrder = `${environment.apiUrl}/purchaseOrders`;
 
 function productUrl(id) {
   return `${apiEndpoint}/${id}/`;
@@ -110,5 +110,5 @@ export function savePurchaseOrder(order) {
 }
 
 export function getProductProviders(productId) {
-  return http.get(`${apiUrl}/productsProviders/?product_id=${productId}`);
+  return http.get(`${environment.apiUrl}/productsProviders/?product_id=${productId}`);
 }
