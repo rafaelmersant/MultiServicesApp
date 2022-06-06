@@ -10,13 +10,13 @@ const NavBarSide = ({ user }) => {
   return (
     <div className="bg-dark border-right border-dark" id="sidebar-wrapper">
       <div className="sidebar-heading text-center border-bottom border-dark">
-        <NavLink className="" to="/invoice/new">
+        <div className="">
           <img
             style={{ width: "54px", padding: "5px", margin: "0" }}
             src={process.env.PUBLIC_URL + "/images/SUPERAVIT_small.png"}
             alt="SUPERAVIT"
           />
-        </NavLink>
+        </div>
       </div>
       <div className="list-group list-group-flush">
         {user &&
