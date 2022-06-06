@@ -107,7 +107,7 @@ class UserForm extends Form {
   render() {
     const userRole = getCurrentUser().role;
     const emailDisabled =
-      userRole === "Admin" || userRole === "Owner" ? "disabled" : "";
+      userRole === "Admin" || userRole === "Owner" ? "" : "disabled";
 
     return (
       <div className="container-fluid">
