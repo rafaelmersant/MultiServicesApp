@@ -115,5 +115,5 @@ div[disabled] {
 }
 
 .active {
-  color: orange !important;
+  background-color: orange !important;
 }
