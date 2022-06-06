@@ -105,7 +105,7 @@ class UserForm extends Form {
   };
 
   render() {
-    const { userRole } = { ...this.state.data };
+    const userRole = getCurrentUser().role;
     const emailDisabled =
       userRole === "Admin" || userRole === "Owner" ? "disabled" : "";
 
