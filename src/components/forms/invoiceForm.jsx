@@ -337,6 +337,8 @@ class InvoiceForm extends Form {
   };
 
   handleSelectProduct = async (product) => {
+    console.log('Product Selected:', product);
+
     const handler = (e) => {
       e.preventDefault();
     };
@@ -423,6 +425,18 @@ class InvoiceForm extends Form {
       if (line.quantity > this.state.currentProduct.quantity) {
         toast.error(
           `La cantidad no puede exceder lo disponible: ${this.state.currentProduct.quantity}`
+        );
+        return false;
+      }
+
+      //Only Admin and Owner can add total discount for product
+      if (
+        (getCurrentUser().role !== "Admin" &&
+          getCurrentUser().role !== "Owner") &&
+        line.discount > this.state.currentProduct.discount_max
+      ) {
+        toast.error(
+          `No puede exceder el tope de descuento para este producto. Tope RD$${this.state.currentProduct.discount_max}`
         );
         return false;
       }
@@ -936,7 +950,7 @@ class InvoiceForm extends Form {
                     label="Desc/Unidad"
                     onChange={this.handleChangeQtyDisc}
                     onBlur={this.handleBlurDiscount}
-                    disabled={role !== "Admin" && role !== "Owner"}
+                    // disabled={role !== "Admin" && role !== "Owner"}
                   />
                 </div>
                 <div

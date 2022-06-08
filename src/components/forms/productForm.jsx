@@ -38,6 +38,7 @@ class ProductForm extends Form {
       minimumStock: 0,
       updated: false,
       ocurrences: 0,
+      discount_max: 0,
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString(),
@@ -67,6 +68,7 @@ class ProductForm extends Form {
     barcode: Joi.optional(),
     updated: Joi.optional(),
     minimumStock: Joi.number().required().label("Mínimo en Inventario"),
+    discount_max: Joi.optional(),
     ocurrences: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
@@ -232,6 +234,7 @@ class ProductForm extends Form {
       category_id: product[0].category.id,
       barcode: product[0].barcode ? product[0].barcode : "",
       minimumStock: product[0].minimumStock ? product[0].minimumStock : 0,
+      discount_max: product[0].discount_max ? product[0].discount_max : 0,
       ocurrences: product[0].ocurrences ? product[0].ocurrences : 0,
       company_id: product[0].company.id,
       updated: product[0].updated ? product[0].updated : false,
@@ -243,6 +246,12 @@ class ProductForm extends Form {
   }
 
   doSubmit = async () => {
+
+    if (this.state.data.discount_max > this.state.data.price) {
+      toast.error("El monto en Tope de Descuento no puede ser mayor al precio.");
+      return false;
+    }
+
     const descrp = this.state.data.description
       .toUpperCase()
       .split(" ")
@@ -387,7 +396,7 @@ class ProductForm extends Form {
                     ></button>
                   </div>
                 )}
-                <div className={_customColMedium}>
+                <div className="mr-2">
                   <Input
                     type="text"
                     name="quantity"
@@ -397,8 +406,11 @@ class ProductForm extends Form {
                     autoComplete="off"
                   />
                 </div>
-                <div className={_customColMedium}>
+                <div className="mr-2">
                   {this.renderInput("minimumStock", "Mínimo en Inv.")}
+                </div>
+                <div>
+                  {this.renderInput("discount_max", "Tope Descuento $")}
                 </div>
               </React.Fragment>
             </div>
