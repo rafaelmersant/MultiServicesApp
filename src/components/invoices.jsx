@@ -8,7 +8,6 @@ import InvoicesTable from "./tables/invoicesTable";
 import { getCurrentUser } from "../services/authService";
 import {
   getInvoicesHeader,
-  deleteInvoiceHeader,
   getInvoiceDetail,
   cancelInvoiceHeader,
 } from "../services/invoiceServices";

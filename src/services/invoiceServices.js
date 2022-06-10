@@ -7,6 +7,7 @@ const apiEndpointSequence = `${environment.apiUrl}/invoicesSequences`;
 const apiEndpointDetailSimple = `${environment.apiUrl}/InvoicesDetailSimple`;
 const apiEndpointProductReduced = `${environment.apiUrl}/invoicesDetailsReduced`;
 const apiEndpointCancelInvoice = `${environment.apiUrl}/cancelInvoice`;
+const apiEndpointPoints = `${environment.apiUrl}/points`;
 
 function invoiceHeaderUrl(id) {
   return `${apiEndpointHeader}/${id}/`;
@@ -43,7 +44,8 @@ export function getInvoicesHeader(
   if (customerId) urlQuery += `&customer=${customerId}`;
   if (paymentMethod !== "ALL") urlQuery += `&paymentMethod=${paymentMethod}`;
 
-  if (customerId || invoiceNo) urlQuery = urlQuery.replace("invoicesHeaders","invoicesHeadersSearch");
+  if (customerId || invoiceNo)
+    urlQuery = urlQuery.replace("invoicesHeaders", "invoicesHeadersSearch");
 
   return http.get(urlQuery);
 }
@@ -138,4 +140,28 @@ export function deleteInvoiceDetail(id) {
 
 export function cancelInvoiceHeader(invoice) {
   return http.post(`${apiEndpointCancelInvoice}/${invoice}`);
+}
+
+export function getPoints(customerId, currentPage, sortColumn) {
+  const order = sortColumn && sortColumn.order === "desc" ? "-" : "";
+  const column =
+    sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
+  const page = currentPage ? currentPage : 1;
+
+  let urlQuery = `${apiEndpointPoints}/?ordering=${order}${column}&page=${page}`;
+  if (customerId) urlQuery += `&customer=${customerId}`;
+
+  return http.get(urlQuery);
+}
+
+export function getAvailablePoints(customerId) {
+  return http.get(
+    `${environment.apiUrl}/totalpoints/${customerId}`
+  );
+}
+
+export function getEarnedPointsForInvoice(invoiceId) {
+  return http.get(
+    `${environment.apiUrl}/points/?invoice=${invoiceId}`
+  );
 }

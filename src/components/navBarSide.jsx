@@ -145,6 +145,14 @@ const NavBarSide = ({ user }) => {
           <React.Fragment>
             <NavLink
               className="list-group-item list-group-item-action bg-dark text-light border-none py-2"
+              to="/puntos"
+            >
+              <span className="fa fa-list mr-2 color-local" />
+              Puntos Superavit
+            </NavLink>
+
+            <NavLink
+              className="list-group-item list-group-item-action bg-dark text-light border-none py-2"
               to="/reports/report607"
             >
               <span className="fa fa-list mr-2 color-local" />
@@ -159,7 +167,6 @@ const NavBarSide = ({ user }) => {
               Reporte 606 (Compras)
             </NavLink>
 
-
             <NavLink
               className="list-group-item list-group-item-action bg-dark text-light border-none py-2"
               to="/invoicesCustomers"
@@ -167,7 +174,7 @@ const NavBarSide = ({ user }) => {
               <span className="fa fa-list mr-2 color-local" />
               Reporte de Clientes
             </NavLink>
-            
+
             <NavLink
               className="list-group-item list-group-item-action bg-dark text-light border-none py-2"
               to="/employeesSales"
@@ -184,18 +191,17 @@ const NavBarSide = ({ user }) => {
               Inventario
             </NavLink>
 
-            <NavLink
+            {/* <NavLink
               className="list-group-item list-group-item-action bg-dark text-light border-none py-2"
               to="/reports/entrtiesProvider"
             >
               <span className="fa fa-list mr-2 color-local" />
               Entradas por Proveedor
-            </NavLink>
+            </NavLink> */}
           </React.Fragment>
         )}
       </div>
     </div>
-  
   );
 };
 

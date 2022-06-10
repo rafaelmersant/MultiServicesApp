@@ -28,6 +28,7 @@ import {
   getInvoiceHeader,
   getInvoiceDetail,
   deleteInvoiceDetail,
+  getAvailablePoints,
 } from "../../services/invoiceServices";
 import {
   saveProductTracking,
@@ -78,6 +79,7 @@ class InvoiceForm extends Form {
     detailsOriginal: [],
     detailsToDelete: [],
     companies: [],
+    availablePoints: 0,
     line: {
       id: 0,
       invoice_id: 0,
@@ -94,6 +96,7 @@ class InvoiceForm extends Form {
       // { id: "", name: "Ninguno" },
       { id: "TRANS", name: "Transferencia" },
       { id: "CREDIT", name: "Crédito" },
+      { id: "POINTS", name: "Puntos Superavit" },
     ],
     invoiceTypes: [
       { id: "CASH", name: "Contado" },
@@ -290,6 +293,10 @@ class InvoiceForm extends Form {
 
       const invoiceHeaderMapped = mapToViewInvoiceHeader(invoiceHeader);
 
+      const { data: availablePoints } = await getAvailablePoints(
+        invoiceHeader[0].customer_id
+      );
+
       this.setState({
         data: invoiceHeaderMapped,
         details: mapToViewInvoiceDetail(invoiceDetail),
@@ -303,6 +310,7 @@ class InvoiceForm extends Form {
         serializedInvoiceDetail: invoiceDetail,
         createdUserName: createdUserData[0].name,
         loading: false,
+        availablePoints: availablePoints.total_points
       });
 
       this.forceUpdate();
@@ -397,10 +405,13 @@ class InvoiceForm extends Form {
     const data = { ...this.state.data };
     data.customer_id = customer.id;
 
+    const {data : availablePoints} = await getAvailablePoints(customer.id);
+    
     this.setState({
       data,
       hideSearchCustomer: true,
       searchCustomerText: `${customer.firstName} ${customer.lastName}`,
+      availablePoints: availablePoints.total_points
     });
   };
 
@@ -663,6 +674,11 @@ class InvoiceForm extends Form {
 
   doSubmit = async () => {
     try {
+      if (this.state.data.paymentMethod === "POINTS" && this.state.data.discount > this.state.availablePoints) {
+        toast.error('El descuento no puede exceder los puntos superavit disponibles.');
+        return false;
+      }
+      
       if (this.state.disabledSave) return false;
 
       this.setState({ disabledSave: true });
@@ -766,6 +782,10 @@ class InvoiceForm extends Form {
 
     return (
       <React.Fragment>
+        <div className="mb-2 ml-3">
+            <h6 className="text-danger">Puntos Superavit disponibles: {this.state.availablePoints}</h6>
+          </div>
+
         <div className="container-fluid">
           <h4 className="bg-dark text-light pl-2 pr-2 list-header">
             {this.state.action}
@@ -1058,6 +1078,7 @@ class InvoiceForm extends Form {
               itbisTotal={this.state.data.itbis}
               valorTotal={this.state.data.subtotal}
               discountTotal={this.state.data.discount}
+              availablePoints={this.state.availablePoints}
             />
           </div>
         </div>

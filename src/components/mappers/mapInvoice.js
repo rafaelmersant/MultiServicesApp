@@ -7,7 +7,7 @@ export function mapToViewInvoiceHeader(invoiceHeader) {
     customer_id: invoiceHeader[0].customer_id,
     ncf: invoiceHeader[0].ncf,
     paymentMethod: invoiceHeader[0].paymentMethod,
-    invoiceType: invoiceHeader[0].invoiceType,
+    invoiceType: invoiceHeader[0].invoiceType ? invoiceHeader[0].invoiceType : "",
     invoiceStatus: invoiceHeader[0].invoiceStatus,
     paid: invoiceHeader[0].paid,
     printed: invoiceHeader[0].printed ? invoiceHeader.printed : false,

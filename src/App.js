@@ -59,6 +59,7 @@ import Quotations from "./components/quotations";
 import QuotationForm from "./components/forms/quotationForm";
 import InvoicesCustomers from "./components/reports/invoicesCustomers";
 import EmployeesSales from "./components/reports/employeesSales";
+import Points from "./components/points";
 
 class App extends Component {
   state = {
@@ -147,6 +148,11 @@ class App extends Component {
                   <ProtectedRoute
                     path="/invoicesCustomers"
                     component={InvoicesCustomers}
+                  />
+
+                  <ProtectedRoute
+                    path="/puntos"
+                    component={Points}
                   />
 
                   <ProtectedRoute
