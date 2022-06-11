@@ -405,15 +405,13 @@ class InvoiceForm extends Form {
     const data = { ...this.state.data };
     data.customer_id = customer.id;
 
-    // const { data: availablePoints } = await getAvailablePoints(customer.id);
-
-    console.log("customer selected:", customer);
+    const { data: availablePoints } = await getAvailablePoints(customer.id);
 
     this.setState({
       data,
       hideSearchCustomer: true,
       searchCustomerText: `${customer.firstName} ${customer.lastName}`,
-      availablePoints: 0//availablePoints.total_points,
+      availablePoints: availablePoints.total_points,
     });
   };
 
@@ -781,18 +779,6 @@ class InvoiceForm extends Form {
     this.setState({ currentProduct: {}, searchProductText: "" });
   };
 
-  handleCleanCustomer = async () => {
-    const data = { ...this.state.data };
-    data.customer_id = 0;
-
-    this.setState({
-      data,
-      hideSearchCustomer: true,
-      searchCustomerText: "",
-      availablePoints: 0,
-    });
-  };
-
   render() {
     const { user } = this.props;
     const role = getCurrentUser().role;
@@ -829,26 +815,6 @@ class InvoiceForm extends Form {
                     label="Cliente"
                   />
                 </div>
-
-                {this.state.data.customer_id > 0 && (
-                  <div
-                    style={{
-                      marginTop: "36px",
-                    }}
-                  >
-                    <span
-                      className="fa fa-trash text-danger"
-                      style={{
-                        fontSize: "24px",
-                        position: "absolute",
-                        marginLeft: "-29px",
-                        cursor: "pointer",
-                      }}
-                      title="Limpiar filtro de cliente"
-                      onClick={this.handleCleanCustomer}
-                    ></span>
-                  </div>
-                )}
 
                 {!this.state.data.ncf && (
                   <div className="col-2">
