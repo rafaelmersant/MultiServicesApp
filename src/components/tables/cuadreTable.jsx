@@ -32,10 +32,19 @@ class CuadreTable extends Component {
         </div>
       ),
     },
+    {
+      path: "utilidad",
+      label: "Utilidad",
+      content: (invoice) => (
+        <div className="text-right">
+          <span>{formatNumber(invoice.subtotal - invoice.cost)}</span>
+        </div>
+      ),
+    },
   ];
 
   render() {
-    const { invoices, totalAmount, totalITBIS, sortColumn, onSort } = this.props;
+    const { invoices, totalAmount, totalUtility, totalITBIS, sortColumn, onSort } = this.props;
 
     return (
       <React.Fragment>
@@ -60,6 +69,9 @@ class CuadreTable extends Component {
                 </td>
                 <td className="bg-dark text-light text-right">
                   Total: {formatNumber(totalAmount)}
+                </td>
+                <td className="bg-dark text-light text-right">
+                  Utilidad: {formatNumber(totalUtility)}
                 </td>
               </tr>
             </thead>
