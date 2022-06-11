@@ -116,7 +116,7 @@ class CustomerForm extends Form {
       this.state.data.lastName.toUpperCase()
     );
 
-    if (_customer.length > 0 && this.state.data.id === 0) {
+    if (_customer.count > 0 && this.state.data.id === 0) {
       toast.error("Este cliente ya existe!");
       return false;
     }
