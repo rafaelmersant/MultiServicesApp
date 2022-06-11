@@ -392,6 +392,8 @@ class InvoiceForm extends Form {
   };
 
   handleSelectCustomer = async (customer) => {
+    this.setState({searchCustomerText: `${customer.firstName} ${customer.lastName}`})
+
     const handler = (e) => {
       e.preventDefault();
     };
@@ -410,7 +412,6 @@ class InvoiceForm extends Form {
     this.setState({
       data,
       hideSearchCustomer: true,
-      searchCustomerText: `${customer.firstName} ${customer.lastName}`,
       availablePoints: availablePoints.total_points,
     });
   };
@@ -821,7 +822,7 @@ class InvoiceForm extends Form {
               <div className="row">
                 <div className="col-7">
                   <SearchCustomer
-                    onSelect={this.handleSelectCustomer}
+                    onSelect={this.handleSetNewCustomer}
                     onFocus={() => this.handleFocusCustomer(false)}
                     onBlur={() => this.handleFocusCustomer(true)}
                     hide={this.state.hideSearchCustomer}
