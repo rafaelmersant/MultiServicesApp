@@ -65,6 +65,7 @@ class InvoiceForm extends Form {
       itbis: 0,
       discount: 0,
       cost: 0,
+      amount_points: 0,
       typeDoc: "B02",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
@@ -143,6 +144,7 @@ class InvoiceForm extends Form {
     itbis: Joi.optional(),
     discount: Joi.optional(),
     cost: Joi.optional(),
+    amount_points: Joi.optional(),
     typeDoc: Joi.optional(),
     company_id: Joi.number().label("Compañîa"),
     createdUser: Joi.string(),
@@ -217,12 +219,18 @@ class InvoiceForm extends Form {
       data.discount += Math.round(parseFloat(item.discount) * 100) / 100;
       data.subtotal += Math.round(parseFloat(item.total) * 100) / 100;
       data.cost += Math.round(parseFloat(item.cost) * 100) / 100;
+
+      //Puntos Superavit (Exclude CEMENTO product)
+      if (item.product_id !== 618)
+        data.amount_points += Math.round(parseFloat(item.total) * 100) / 100;
+
     });
 
     data.itbis = Math.round(data.itbis * 100) / 100;
     data.discount = Math.round(data.discount * 100) / 100;
     data.subtotal = Math.round(data.subtotal * 100) / 100;
     data.cost = Math.round(data.cost * 100) / 100;
+    data.amount_points = Math.round(data.amount_points * 100) / 100;
 
     this.setState({ data });
 

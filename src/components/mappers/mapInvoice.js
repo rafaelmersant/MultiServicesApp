@@ -14,6 +14,8 @@ export function mapToViewInvoiceHeader(invoiceHeader) {
     reference: invoiceHeader[0].reference ? invoiceHeader[0].reference : "",
     subtotal: invoiceHeader[0].subtotal,
     itbis: invoiceHeader[0].itbis,
+    cost: invoiceHeader[0].cost,
+    amount_points: invoiceHeader[0].amount_points,
     discount: invoiceHeader[0].discount,
     company_id: invoiceHeader[0].company_id,
     createdUser: invoiceHeader[0].createdByUser
