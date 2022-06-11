@@ -345,9 +345,7 @@ class InvoiceForm extends Form {
   };
 
   handleSelectProduct = async (product) => {
-    console.log("Product Selected:", product);
-
-    const handler = (e) => {
+      const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -511,7 +509,7 @@ class InvoiceForm extends Form {
   };
 
   handleEditDetail = async (detail) => {
-    this.setState({searchProductText: line.product});
+    this.setState({searchProductText: detail.product});
 
     const handler = (e) => {
       e.preventDefault();
