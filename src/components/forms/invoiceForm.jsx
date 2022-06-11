@@ -310,7 +310,7 @@ class InvoiceForm extends Form {
         serializedInvoiceDetail: invoiceDetail,
         createdUserName: createdUserData[0].name,
         loading: false,
-        availablePoints: availablePoints.total_points
+        availablePoints: availablePoints.total_points,
       });
 
       this.forceUpdate();
@@ -345,7 +345,7 @@ class InvoiceForm extends Form {
   };
 
   handleSelectProduct = async (product) => {
-    console.log('Product Selected:', product);
+    console.log("Product Selected:", product);
 
     const handler = (e) => {
       e.preventDefault();
@@ -375,7 +375,7 @@ class InvoiceForm extends Form {
       toast.error(`No tiene disponible en inventario`);
       return false; //Uncomment this line for blocking the sales without stock
     }
-    
+
     this.updateLine(product);
 
     this.setState({
@@ -405,22 +405,20 @@ class InvoiceForm extends Form {
     const data = { ...this.state.data };
     data.customer_id = customer.id;
 
-    const {data : availablePoints} = await getAvailablePoints(customer.id);
-    
-    setTimeout(() => {
-      this.setState({
-        data,
-        hideSearchCustomer: true,
-        searchCustomerText: `${customer.firstName} ${customer.lastName}`,
-        availablePoints: availablePoints.total_points
-      });
-    }, 200);
+    const { data: availablePoints } = await getAvailablePoints(customer.id);
+
+    this.setState({
+      data,
+      hideSearchCustomer: true,
+      searchCustomerText: `${customer.firstName} ${customer.lastName}`,
+      availablePoints: availablePoints.total_points,
+    });
+
+    this.forceUpdate();
   };
 
   handleFocusCustomer = (value) => {
-    setTimeout(() => {
-      this.setState({ hideSearchCustomer: value });
-    }, 200);
+    this.setState({ hideSearchCustomer: value });
   };
 
   handleAddDetail = () => {
@@ -444,8 +442,8 @@ class InvoiceForm extends Form {
 
       //Only Admin and Owner can add total discount for product
       if (
-        (getCurrentUser().role !== "Admin" &&
-          getCurrentUser().role !== "Owner") &&
+        getCurrentUser().role !== "Admin" &&
+        getCurrentUser().role !== "Owner" &&
         line.discount > this.state.currentProduct.discount_max
       ) {
         toast.error(
@@ -618,7 +616,7 @@ class InvoiceForm extends Form {
   isInvoiceEditable = () => {
     const isPaid = this.state.data.paid;
     const isNew = this.state.data.id === 0;
-    
+
     const isUserCapable =
       getCurrentUser().role === "Admin" || getCurrentUser().role === "Owner";
 
@@ -676,11 +674,16 @@ class InvoiceForm extends Form {
 
   doSubmit = async () => {
     try {
-      if (this.state.data.paymentMethod === "POINTS" && this.state.data.discount > this.state.availablePoints) {
-        toast.error('El descuento no puede exceder los puntos superavit disponibles.');
+      if (
+        this.state.data.paymentMethod === "POINTS" &&
+        this.state.data.discount > this.state.availablePoints
+      ) {
+        toast.error(
+          "El descuento no puede exceder los puntos superavit disponibles."
+        );
         return false;
       }
-      
+
       if (this.state.disabledSave) return false;
 
       this.setState({ disabledSave: true });
@@ -778,6 +781,18 @@ class InvoiceForm extends Form {
     this.setState({ currentProduct: {}, searchProductText: "" });
   };
 
+  handleCleanCustomer = async () => {
+    const data = { ...this.state.data };
+    data.customer_id = 0;
+
+    this.setState({
+      data,
+      hideSearchCustomer: true,
+      searchCustomerText: "",
+      availablePoints: 0,
+    });
+  };
+
   render() {
     const { user } = this.props;
     const role = getCurrentUser().role;
@@ -785,8 +800,10 @@ class InvoiceForm extends Form {
     return (
       <React.Fragment>
         <div className="mb-2 ml-3">
-            <h6 className="text-danger">Puntos Superavit disponibles: {this.state.availablePoints}</h6>
-          </div>
+          <h6 className="text-danger">
+            Puntos Superavit disponibles: {this.state.availablePoints}
+          </h6>
+        </div>
 
         <div className="container-fluid">
           <h4 className="bg-dark text-light pl-2 pr-2 list-header">
@@ -812,6 +829,26 @@ class InvoiceForm extends Form {
                     label="Cliente"
                   />
                 </div>
+
+                {this.state.data.customer_id > 0 && (
+                  <div
+                    style={{
+                      marginTop: "36px",
+                    }}
+                  >
+                    <span
+                      className="fa fa-trash text-danger"
+                      style={{
+                        fontSize: "24px",
+                        position: "absolute",
+                        marginLeft: "-29px",
+                        cursor: "pointer",
+                      }}
+                      title="Limpiar filtro de cliente"
+                      onClick={this.handleCleanCustomer}
+                    ></span>
+                  </div>
+                )}
 
                 {!this.state.data.ncf && (
                   <div className="col-2">
@@ -1029,15 +1066,14 @@ class InvoiceForm extends Form {
 
           {!this.isInvoiceEditable() &&
             (role === "Admin" || role === "Owner") &&
-            this.state.data.invoiceStatus !==
-              "ANULADA" && (
-                <button
-                  className="btn btn-danger mb-2 ml-3"
-                  onClick={this.handleChangePaid}
-                >
-                  Re-Abrir factura
-                </button>
-              )}
+            this.state.data.invoiceStatus !== "ANULADA" && (
+              <button
+                className="btn btn-danger mb-2 ml-3"
+                onClick={this.handleChangePaid}
+              >
+                Re-Abrir factura
+              </button>
+            )}
 
           <div className="container-fluid mt-3">
             {(role === "Admin" || role === "Owner" || role === "Caja") && (
