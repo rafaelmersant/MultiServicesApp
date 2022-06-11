@@ -407,14 +407,14 @@ class InvoiceForm extends Form {
 
     const { data: availablePoints } = await getAvailablePoints(customer.id);
 
+    console.log("customer selected:", customer);
+
     this.setState({
       data,
       hideSearchCustomer: true,
       searchCustomerText: `${customer.firstName} ${customer.lastName}`,
       availablePoints: availablePoints.total_points,
     });
-
-    this.forceUpdate();
   };
 
   handleFocusCustomer = (value) => {
@@ -549,9 +549,9 @@ class InvoiceForm extends Form {
     }
   };
 
-  handleSetNewCustomer = (e) => {
-    this.handleSelectCustomer(e);
-    this.forceUpdate();
+  handleSetNewCustomer = async (e) => {
+    this.setState({ searchCustomerText: `${e.firstName} ${e.lastName}` });
+    await this.handleSelectCustomer(e);
   };
 
   handleSetNewProduct = (e) => {
