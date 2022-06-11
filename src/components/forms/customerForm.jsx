@@ -44,9 +44,9 @@ class CustomerForm extends Form {
       .max(100)
       .label("Apellidos"),
     email: Joi.optional(),
-    address: Joi.string().required().min(10).label("Dirección"),
+    address: Joi.optional(),
     phoneNumber: Joi.optional(),
-    identification: Joi.string().max(20).optional(),
+    identification: Joi.optional(),
     identificationType: Joi.optional(),
     company_id: Joi.number().required().label("Compañîa"),
     createdUser: Joi.string(),
