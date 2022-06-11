@@ -415,8 +415,23 @@ class InvoiceForm extends Form {
     });
   };
 
+  handleClearCustomerSelection = () => {
+    const handler = (e) => {
+      e.preventDefault();
+    };
+    handler(window.event);
+
+    const data = { ...this.state.data };
+    data.customer_id = 0;
+
+    this.handleSelectCustomer({ id: null, firstName: "", lastName: "" });
+    this.setState({ data, searchCustomerText: "" });
+  };
+
   handleFocusCustomer = (value) => {
-    this.setState({ hideSearchCustomer: value });
+    setTimeout(() => {
+      this.setState({ hideSearchCustomer: value });
+    }, 300);
   };
 
   handleAddDetail = () => {
@@ -804,7 +819,7 @@ class InvoiceForm extends Form {
           >
             <form onSubmit={this.handleSubmit}>
               <div className="row">
-                <div className="col-8">
+                <div className="col-7">
                   <SearchCustomer
                     onSelect={this.handleSelectCustomer}
                     onFocus={() => this.handleFocusCustomer(false)}
@@ -815,6 +830,25 @@ class InvoiceForm extends Form {
                     label="Cliente"
                   />
                 </div>
+                {this.state.data.customer_id && (
+                  <div
+                    style={{
+                      marginTop: "36px",
+                    }}
+                  >
+                    <span
+                      className="fa fa-trash text-danger"
+                      style={{
+                        fontSize: "24px",
+                        position: "absolute",
+                        marginLeft: "-39px",
+                        cursor: "pointer",
+                      }}
+                      title="Limpiar filtro de cliente"
+                      onClick={this.handleClearCustomerSelection}
+                    ></span>
+                  </div>
+                )}
 
                 {!this.state.data.ncf && (
                   <div className="col-2">

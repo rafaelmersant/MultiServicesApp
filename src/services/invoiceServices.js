@@ -155,9 +155,9 @@ export function getPoints(customerId, currentPage, sortColumn) {
 }
 
 export function getAvailablePoints(customerId) {
-  return http.get(
-    `${environment.apiUrl}/totalpoints/${customerId}`
-  );
+  if (!customerId) customerId = 0;
+
+  return http.get(`${environment.apiUrl}/totalpoints/${customerId}`);
 }
 
 export function getEarnedPointsForInvoice(invoiceId) {
