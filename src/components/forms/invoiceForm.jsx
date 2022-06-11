@@ -511,6 +511,8 @@ class InvoiceForm extends Form {
   };
 
   handleEditDetail = async (detail) => {
+    this.setState({searchProductText: line.product});
+
     const handler = (e) => {
       e.preventDefault();
     };
@@ -525,7 +527,6 @@ class InvoiceForm extends Form {
       line,
       currentProduct: product.results[0],
       hideSearchProduct: true,
-      searchProductText: line.product,
     });
 
     this.handleDeleteDetail(detail, true);
