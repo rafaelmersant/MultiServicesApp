@@ -612,16 +612,7 @@ class InventoryFullForm extends Form {
                   ref={(button) => (this.raiseProductModal = button)}
                 ></button>
 
-                <button
-                  type="button"
-                  data-toggle="modal"
-                  data-target="#providerModal"
-                  hidden="hidden"
-                  ref={(button) => (this.raiseProviderModal = button)}
-                ></button>
-
                 <ProductModal setNewProduct={this.handleSetNewProduct} />
-                <ProviderModal setNewProvider={this.handleSetNewProvider} />
               </div>
             </div>
           )}
@@ -632,6 +623,15 @@ class InventoryFullForm extends Form {
             {"<-"} Ir al listado
           </NavLink>
         </div>
+
+        <button
+          type="button"
+          data-toggle="modal"
+          data-target="#providerModal"
+          hidden="hidden"
+          ref={(button) => (this.raiseProviderModal = button)}
+        ></button>
+        <ProviderModal setNewProvider={this.handleSetNewProvider} />
       </React.Fragment>
     );
   }
