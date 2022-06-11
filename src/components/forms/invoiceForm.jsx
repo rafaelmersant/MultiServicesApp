@@ -407,12 +407,14 @@ class InvoiceForm extends Form {
 
     const {data : availablePoints} = await getAvailablePoints(customer.id);
     
-    this.setState({
-      data,
-      hideSearchCustomer: true,
-      searchCustomerText: `${customer.firstName} ${customer.lastName}`,
-      availablePoints: availablePoints.total_points
-    });
+    setTimeout(() => {
+      this.setState({
+        data,
+        hideSearchCustomer: true,
+        searchCustomerText: `${customer.firstName} ${customer.lastName}`,
+        availablePoints: availablePoints.total_points
+      });
+    }, 200);
   };
 
   handleFocusCustomer = (value) => {
