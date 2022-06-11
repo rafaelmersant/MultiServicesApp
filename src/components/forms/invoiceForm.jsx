@@ -405,7 +405,7 @@ class InvoiceForm extends Form {
     const data = { ...this.state.data };
     data.customer_id = customer.id;
 
-    const { data: availablePoints } = await getAvailablePoints(customer.id);
+    // const { data: availablePoints } = await getAvailablePoints(customer.id);
 
     console.log("customer selected:", customer);
 
@@ -413,7 +413,7 @@ class InvoiceForm extends Form {
       data,
       hideSearchCustomer: true,
       searchCustomerText: `${customer.firstName} ${customer.lastName}`,
-      availablePoints: availablePoints.total_points,
+      availablePoints: 0//availablePoints.total_points,
     });
   };
 
