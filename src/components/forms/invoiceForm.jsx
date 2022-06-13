@@ -1074,7 +1074,8 @@ class InvoiceForm extends Form {
 
           {!this.isInvoiceEditable() &&
             (role === "Admin" || role === "Owner") &&
-            this.state.data.invoiceStatus !== "ANULADA" && (
+            this.state.data.invoiceStatus !== "ANULADA" &&
+            this.state.data.paymentMethod !== "POINTS" && (
               <button
                 className="btn btn-danger mb-2 ml-3"
                 onClick={this.handleChangePaid}
