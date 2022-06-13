@@ -33,7 +33,7 @@ class UserForm extends Form {
   schema = {
     id: Joi.number(),
     email: Joi.string().required().email().label("Email"),
-    password: Joi.string().required().min(8).max(30).label("Password"),
+    password: Joi.string().required().min(8).max(150).label("Password"),
     name: Joi.string().required().min(5).label("Nombre"),
     userRole: Joi.string().required().label("Rol"),
     company_id: Joi.number().label("Compañîa"),
