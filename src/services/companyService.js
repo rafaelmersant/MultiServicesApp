@@ -4,7 +4,7 @@ import { environment } from "../settings";
 const apiEndpoint = `${environment.apiUrl}/companies`;
 
 function companyUrl(id) {
-  return `${apiEndpoint}/${id}`;
+  return `${apiEndpoint}/${id}/`;
 }
 
 export function getCompanies() {
