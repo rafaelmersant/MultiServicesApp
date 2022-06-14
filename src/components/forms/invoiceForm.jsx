@@ -232,6 +232,7 @@ class InvoiceForm extends Form {
     data.subtotal = Math.round(data.subtotal * 100) / 100;
     data.cost = Math.round(data.cost * 100) / 100;
     data.amount_points = Math.round(data.amount_points * 100) / 100;
+    data.amount_points = this.state.data.customer_id === 1 ? 0 : data.amount_points;
 
     this.setState({ data });
 

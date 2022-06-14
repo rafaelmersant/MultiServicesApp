@@ -2,13 +2,18 @@ import React, { Component } from "react";
 import Table from "../common/table";
 import auth from "../../services/authService";
 import { formatNumber } from "../../utils/custom";
+import { Link } from "react-router-dom";
 
 class PointsTable extends Component {
   columns = [
     {
       path: "invoice.sequence",
       label: "No. Factura",
-      content: (point) => <span>{`${point.invoice.sequence}`}</span>,
+      content: (point) => (
+        <div className="text-center">
+          <Link to={`/invoice/${point.invoice.sequence}`}>{point.invoice.sequence}</Link>
+        </div>
+      ),
     },
     {
       path: "customer.firstName",
@@ -19,7 +24,7 @@ class PointsTable extends Component {
     },
     {
       path: "invoice_amount",
-      label: "Monto Factura",
+      label: "Monto para Puntos",
       align: "text-right",
       content: (point) => (
         <div className="text-right">
