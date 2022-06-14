@@ -221,10 +221,37 @@ class InvoiceForm extends Form {
       data.cost += Math.round(parseFloat(item.cost) * 100) / 100;
 
       //Puntos Superavit (Exclude CEMENTO product)
-      const products_excluded = [651, 639, 640, 641, 642, 650, 2350, 2351, 2352, 2353, 2354, 3401, 3402];
+      const CEMENTO_TITAN = 651;
+      const CEMENTO_2_LIBRA = 639;
+      const CEMENTO_5_LIBRA = 640;
+      const CEMENTO_ARGOS = 641;
+      const CEMENTO_BLANCO_LIBRAS = 642;
+      const CEMENTO_GRIS_LIBRA = 650;
+      const POLVO_MOSAICO_AMARILLO = 2350;
+      const POLVO_MOSAICO_AZUL = 2351;
+      const POLVO_MOSAICO_NEGRO = 2352;
+      const POLVO_MOSAICO_ROJO = 2353;
+      const POLVO_MOSAICO_VERDE = 2354;
+      const YESO = 3401;
+      const YESO_FUNDA = 3402;
+
+      const products_excluded = [
+        CEMENTO_TITAN,
+        CEMENTO_2_LIBRA,
+        CEMENTO_5_LIBRA,
+        CEMENTO_ARGOS,
+        CEMENTO_BLANCO_LIBRAS,
+        CEMENTO_GRIS_LIBRA,
+        POLVO_MOSAICO_AMARILLO,
+        POLVO_MOSAICO_AZUL,
+        POLVO_MOSAICO_NEGRO,
+        POLVO_MOSAICO_ROJO,
+        POLVO_MOSAICO_VERDE,
+        YESO,
+        YESO_FUNDA,
+      ];
       if (products_excluded.indexOf(item.product_id) === -1)
         data.amount_points += Math.round(parseFloat(item.total) * 100) / 100;
-
     });
 
     data.itbis = Math.round(data.itbis * 100) / 100;
