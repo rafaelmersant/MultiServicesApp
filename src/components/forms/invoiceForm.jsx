@@ -213,6 +213,7 @@ class InvoiceForm extends Form {
     data.discount = 0;
     data.subtotal = 0;
     data.cost = 0;
+    data.amount_points = 0;
 
     this.state.details.forEach((item) => {
       data.itbis += Math.round(parseFloat(item.itbis) * 100) / 100;
