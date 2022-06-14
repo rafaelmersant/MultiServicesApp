@@ -72,6 +72,7 @@ class InvoiceForm extends Form {
       creationDate: new Date().toISOString(),
       serverDate: new Date().toISOString(),
     },
+    saving: false,
     loading: true,
     disabledSave: false,
     invoiceDate: new Date(),
@@ -736,8 +737,7 @@ class InvoiceForm extends Form {
       }
 
       if (this.state.disabledSave) return false;
-
-      this.setState({ disabledSave: true });
+      this.setState({ disabledSave: true, saving: true });
 
       if (!this.state.data.id) {
         await this.refreshNextInvoiceSequence();
@@ -801,7 +801,7 @@ class InvoiceForm extends Form {
         console.log("Exception for deleteInvoiceDetail --> " + ex);
       }
 
-      this.setState({ disabledSave: false });
+      this.setState({ disabledSave: false, saving: false });
 
       sessionStorage["newInvoice"] = "y";
       window.location = `/invoice/${this.state.data.sequence}`;
@@ -1080,7 +1080,11 @@ class InvoiceForm extends Form {
                 />
               )}
 
-              {this.isInvoiceEditable() && this.renderButton("Guardar")}
+              <div>
+                {this.isInvoiceEditable() && this.renderButton("Guardar")}
+                {this.state.saving && <span className="spinner-border text-warning ml-2 align-middle"></span>}
+              </div>
+                            
             </form>
           </div>
 
