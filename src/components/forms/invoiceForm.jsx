@@ -221,7 +221,7 @@ class InvoiceForm extends Form {
       data.cost += Math.round(parseFloat(item.cost) * 100) / 100;
 
       //Puntos Superavit (Exclude CEMENTO product)
-      const products_excluded = [654, 642, 643, 644, 645, 653, 2353, 2354, 2355, 2356, 2357, 3404, 3405];
+      const products_excluded = [651, 639, 640, 641, 642, 650, 2350, 2351, 2352, 2353, 2354, 3401, 3402];
       if (products_excluded.indexOf(item.product_id) === -1)
         data.amount_points += Math.round(parseFloat(item.total) * 100) / 100;
 
