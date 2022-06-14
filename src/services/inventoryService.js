@@ -264,7 +264,7 @@ export async function replaceProductStock(inventory) {
       barcode: products.results[0].barcode ? products.results[0].barcode : "",
       minimumStock: products.results[0].minimumStock
         ? products.results[0].minimumStock
-        : "",
+        : "0",
       company_id: products.results[0].company.id,
       createdUser: products.results[0].createdUser
         ? products.results[0].createdUser
