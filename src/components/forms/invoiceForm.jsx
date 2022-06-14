@@ -222,7 +222,7 @@ class InvoiceForm extends Form {
 
       //Puntos Superavit (Exclude CEMENTO product)
       const products_excluded = [654, 642, 643, 644, 645, 653, 2353, 2354, 2355, 2356, 2357, 3404, 3405];
-      if (!products_excluded.includes(item.product_id))
+      if (!products_excluded.includes(item.product_id) === false)
         data.amount_points += Math.round(parseFloat(item.total) * 100) / 100;
 
     });
