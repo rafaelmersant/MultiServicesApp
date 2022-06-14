@@ -101,7 +101,7 @@ class PrintInvoice extends Component {
           <div className="text-center">
             <span className="font-receipt font-receipt-small-2-invoice">
               {invoiceHeader.length &&
-                invoiceHeader[0].ncf.includes("B02") &&
+                !invoiceHeader[0].ncf.includes("B01") &&
                 "FACTURA PARA CONSUMIDOR FINAL"}
             </span>
 
