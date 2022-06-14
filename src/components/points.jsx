@@ -65,8 +65,8 @@ class Points extends Component {
       0
     );
 
-    console.log('Total Points:', sumPoints)
-    console.log('Total Amount:', sumAmount)
+    // console.log('Total Points:', sumPoints)
+    // console.log('Total Amount:', sumAmount)
 
     this.setState({
       points: points.results,
