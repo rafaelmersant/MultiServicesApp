@@ -1127,6 +1127,7 @@ class InvoiceForm extends Form {
               valorTotal={this.state.data.subtotal}
               discountTotal={this.state.data.discount}
               availablePoints={this.state.availablePoints}
+              amountPoints={this.state.data.amount_points}
             />
           </div>
         </div>

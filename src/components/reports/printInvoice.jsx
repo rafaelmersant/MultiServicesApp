@@ -9,7 +9,8 @@ class PrintInvoice extends Component {
       itbisTotal,
       valorTotal,
       discountTotal,
-      availablePoints
+      availablePoints,
+      amountPoints
     } = this.props;
 
     if (invoiceHeader.length) {
@@ -284,9 +285,9 @@ class PrintInvoice extends Component {
         <div className="mt-4 text-center">GRACIAS POR TU COMPRA!</div>
         <div className="text-center">DIOS TE BENDIGA!</div>
 
-        {valorTotal >= 125 && (
+        {amountPoints >= 125 && (
           <div className="mt-4 text-center">
-            <span className="d-block">Puntos obtenidos en esta compra: {Math.floor(valorTotal / 125)}</span>
+            <span className="d-block">Puntos obtenidos en esta compra: {Math.floor(amountPoints / 125)}</span>
             <span>Total de puntos acumulados: {availablePoints}</span>
           </div>
         )}
