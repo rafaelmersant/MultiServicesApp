@@ -139,6 +139,7 @@ export function saveProductTracking(entry) {
 }
 
 export function saveProductStock(stock) {
+  console.log('SAVE Stock for this product:', stock)
   if (stock.id) {
     const body = { ...stock };
     delete body.id;
