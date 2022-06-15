@@ -25,6 +25,7 @@ class CustomerForm extends Form {
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString(),
     },
+    saving: false,
     companies: [],
     identificationTypes: [
       { id: "0", name: "Seleccionar..." },
@@ -110,6 +111,8 @@ class CustomerForm extends Form {
   }
 
   doSubmit = async () => {
+    this.setState({ saving: true });
+
     const { data: _customer } = await getCustomerByFirstLastName(
       getCurrentUser().companyId,
       this.state.data.firstName.toUpperCase(),
@@ -118,6 +121,7 @@ class CustomerForm extends Form {
 
     if (_customer.count > 0 && this.state.data.id === 0) {
       toast.error("Este cliente ya existe!");
+      this.setState({ saving: false });
       return false;
     }
 
@@ -129,6 +133,8 @@ class CustomerForm extends Form {
 
     if (!this.props.popUp) this.props.history.push("/customers");
     else this.props.closeMe(customer);
+
+    this.setState({ saving: false });
   };
 
   render() {
@@ -177,6 +183,7 @@ class CustomerForm extends Form {
               this.renderSelect("company_id", "Compañía", this.state.companies)}
 
             {this.renderButton("Guardar")}
+            {this.state.saving && <span className="spinner-border text-warning ml-2 align-middle"></span>}
           </form>
         </div>
       </div>
