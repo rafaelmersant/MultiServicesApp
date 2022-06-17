@@ -252,8 +252,11 @@ class InvoiceForm extends Form {
         YESO,
         YESO_FUNDA,
       ];
-      if (products_excluded.indexOf(item.product_id) === -1)
-        data.amount_points += Math.round(parseFloat(item.total) * 100) / 100;
+      if (products_excluded.indexOf(item.product_id) === -1) {
+        const discount = Math.round(parseFloat(item.discount) * 100) / 100;
+        const total = Math.round(parseFloat(item.total) * 100) / 100;
+        data.amount_points += total - discount;
+      }
     });
 
     data.itbis = Math.round(data.itbis * 100) / 100;
