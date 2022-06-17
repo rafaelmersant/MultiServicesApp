@@ -208,7 +208,7 @@ class InvoiceForm extends Form {
     this.setState({ line });
   };
 
-  updateTotals = () => {
+  updateTotals = async () => {
     const data = { ...this.state.data };
     data.itbis = 0;
     data.discount = 0;
@@ -729,7 +729,7 @@ class InvoiceForm extends Form {
 
   doSubmit = async () => {
     try {
-      this.updateTotals();
+      await this.updateTotals();
 
       if (
         this.state.data.paymentMethod === "POINTS" &&
