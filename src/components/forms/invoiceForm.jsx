@@ -216,7 +216,7 @@ class InvoiceForm extends Form {
     data.cost = 0;
     data.amount_points = 0;
 
-    this.state.details.forEach((item) => {
+    for (const item of this.state.details) {
       data.itbis += Math.round(parseFloat(item.itbis) * 100) / 100;
       data.discount += Math.round(parseFloat(item.discount) * 100) / 100;
       data.subtotal += Math.round(parseFloat(item.total) * 100) / 100;
@@ -257,7 +257,7 @@ class InvoiceForm extends Form {
         const total = Math.round(parseFloat(item.total) * 100) / 100;
         data.amount_points += total - discount;
       }
-    });
+    };
 
     data.itbis = Math.round(data.itbis * 100) / 100;
     data.discount = Math.round(data.discount * 100) / 100;
@@ -729,6 +729,8 @@ class InvoiceForm extends Form {
 
   doSubmit = async () => {
     try {
+      this.updateTotals();
+
       if (
         this.state.data.paymentMethod === "POINTS" &&
         this.state.data.discount > this.state.availablePoints
