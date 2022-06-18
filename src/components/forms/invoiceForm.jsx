@@ -668,6 +668,23 @@ class InvoiceForm extends Form {
     }
   }
 
+  async revertNCF() {
+    const { data: entry } = await getNextNCF(
+      this.state.data.typeDoc,
+      getCurrentUser().companyId
+    );
+
+    if (entry.length) {
+      const currentNCF = entry[0].current - 1;
+        
+      const _entry = { ...entry[0] };
+      _entry.current = currentNCF;
+      _entry.company_id = getCurrentUser().companyId;
+
+      await saveEntry(_entry);
+    }
+  }
+
   isInvoiceEditable = () => {
     const isPaid = this.state.data.paid;
     const isNew = this.state.data.id === 0;
@@ -817,8 +834,20 @@ class InvoiceForm extends Form {
         console.log(ex);
       }
 
-      if (ex.response && ex.response.status >= 400 && ex.response.status < 500)
-        toast.error("Hubo un error en la información enviada.");
+      if (ex.response && ex.response.status >= 400 && ex.response.status < 500) {
+        if (ex.message === "invoice sequence duplicated") {
+          const newSequence = { ...this.state.invoiceSequence };
+          await saveInvoiceSequence(newSequence);
+          await this.revertNCF();
+
+          toast.error("Hubo un error en la información enviada. Favor intente guardar nuevamente");
+          
+          this.setState({ disabledSave: false, saving: false });
+        }
+        else {
+          toast.error("Hubo un error en la información enviada.");
+        }
+      }
 
       if (ex.response && ex.response.status >= 500) {
         const errors = { ...this.state.errors };

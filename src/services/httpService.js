@@ -23,6 +23,10 @@ axios.interceptors.response.use(null, error => {
         }
       }
       toast.error(errors);
+
+      if (errors.includes("invoices header with this sequence already exists")) {
+        error.message = "invoice sequence duplicated";
+      }
     }
   }
 
