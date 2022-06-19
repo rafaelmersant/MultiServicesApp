@@ -8,11 +8,7 @@ function userUrl(id) {
 }
 
 export function getUsers() {
-  if (!sessionStorage['_user_']) {
-    sessionStorage['_user_'] = http.get(`${apiEndpoint}/`);
-  }
-  
-  return sessionStorage['_user_'];
+  return http.get(`${apiEndpoint}/`);
 }
 
 export function getUser(userId) {
@@ -20,7 +16,13 @@ export function getUser(userId) {
 }
 
 export function getUserByEmail(email) {
-  return http.get(`${apiEndpoint}/?email=${email}`);
+  const userKey = `_user_${email}`;
+
+  if (!sessionStorage[userKey]) {
+    sessionStorage[userKey] = http.get(`${apiEndpoint}/?email=${email}`);
+  }
+  
+  return sessionStorage[userKey];
 }
 
 export function getEmailExists(companyId, email) {
