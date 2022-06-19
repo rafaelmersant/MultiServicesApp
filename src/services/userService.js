@@ -16,13 +16,7 @@ export function getUser(userId) {
 }
 
 export function getUserByEmail(email) {
-  const userKey = `_user_${email}`;
-
-  if (!sessionStorage[userKey]) {
-    sessionStorage[userKey] = http.get(`${apiEndpoint}/?email=${email}`);
-  }
-  
-  return sessionStorage[userKey];
+  return http.get(`${apiEndpoint}/?email=${email}`);
 }
 
 export function getEmailExists(companyId, email) {
