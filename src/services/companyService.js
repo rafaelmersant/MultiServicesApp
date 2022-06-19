@@ -8,7 +8,11 @@ function companyUrl(id) {
 }
 
 export function getCompanies() {
-  return http.get(`${apiEndpoint}/`);
+  if (!sessionStorage['companies']) {
+    sessionStorage['companies'] = http.get(`${apiEndpoint}/`);
+  }
+  
+  return sessionStorage['companies'];
 }
 
 export function getCompany(companyId) {

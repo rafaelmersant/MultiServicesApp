@@ -8,7 +8,11 @@ function userUrl(id) {
 }
 
 export function getUsers() {
-  return http.get(`${apiEndpoint}/`);
+  if (!sessionStorage['_user_']) {
+    sessionStorage['_user_'] = http.get(`${apiEndpoint}/`);
+  }
+  
+  return sessionStorage['_user_'];
 }
 
 export function getUser(userId) {
