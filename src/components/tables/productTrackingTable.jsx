@@ -10,6 +10,7 @@ class ProductTrackingTable extends Component {
       path: "product.description",
       label: "Producto",
       content: item => (
+        item && item.product &&
         <Link to={`/product/${item.product.id}`}>
           {item.product.description}
         </Link>
