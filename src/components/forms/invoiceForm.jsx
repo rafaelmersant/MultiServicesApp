@@ -419,13 +419,23 @@ class InvoiceForm extends Form {
       const details = [...this.state.details];
       const line = { ...this.state.line };
 
-      //Check if quantity is higher than available one
-      if (line.quantity > this.state.currentProduct.quantity) {
-        toast.error(
-          `La cantidad no puede exceder lo disponible: ${this.state.currentProduct.quantity}`
-        );
-        return false;
-      }
+      let quantity = line.quantity;
+
+      const detail = this.state.detailsOriginal.filter(
+        (item) => item.product_id === line.product_id
+      );
+
+      if (line.quantity > detail[0].quantity) {
+        quantity -= detail[0].quantity;
+
+        //Check if quantity is higher than available one
+        if (quantity > this.state.currentProduct.quantity) {
+          toast.error(
+            `La cantidad no puede exceder lo disponible: ${this.state.currentProduct.quantity}`
+          );
+          return false;
+        }
+      } 
 
       line.itbis = Math.round(line.itbis * line.quantity * 100) / 100;
       line.cost = Math.round(line.cost * line.quantity * 100) / 100;
@@ -481,6 +491,8 @@ class InvoiceForm extends Form {
     const { data: product } = await getProduct(detail.product_id);
 
     if (line.discount > 0) line.discount = line.discount / line.quantity;
+
+    line.editing = true;
 
     this.setState({
       line,

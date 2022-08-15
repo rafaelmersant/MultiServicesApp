@@ -13,7 +13,7 @@ class Quotations extends Component {
     loading: true,
     quotations: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 20,
     sortColumn: { path: "creationDate", order: "desc" },
     searchParams: {
       customerId: 0,

@@ -9,44 +9,47 @@ class ProductTrackingTable extends Component {
     {
       path: "product.description",
       label: "Producto",
-      content: item => (
-        <Link to={`/product/${item.product.id}`}>
-          {item.product.description}
-        </Link>
-      )
+      content: (item) =>
+        item.product && (
+          <Link to={`/product/${item.product.id}`}>
+            {item.product.description}
+          </Link>
+        ),
     },
     {
       path: "typeTracking",
       label: "Tipo",
-      content: item => (
+      content: (item) => (
         <span>
           {item.typeTracking.replace("E", "Entrada").replace("S", "Salida")}
         </span>
-      )
+      ),
     },
     {
       path: "quantity",
       label: "Cantidad",
-      content: item => (
+      content: (item) => (
         <div className="text-right">{formatNumber(item.quantity)}</div>
-      )
+      ),
     },
     {
       path: "concept",
       label: "Desde",
-      content: item => (
+      content: (item) => (
         <span>
           {item.concept
             .replace("INVE", "Inventario")
             .replace("INVO", "Facturación")}
         </span>
-      )
+      ),
     },
     {
       path: "provider",
       label: "Proveedor",
-      content: item => <span>{item.header && item.header.provider.name}</span>
-    }
+      content: (item) => (
+        <span>{item.header && item.header.provider.name}</span>
+      ),
+    },
   ];
 
   render() {
