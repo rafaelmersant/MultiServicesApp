@@ -425,8 +425,10 @@ class InvoiceForm extends Form {
         (item) => item.product_id === line.product_id
       );
 
-      if (line.quantity > detail[0].quantity) {
-        quantity -= detail[0].quantity;
+      const detail_quantity = detail.length > 0 && detail[0].quantity ? detail[0].quantity : 0;
+
+      if (line.quantity > detail_quantity) {
+        quantity -= detail_quantity;
 
         //Check if quantity is higher than available one
         if (quantity > this.state.currentProduct.quantity) {
