@@ -24,6 +24,7 @@ class Cuadre extends Component {
     totalCount: 0,
     totalAmount: 0,
     totalITBIS: 0,
+    totalDiscount: 0,
     start_date: new Date().toISOString().substring(0, 10),
     end_date: new Date().toISOString().substring(0, 10),
     sortColumn: { path: "creationDate", order: "desc" },
@@ -80,8 +81,9 @@ class Cuadre extends Component {
       result.push({
         id: item.id,
         creationDate: item.creationDate,
-        subtotal: item.subtotal,
+        subtotal: item.subtotal - item.discount,
         amountWithoutITBIS: item.subtotal - item.itbis,
+        discount: item.discount,
         itbis: item.itbis
       });
     });
@@ -91,12 +93,14 @@ class Cuadre extends Component {
 
   getPagedData = () => {
     const { sortColumn, invoices: allInvoices } = this.state;
-    const totalAmount = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal))
     const totalITBIS = _.sumBy(allInvoices, (item) => parseFloat(item.itbis))
+    const totalDiscount = _.sumBy(allInvoices, (item) => parseFloat(item.discount))
     const sorted = _.orderBy(allInvoices, [sortColumn.path], [sortColumn.order]);
+    const totalAmount = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal))
+    
     const invoices = paginate(sorted, 1, 9999999);
 
-    return { totalCount: allInvoices.length, totalAmount, totalITBIS, invoices };
+    return { totalCount: allInvoices.length, totalAmount, totalITBIS, totalDiscount, invoices };
   };
 
   invoicesExportFormat = (data) => {
@@ -108,6 +112,7 @@ class Cuadre extends Component {
         creationDate: new Date(item.creationDate).toLocaleDateString(),
         subtotal: item.subtotal,
         amountWithoutITBIS: item.subtotal - item.itbis,
+        discount: item.discount,
         itbis: item.itbis
       });
     });
@@ -119,7 +124,7 @@ class Cuadre extends Component {
     const { sortColumn } = this.state;
     const { user } = this.props;
 
-    const { invoices, totalAmount, totalITBIS } = this.getPagedData();
+    const { invoices, totalAmount, totalITBIS, totalDiscount } = this.getPagedData();
 
     return (
       <div className="container-fluid">
@@ -187,6 +192,7 @@ class Cuadre extends Component {
                   invoices={invoices}
                   totalAmount={totalAmount}
                   totalITBIS={totalITBIS}
+                  totalDiscount={totalDiscount}
                   user={user}
                   sortColumn={sortColumn}
                 />
