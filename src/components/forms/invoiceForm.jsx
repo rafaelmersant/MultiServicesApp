@@ -792,10 +792,14 @@ class InvoiceForm extends Form {
               (__item) => __item.product_id === item.product_id
             );
 
-            if (this.state.data.id && _item.quantity !== item.quantity) {
-              const newQuantity = _item.quantity - item.quantity;
-              detail.quantity = newQuantity;
-              await this.updateInventory(detail, true);
+            if (this.state.data.id) {
+              if (_item && _item.quantity !== item.quantity) {
+                const newQuantity = _item.quantity - item.quantity;
+                detail.quantity = newQuantity;
+                await this.updateInventory(detail, true);
+              } else {
+                await this.updateInventory(detail, false);
+              }
             }
           }
 
@@ -813,6 +817,7 @@ class InvoiceForm extends Form {
       try {
         for (const item of this.state.detailsToDelete) {
           await deleteInvoiceDetail(item.id);
+          await this.updateInventory(item, true);
         }
       } catch (ex) {
         try {

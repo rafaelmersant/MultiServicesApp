@@ -24,6 +24,15 @@ class CuadreTable extends Component {
       ),
     },
     {
+      path: "discount",
+      label: "Descuento",
+      content: (invoice) => (
+        <div className="text-right">
+          <span>{formatNumber(invoice.discount)}</span>
+        </div>
+      ),
+    },
+    {
       path: "subtotal",
       label: "Total",
       content: (invoice) => (
