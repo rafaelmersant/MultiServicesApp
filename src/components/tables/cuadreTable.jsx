@@ -46,7 +46,7 @@ class CuadreTable extends Component {
       label: "Utilidad",
       content: (invoice) => (
         <div className="text-right">
-          <span>{formatNumber(invoice.subtotal - invoice.cost)}</span>
+          <span>{formatNumber(invoice.subtotal - invoice.discount - invoice.cost)}</span>
         </div>
       ),
     },

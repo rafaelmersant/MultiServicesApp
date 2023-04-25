@@ -96,7 +96,7 @@ class Cuadre extends Component {
   getPagedData = () => {
     const { sortColumn, invoices: allInvoices } = this.state;
     const totalAmount = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal))
-    const totalUtility = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal - item.cost))
+    const totalUtility = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal - item.discount - item.cost))
     const totalITBIS = _.sumBy(allInvoices, (item) => parseFloat(item.itbis))
     const totalDiscount = _.sumBy(allInvoices, (item) => parseFloat(item.discount))
     const sorted = _.orderBy(allInvoices, [sortColumn.path], [sortColumn.order]);
