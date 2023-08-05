@@ -25,6 +25,7 @@ class Cuadre extends Component {
     totalAmount: 0,
     totalUtility: 0,
     totalITBIS: 0,
+    totalCostWithITBIS: 0,
     totalDiscount: 0,
     start_date: new Date().toISOString().substring(0, 10),
     end_date: new Date().toISOString().substring(0, 10),
@@ -79,12 +80,15 @@ class Cuadre extends Component {
     let result = [];
 
     data.forEach((item) => {
+      const ITBISCost = item.itbis > 0 ? parseFloat((item.cost * 0.18) * 100 / 100) : 0;
+
       result.push({
         id: item.id,
         creationDate: item.creationDate,
         subtotal: item.subtotal - item.discount,
         cost: item.cost,
-        amountWithoutITBIS: item.subtotal - item.itbis,
+        costWithITBIS: item.cost + ITBISCost,
+        // amountWithoutITBIS: item.subtotal - item.itbis,
         discount: item.discount,
         itbis: item.itbis
       });
@@ -96,24 +100,28 @@ class Cuadre extends Component {
   getPagedData = () => {
     const { sortColumn, invoices: allInvoices } = this.state;
     const totalAmount = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal))
-    const totalUtility = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal - item.discount - item.cost))
+    const totalUtility = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal - item.discount - item.costWithITBIS))
     const totalITBIS = _.sumBy(allInvoices, (item) => parseFloat(item.itbis))
+    const totalCostWithITBIS = _.sumBy(allInvoices, (item) => parseFloat(item.cost + (item.itbis > 0 ? parseFloat((item.cost * 0.18) * 100 / 100) : 0)))
     const totalDiscount = _.sumBy(allInvoices, (item) => parseFloat(item.discount))
     const sorted = _.orderBy(allInvoices, [sortColumn.path], [sortColumn.order]);
     const invoices = paginate(sorted, 1, 9999999);
 
-    return { totalCount: allInvoices.length, totalAmount, totalUtility, totalITBIS, totalDiscount, invoices };
+    return { totalCount: allInvoices.length, totalAmount, totalUtility, totalITBIS, totalCostWithITBIS, totalDiscount, invoices };
   };
 
   invoicesExportFormat = (data) => {
     let result = [];
 
     data.forEach((item) => {
+      const ITBISCost = item.itbis > 0 ? parseFloat((item.cost * 0.18) * 100 / 100) : 0;
+
       result.push({
         id: item.id,
         creationDate: new Date(item.creationDate).toLocaleDateString(),
         subtotal: item.subtotal,
-        amountWithoutITBIS: item.subtotal - item.itbis,
+        costWithITBIS: item.cost + ITBISCost,
+        // amountWithoutITBIS: item.subtotal - item.itbis,
         discount: item.discount,
         itbis: item.itbis
       });
@@ -126,7 +134,7 @@ class Cuadre extends Component {
     const { sortColumn } = this.state;
     const { user } = this.props;
 
-    const { invoices, totalAmount, totalUtility, totalITBIS, totalDiscount } = this.getPagedData();
+    const { invoices, totalAmount, totalUtility, totalITBIS, totalCostWithITBIS, totalDiscount } = this.getPagedData();
 
     return (
       <div className="container-fluid">
@@ -195,6 +203,7 @@ class Cuadre extends Component {
                   totalAmount={totalAmount}
                   totalUtility={totalUtility}
                   totalITBIS={totalITBIS}
+                  totalCostWithITBIS={totalCostWithITBIS}
                   totalDiscount={totalDiscount}
                   user={user}
                   sortColumn={sortColumn}

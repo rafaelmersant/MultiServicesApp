@@ -56,13 +56,16 @@ class PriceCalculation extends Component {
     if (this.state.itbis) {
       data.itbis = Math.round(costNet * 0.18 * 100) / 100;
       data.costPlusITBIS = Math.round(costNet * 1.18 * 100) / 100;
-      data.itbisSales = Math.round(data.priceSales * 0.18 * 100) / 100;
-      data.priceSalesFinal = parseFloat(data.priceSales) + parseFloat(data.itbisSales);
+      // data.itbisSales = Math.round(data.priceSales * 0.18 * 100) / 100;
+      // data.priceSalesFinal = parseFloat(data.priceSales) + parseFloat(data.itbisSales);
+      data.itbisSales = Math.round(data.priceSalesFinal * 0.18 * 100) / 100;
+      data.priceSales = parseFloat(data.priceSalesFinal) - parseFloat(data.itbisSales);
     } else {
       data.itbis = 0;
       data.itbisSales = 0;
       data.costPlusITBIS = costNet;
-      data.priceSalesFinal = data.priceSales;
+      // data.priceSalesFinal = data.priceSales;
+      data.priceSales = data.priceSalesFinal;
     }
 
     // OLD FORMULA
@@ -71,8 +74,8 @@ class PriceCalculation extends Component {
     // data.priceSales = pricePercent;
 
     //if (data.priceSales >= data.costPlusITBIS) {
-    if (data.priceSales >= data.costNet) {
-      let percent = (data.priceSales - data.costNet) / data.costNet;
+    if (data.priceSalesFinal >= data.costPlusITBIS) {
+      let percent = (data.priceSalesFinal - data.costPlusITBIS) / data.costPlusITBIS;
       percent = parseFloat(percent) * 100
       data.percentage = percent;
     }
@@ -183,6 +186,7 @@ class PriceCalculation extends Component {
             name="priceSales"
             value={this.state.data.priceSales}
             label="Precio"
+            disabled="disabled"
             autoComplete="off"
             onChange={this.handleChangeInput}
             classForLabel="font-calculation"
@@ -207,7 +211,7 @@ class PriceCalculation extends Component {
             name="priceSalesFinal"
             value={this.state.data.priceSalesFinal}
             label="Precio Venta"
-            disabled="disabled"
+            // disabled="disabled"
             onChange={this.handleChangeInput}
             classForLabel="font-calculation"
           />

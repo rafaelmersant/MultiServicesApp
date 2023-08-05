@@ -6,11 +6,11 @@ class CuadreTable extends Component {
   columns = [
     { path: "creationDate", label: "Fecha (m/d/a)" },
     {
-      path: "amountWithoutITBIS",
-      label: "Monto",
+      path: "costWithITBIS",
+      label: "Costo con ITBIS",
       content: (invoice) => (
         <div className="text-right">
-          <span>{formatNumber(invoice.amountWithoutITBIS)}</span>
+          <span>{formatNumber(invoice.costWithITBIS)}</span>
         </div>
       ),
     },
@@ -46,15 +46,15 @@ class CuadreTable extends Component {
       label: "Utilidad",
       content: (invoice) => (
         <div className="text-right">
-          <span>{formatNumber(invoice.subtotal - invoice.discount - invoice.cost)}</span>
+          <span>{formatNumber(invoice.subtotal - invoice.discount - invoice.costWithITBIS)}</span>
         </div>
       ),
     },
   ];
 
   render() {
-    const { invoices, totalAmount, totalUtility, totalITBIS, totalDiscount, sortColumn, onSort } = this.props;
-
+    const { invoices, totalAmount, totalUtility, totalITBIS, totalDiscount, totalCostWithITBIS, sortColumn, onSort } = this.props;
+    console.log('DATA:', invoices)
     return (
       <React.Fragment>
         <Table
@@ -71,7 +71,7 @@ class CuadreTable extends Component {
                   Total de facturas: {invoices.length}
                 </td>
                 <td className="bg-dark text-light text-right">
-                  Monto: {formatNumber(totalAmount - totalITBIS)}
+                  Costo con ITBIS: {formatNumber(totalCostWithITBIS)}
                 </td>
                 <td className="bg-dark text-light text-right">
                   ITBIS: {formatNumber(totalITBIS)}
