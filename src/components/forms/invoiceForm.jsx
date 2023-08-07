@@ -706,7 +706,8 @@ class InvoiceForm extends Form {
                 detail.quantity = newQuantity;
                 await this.updateInventory(detail, true);
               } else {
-                await this.updateInventory(detail, false);
+                if (!_item)
+                  await this.updateInventory(detail, false);
               }
             }
           }
