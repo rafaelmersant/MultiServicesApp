@@ -13,8 +13,8 @@ const NavBarSide = ({ user }) => {
         <div className="">
           <img
             style={{ width: "54px", padding: "5px", margin: "0" }}
-            src={process.env.PUBLIC_URL + "/images/SUPERAVIT_small.png"}
-            alt="SUPERAVIT"
+            src={process.env.PUBLIC_URL + "/images/test.png"}
+            alt="test"
           />
         </div>
       </div>
@@ -143,13 +143,13 @@ const NavBarSide = ({ user }) => {
 
         {user && (user.role === "Admin" || user.role === "Owner") && (
           <React.Fragment>
-            <NavLink
+            {/* <NavLink
               className="list-group-item list-group-item-action bg-dark text-light border-none py-2"
               to="/puntos"
             >
               <span className="fa fa-list mr-2 color-local" />
               Puntos Superavit
-            </NavLink>
+            </NavLink> */}
 
             <NavLink
               className="list-group-item list-group-item-action bg-dark text-light border-none py-2"

@@ -98,7 +98,7 @@ class InvoiceForm extends Form {
       // { id: "", name: "Ninguno" },
       { id: "TRANS", name: "Transferencia" },
       { id: "CREDIT", name: "Crédito" },
-      { id: "POINTS", name: "Puntos Superavit" },
+      // { id: "POINTS", name: "Puntos Superavit" },
     ],
     invoiceTypes: [
       { id: "CASH", name: "Contado" },
@@ -878,11 +878,11 @@ class InvoiceForm extends Form {
 
     return (
       <React.Fragment>
-        <div className="mb-2 ml-3">
+        {/* <div className="mb-2 ml-3">
           <h6 className="text-danger">
             Puntos Superavit disponibles: {this.state.availablePoints}
           </h6>
-        </div>
+        </div> */}
 
         <div className="container-fluid">
           <h4 className="bg-dark text-light pl-2 pr-2 list-header">

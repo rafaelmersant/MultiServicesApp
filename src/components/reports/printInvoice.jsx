@@ -25,8 +25,8 @@ class PrintInvoice extends Component {
             <div className="text-center">
               <img
                 width="210px"
-                src={process.env.PUBLIC_URL + "/images/SUPERAVIT_print.png"}
-                alt="SUPERAVIT"
+                src={process.env.PUBLIC_URL + "/images/test.png"}
+                alt="Test"
               />
               {/* <div
                 className="font-receipt font-receipt-small-slogan"
@@ -285,12 +285,12 @@ class PrintInvoice extends Component {
         <div className="mt-4 text-center">GRACIAS POR TU COMPRA!</div>
         <div className="text-center">DIOS TE BENDIGA!</div>
 
-        {amountPoints >= 125 && (
+        {/* {amountPoints >= 125 && (
           <div className="mt-4 text-center">
             <span className="d-block">Puntos obtenidos en esta compra: {Math.floor(amountPoints / 125)}</span>
             <span>Total de puntos acumulados: {availablePoints}</span>
           </div>
-        )}
+        )} */}
 
         <div
           className="mt-5 font-receipt-small-F-invoice"
