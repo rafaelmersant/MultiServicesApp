@@ -26,8 +26,8 @@ class PrintQuotation extends Component {
             <div className="text-center">
               <img
                 width="210px"
-                src={process.env.PUBLIC_URL + "/images/SUPERAVIT_print.png"}
-                alt="SUPERAVIT"
+                src={process.env.PUBLIC_URL + "/images/test.png"}
+                alt="test"
               />
               {/* <div
                 className="font-receipt font-receipt-small-slogan"
