@@ -91,7 +91,7 @@ class Cuadre extends Component {
         // amountWithoutITBIS: item.subtotal - item.itbis,
         discount: item.discount,
         itbis: item.itbis,
-        utility: item.subtotal - item.discount - (item.cost + ITBISCost)
+        utility: item.subtotal - (item.cost + ITBISCost)
       });
     }
     
