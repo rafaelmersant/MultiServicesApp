@@ -79,7 +79,7 @@ class Cuadre extends Component {
   mapToModel = (data) => {
     let result = [];
 
-    data.forEach((item) => {
+    for (const item of data) {
       const ITBISCost = item.itbis > 0 ? parseFloat((item.cost * 0.18) * 100 / 100) : 0;
 
       result.push({
@@ -92,8 +92,8 @@ class Cuadre extends Component {
         discount: item.discount,
         itbis: item.itbis
       });
-    });
-
+    }
+    
     return result;
   };
 
