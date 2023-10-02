@@ -85,7 +85,7 @@ class Cuadre extends Component {
       result.push({
         id: item.id,
         creationDate: item.creationDate,
-        subtotal: item.subtotal,
+        subtotal: item.subtotal - item.discount,
         cost: item.cost,
         costWithITBIS: item.cost + ITBISCost,
         // amountWithoutITBIS: item.subtotal - item.itbis,
