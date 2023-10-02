@@ -90,7 +90,8 @@ class Cuadre extends Component {
         costWithITBIS: item.cost + ITBISCost,
         // amountWithoutITBIS: item.subtotal - item.itbis,
         discount: item.discount,
-        itbis: item.itbis
+        itbis: item.itbis,
+        utility: item.subtotal - item.discount - (item.cost + ITBISCost)
       });
     }
     
@@ -100,7 +101,7 @@ class Cuadre extends Component {
   getPagedData = () => {
     const { sortColumn, invoices: allInvoices } = this.state;
     const totalAmount = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal))
-    const totalUtility = _.sumBy(allInvoices, (item) => parseFloat(item.subtotal - item.costWithITBIS))
+    const totalUtility = _.sumBy(allInvoices, (item) => parseFloat(item.utility))
     const totalITBIS = _.sumBy(allInvoices, (item) => parseFloat(item.itbis))
     const totalCostWithITBIS = _.sumBy(allInvoices, (item) => parseFloat(item.cost + (item.itbis > 0 ? parseFloat((item.cost * 0.18) * 100 / 100) : 0)))
     const totalDiscount = _.sumBy(allInvoices, (item) => parseFloat(item.discount))
