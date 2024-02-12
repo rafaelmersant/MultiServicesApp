@@ -7,6 +7,7 @@ import NewButton from "./common/newButton";
 import { paginate } from "../utils/paginate";
 import { getUsers, deleteUser } from "../services/userService";
 import UsersTable from "./tables/usersTable";
+import { getCurrentUser } from "../services/authService";
 
 class Users extends Component {
   state = {
@@ -18,6 +19,10 @@ class Users extends Component {
   };
 
   async componentDidMount() {
+    const role = getCurrentUser().role;
+    if (role !== "Admin" && role !== "Owner")
+      this.props.history.push('/');
+
     const { data: users } = await getUsers();
 
     this.setState({ users });

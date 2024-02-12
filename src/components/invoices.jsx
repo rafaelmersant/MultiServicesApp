@@ -10,6 +10,7 @@ import {
   getInvoicesHeader,
   deleteInvoiceHeader,
   getInvoiceDetail,
+  cancelInvoiceHeader,
 } from "../services/invoiceServices";
 
 import {
@@ -107,12 +108,12 @@ class Invoices extends Component {
 
   handleDelete = async (invoice) => {
     if (invoice.paid) {
-      toast.error("No puede eliminar una factura pagada.");
+      toast.error("No puede anular una factura pagada.");
       return false;
     }
 
     const answer = window.confirm(
-      `Seguro que desea eliminar la factura #${invoice.sequence}`
+      `Seguro que desea anular la factura #${invoice.sequence}`
     );
 
     if (answer) {
@@ -124,20 +125,20 @@ class Invoices extends Component {
 
         const { data: details } = await getInvoiceDetail(invoice.id);
 
+        console.log('details:', details)
         details.forEach(async (item) => {
-          await this.updateInventory(item.product.id, item.quantity);
-          //await deleteInvoiceDetail(item.id); //deleted by default with the header
+          await this.updateInventory(item.product_id, item.quantity);
         });
 
-        var deleted = await deleteInvoiceHeader(invoice.id);
+        var deleted = await cancelInvoiceHeader(invoice.sequence);
       } catch (ex) {
         if (ex.response && ex.response.status === 404)
-          toast.error("Este factura ya fue eliminada");
+          toast.error("Este factura ya fue anulada");
       }
 
       if (deleted && deleted.status === 200)
         toast.success(
-          `La factura #${invoice.sequence} fue eliminada con exito!`
+          `La factura #${invoice.sequence} fue anulada con exito!`
         );
     }
   };

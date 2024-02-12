@@ -4,29 +4,30 @@ import Pagination from "react-js-pagination";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
 import { getCurrentUser } from "../services/authService";
-import { getInvoiceLeadHeader } from "../services/invoiceLeadServices";
-import ConducesTable from "./tables/conducesTable";
+import { deleteQuotationHeader, getQuotationsHeader } from "../services/quotationServices";
+import SearchInvoiceBlock from "./common/searchInvoiceBlock";
+import QuotationsTable from './tables/quotationsTable'
 
 class Quotations extends Component {
   state = {
     loading: true,
-    conduces: [],
+    quotations: [],
     currentPage: 1,
-    pageSize: 10,
+    pageSize: 20,
     sortColumn: { path: "creationDate", order: "desc" },
     searchParams: {
       customerId: 0,
-      invoiceNo: 0,
+      headerId: 0,
     },
   };
 
   async componentDidMount() {
-    //await this.populateConduces();
+    await this.populateQuotations();
   }
 
-  async populateConduces(_sortColumn, _currentPage) {
+  async populateQuotations(_sortColumn, _currentPage) {
     const companyId = getCurrentUser().companyId;
-    const { invoiceNo, customerId } = {
+    const { customerId, headerId } = {
       ...this.state.searchParams,
     };
     const { currentPage, sortColumn } = { ...this.state };
@@ -34,16 +35,19 @@ class Quotations extends Component {
     _sortColumn = _sortColumn ? _sortColumn : sortColumn;
     _currentPage = _currentPage ? _currentPage : currentPage;
 
-    const { data: conduces } = await getInvoiceLeadHeader(
+    const { data: quotations } = await getQuotationsHeader(
       companyId,
-      0,
+      customerId,
+      headerId,
       _currentPage,
       _sortColumn
     );
 
+    console.log('quotations', quotations)
+
     this.setState({
-      conduces: conduces.results,
-      totalConduces: conduces.count,
+      quotations: quotations.results,
+      totalQuotations: quotations.count,
       loading: false,
     });
   }
@@ -52,26 +56,26 @@ class Quotations extends Component {
     this.setState({ currentPage: page });
     sessionStorage["currentPage"] = parseInt(page);
 
-    await this.populateConduces(null, page);
+    await this.populateQuotations(null, page);
   };
 
   handleSort = async (sortColumn) => {
     this.setState({ sortColumn });
 
-    await this.populateConduces(sortColumn);
+    await this.populateQuotations(sortColumn);
   };
 
-  handleInvoiceChange = async (invoiceNo) => {
+  handleQuotationChange = async (headerId) => {
     const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
 
     const { searchParams } = { ...this.state };
-    searchParams.invoiceNo = invoiceNo;
+    searchParams.headerId = headerId;
 
     this.setState({ searchParams });
-    this.populateConduces();
+    this.populateQuotations();
   };
 
   handleCustomerChange = async (customer) => {
@@ -82,45 +86,40 @@ class Quotations extends Component {
 
     const { searchParams } = { ...this.state };
     searchParams.customerId = customer.id;
-    searchParams.invoiceNo = "";
+    searchParams.headerId = "";
 
     this.setState({ searchParams });
-    this.populateConduces();
+    this.populateQuotations();
   };
 
-  handleDelete = async (conduce) => {
+  handleDelete = async (quotation) => {
     const answer = window.confirm(
-      `Seguro que desea eliminar el conduce #${conduce.id}`
+      `Seguro que desea eliminar la cotización #${quotation.id}`
     );
 
     if (answer) {
       try {
-        const conduces = this.state.conduces.filter(
-          (item) => item.id !== conduce.id
+        const quotations = this.state.quotations.filter(
+          (item) => item.id !== quotation.id
         );
-        this.setState({ conduces });
+        this.setState({ quotations });
 
-        var deleted = { status: 200 }; //await deleteInvoiceHeader(invoice.id);
+        var deleted = await deleteQuotationHeader(quotation.id);
       } catch (ex) {
         if (ex.response && ex.response.status === 404)
-          toast.error("Este factura ya fue eliminada");
+          toast.error("Esta cotización ya fue eliminada");
       }
 
       if (deleted && deleted.status === 200)
         toast.success(
-          ` (Simulando) -> El conduce #${conduce.id} fue eliminado con exito!`
+          `La cotización #${quotation.id} fue eliminada con exito!`
         );
     }
   };
 
   render() {
-    const {
-      quotations,
-      sortColumn,
-      totalQuotations,
-      pageSize,
-      currentPage,
-    } = this.state;
+    const { quotations, sortColumn, totalQuotations, pageSize, currentPage } =
+      this.state;
     const user = getCurrentUser();
     const total = quotations ? quotations.length : 0;
 
@@ -139,14 +138,14 @@ class Quotations extends Component {
                 <h5 className="text-info">Listado de Cotizaciones</h5>
               </div>
             </div>
-            <h3>En construcción...</h3>
-            {/* <SearchInvoiceBlock
-              onInvoiceChange={this.handleInvoiceChange}
+            <SearchInvoiceBlock
+              onInvoiceChange={this.handleQuotationChange}
               onCustomerChange={this.handleCustomerChange}
-              onPaymentMethodChange={this.handlePaymentMethodChange}
-            /> */}
+              paymentMethodOff={true}
+              source="quotations"
+            />
 
-            {/* {this.state.loading && (
+            {this.state.loading && (
               <div className="d-flex justify-content-center">
                 <Loading />
               </div>
@@ -154,8 +153,8 @@ class Quotations extends Component {
 
             {!this.state.loading && (
               <div className="row">
-                <ConducesTable
-                  conduces={conduces}
+                <QuotationsTable
+                  quotations={quotations}
                   user={user}
                   sortColumn={sortColumn}
                   onDelete={this.handleDelete}
@@ -170,7 +169,7 @@ class Quotations extends Component {
                   <Pagination
                     activePage={currentPage}
                     itemsCountPerPage={pageSize}
-                    totalItemsCount={totalConduces}
+                    totalItemsCount={totalQuotations}
                     pageRangeDisplayed={5}
                     onChange={this.handlePageChange.bind(this)}
                     itemClass="page-item"
@@ -179,11 +178,11 @@ class Quotations extends Component {
                 </div>
                 <p className="text-muted ml-3 mt-2">
                   <em>
-                    Mostrando {total} conduces de {totalConduces}
+                    Mostrando {total} cotizaciones de {totalQuotations}
                   </em>
                 </p>
               </div>
-            )} */}
+            )}
           </div>
         </div>
       </div>

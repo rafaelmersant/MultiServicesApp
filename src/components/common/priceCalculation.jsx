@@ -12,6 +12,8 @@ class PriceCalculation extends Component {
       costPlusITBIS: 0,
       percentage: 0,
       priceSales: 0,
+      itbisSales: 0,
+      priceSalesFinal: 0,
     },
     itbis: true,
     resetValues: false,
@@ -36,6 +38,8 @@ class PriceCalculation extends Component {
     data.costPlusITBIS = 0;
     data.percentage = 0;
     data.priceSales = 0;
+    data.itbisSales = 0;
+    data.priceSalesFinal = 0;
 
     this.props.onResetValues(false);
     this.setState({ data });
@@ -52,8 +56,13 @@ class PriceCalculation extends Component {
     if (this.state.itbis) {
       data.itbis = Math.round(costNet * 0.18 * 100) / 100;
       data.costPlusITBIS = Math.round(costNet * 1.18 * 100) / 100;
+      data.itbisSales = Math.round(data.priceSales * 0.18 * 100) / 100;
+      data.priceSalesFinal = parseFloat(data.priceSales) + parseFloat(data.itbisSales);
     } else {
+      data.itbis = 0;
+      data.itbisSales = 0;
       data.costPlusITBIS = costNet;
+      data.priceSalesFinal = data.priceSales;
     }
 
     // OLD FORMULA
@@ -61,8 +70,9 @@ class PriceCalculation extends Component {
     // const pricePercent = Math.round(percent * 100) / 100;
     // data.priceSales = pricePercent;
 
-    if (data.priceSales >= data.costPlusITBIS) {
-      let percent = (data.priceSales - data.costPlusITBIS) / data.costPlusITBIS;
+    //if (data.priceSales >= data.costPlusITBIS) {
+    if (data.priceSales >= data.costNet) {
+      let percent = (data.priceSales - data.costNet) / data.costNet;
       percent = parseFloat(percent) * 100
       data.percentage = percent;
     }
@@ -104,6 +114,7 @@ class PriceCalculation extends Component {
             label="Costo Bruto"
             autoComplete="off"
             onChange={this.handleChangeInput}
+            classForLabel="font-calculation"
           />
         </div>
 
@@ -115,6 +126,7 @@ class PriceCalculation extends Component {
             label="% Desc."
             autoComplete="off"
             onChange={this.handleChangeInput}
+            classForLabel="font-calculation"
           />
         </div>
 
@@ -126,6 +138,19 @@ class PriceCalculation extends Component {
             label="Costo Neto"
             disabled="disabled"
             onChange={this.handleChangeInput}
+            classForLabel="font-calculation"
+          />
+        </div>
+
+        <div className="col">
+          <Input
+            type="text"
+            name="itbis"
+            value={this.state.data.itbis}
+            label="ITBIS"
+            disabled="disabled"
+            onChange={this.handleChangeInput}
+            classForLabel="font-calculation"
           />
         </div>
 
@@ -143,22 +168,12 @@ class PriceCalculation extends Component {
         <div className="col">
           <Input
             type="text"
-            name="itbis"
-            value={this.state.data.itbis}
-            label="ITBIS"
-            disabled="disabled"
-            onChange={this.handleChangeInput}
-          />
-        </div>
-
-        <div className="col">
-          <Input
-            type="text"
             name="costPlusITBIS"
             value={this.state.data.costPlusITBIS}
-            label="Costo + ITBIS"
+            label="Costo+ITBIS"
             disabled="disabled"
             onChange={this.handleChangeInput}
+            classForLabel="font-calculation"
           />
         </div>
 
@@ -167,9 +182,34 @@ class PriceCalculation extends Component {
             type="text"
             name="priceSales"
             value={this.state.data.priceSales}
-            label="Precio Venta"
+            label="Precio"
             autoComplete="off"
             onChange={this.handleChangeInput}
+            classForLabel="font-calculation"
+          />
+        </div>
+
+        <div className="col">
+          <Input
+            type="text"
+            name="itbisSales"
+            value={this.state.data.itbisSales}
+            label="ITBIS Venta"
+            disabled="disabled"
+            onChange={this.handleChangeInput}
+            classForLabel="font-calculation"
+          />
+        </div>
+
+        <div className="col">
+          <Input
+            type="text"
+            name="priceSalesFinal"
+            value={this.state.data.priceSalesFinal}
+            label="Precio Venta"
+            disabled="disabled"
+            onChange={this.handleChangeInput}
+            classForLabel="font-calculation"
           />
         </div>
 
@@ -181,6 +221,7 @@ class PriceCalculation extends Component {
             label="Porcentaje %"
             disabled="disabled"
             onChange={this.handleChangeInput}
+            classForLabel="font-calculation"
           />
         </div>
       </div>

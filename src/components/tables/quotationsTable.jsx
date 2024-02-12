@@ -4,14 +4,14 @@ import Table from "../common/table";
 import auth from "../../services/authService";
 import { formatNumber } from "../../utils/custom";
 
-class InvoicesTable extends Component {
+class QuotationsTable extends Component {
   columns = [
     {
-      path: "sequence",
-      label: "No. Factura",
-      content: (invoice) => (
+      path: "id",
+      label: "No. Cotización",
+      content: (quotation) => (
         <div className="text-center">
-          <Link to={`/invoice/${invoice.sequence}`}>{invoice.sequence}</Link>
+          <Link to={`/quotation/${quotation.id}`}>{quotation.id}</Link>
         </div>
       ),
     },
@@ -19,9 +19,9 @@ class InvoicesTable extends Component {
     {
       path: "customer.firstName",
       label: "Cliente",
-      content: (invoice) => (
+      content: (quotation) => (
         <span>
-          {`${invoice.customer.firstName} ${invoice.customer.lastName}`}
+          {`${quotation.customer.firstName} ${quotation.customer.lastName}`}
         </span>
       ),
     },
@@ -59,10 +59,10 @@ class InvoicesTable extends Component {
       path: "printed",
       label: "Impresa",
       align: "text-center",
-      content: (invoice) => (
+      content: (quotation) => (
         <div className="text-center">
           <span>
-            {invoice.printed
+            {quotation.printed
               .toString()
               .replace(true, "SI")
               .replace(false, "Pendiente")}
@@ -70,38 +70,16 @@ class InvoicesTable extends Component {
         </div>
       ),
     },
-    {
-      path: "paid",
-      label: "Pagada",
-      align: "text-center",
-      content: (invoice) => (
-        <div className="text-center">
-          {invoice.invoiceStatus === "ANULADA" && (
-            <span className="text-danger">ANULADA</span>
-          )}
-          {invoice.invoiceStatus !== "ANULADA" && (
-            <span>
-              {invoice.paid
-                .toString()
-                .replace(true, "SI")
-                .replace(false, "Pendiente")}
-            </span>
-          )}
-        </div>
-      ),
-    },
   ];
 
   deleteColumn = {
     key: "delete",
-    content: (invoice) => (
+    content: (quotation) => (
       <div className="text-center">
-        {invoice.invoiceStatus !== "ANULADA" && (
-          <span
-            onClick={() => this.props.onDelete(invoice)}
-            className="fa fa-trash text-danger cursor-pointer trash-size"
-          ></span>
-        )}
+        <span
+          onClick={() => this.props.onDelete(quotation)}
+          className="fa fa-trash text-danger cursor-pointer trash-size"
+        ></span>
       </div>
     ),
   };
@@ -116,12 +94,12 @@ class InvoicesTable extends Component {
   }
 
   render() {
-    const { invoices, sortColumn, onSort } = this.props;
+    const { quotations, sortColumn, onSort } = this.props;
 
     return (
       <Table
         columns={this.columns}
-        data={invoices}
+        data={quotations}
         sortColumn={sortColumn}
         onSort={onSort}
       />
@@ -129,4 +107,4 @@ class InvoicesTable extends Component {
   }
 }
 
-export default InvoicesTable;
+export default QuotationsTable;

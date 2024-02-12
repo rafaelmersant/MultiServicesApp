@@ -4,7 +4,7 @@ import ReactExport from "react-export-excel";
 class ExportInvoices607 extends Component {
   render() {
     const { sheetName, data } = this.props;
-    
+
     const ExcelFile = ReactExport.ExcelFile;
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;

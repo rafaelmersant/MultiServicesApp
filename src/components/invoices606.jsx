@@ -68,7 +68,7 @@ class Invoices606 extends Component {
         amount: item.totalAmount - item.itbis,
         itbis: item.itbis,
         subtotal: item.totalAmount,
-        creationDate: new Date(item.creationDate),
+        creationDate: item.creationDate,
       });
     });
 
@@ -95,6 +95,24 @@ class Invoices606 extends Component {
     return { totalCount: filtered.length, invoices };
   };
 
+  invoicesExportFormat = (data) => {
+    let result = [];
+
+    data.forEach((item) => {
+      result.push({
+        id: item.id,
+        rnc: item.rnc,
+        ncf: item.ncf,
+        amount: item.amount,
+        itbis: item.itbis,
+        subtotal: item.subtotal,
+        creationDate: new Date(item.creationDate).toLocaleDateString(),
+      });
+    });
+
+    return result;
+  };
+
   render() {
     const { sortColumn } = this.state;
     const { user } = this.props;
@@ -108,7 +126,7 @@ class Invoices606 extends Component {
             <h2 className="pull-right text-info">Reporte 606</h2>
 
             <ExportInvoices606
-              data={invoices}
+              data={this.invoicesExportFormat(invoices)}
               sheetName="Reporte606"
             />
 

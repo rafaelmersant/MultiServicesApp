@@ -83,7 +83,13 @@ class SearchInvoiceBlock extends Component {
   };
 
   render() {
+    const { paymentMethodOff, source } = { ...this.props };
     const companyId = getCurrentUser().companyId;
+
+    const placeholderSearch =
+      source === "quotations" ? "Número de Cotización" : "Número de Factura";
+    const labelSearch =
+      source === "quotations" ? "Cotización No." : "Factura No.";
 
     return (
       <div>
@@ -93,8 +99,8 @@ class SearchInvoiceBlock extends Component {
               name="invoice"
               value={this.state.data.invoice}
               onChange={this.handleChange}
-              placeholder="Número de Factura"
-              label="Factura No."
+              placeholder={placeholderSearch}
+              label={labelSearch}
             />
           </div>
           <div className="col">
@@ -128,16 +134,18 @@ class SearchInvoiceBlock extends Component {
             </div>
           )}
 
-          <div>
-            <Select
-              name="paymentMethod"
-              value={this.state.data.paymentMethod}
-              label="Metodo de Pago"
-              options={this.state.paymentMethods}
-              onChange={this.handleChange}
-              error={null}
-            />
-          </div>
+          {!paymentMethodOff && (
+            <div>
+              <Select
+                name="paymentMethod"
+                value={this.state.data.paymentMethod}
+                label="Metodo de Pago"
+                options={this.state.paymentMethods}
+                onChange={this.handleChange}
+                error={null}
+              />
+            </div>
+          )}
         </div>
       </div>
     );

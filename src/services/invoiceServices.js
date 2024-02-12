@@ -6,6 +6,7 @@ const apiEndpointDetail = `${apiUrl}/invoicesDetails`;
 const apiEndpointSequence = `${apiUrl}/invoicesSequences`;
 const apiEndpointDetailSimple = `${apiUrl}/InvoicesDetailSimple`;
 const apiEndpointProductReduced = `${apiUrl}/invoicesDetailsReduced`;
+const apiEndpointCancelInvoice = `${apiUrl}/cancelInvoice`;
 
 function invoiceHeaderUrl(id) {
   return `${apiEndpointHeader}/${id}/`;
@@ -56,6 +57,18 @@ export function getInvoicesHeaderFull(companyId, year) {
 export function getInvoiceHeader(companyId, sequence) {
   return http.get(
     `${apiEndpointHeader}/?company=${companyId}&sequence=${sequence}`
+  );
+}
+
+export function getInvoicesHeaderByRange(start_date, end_date) {
+  return http.get(
+    `${apiEndpointHeader}/?start_date=${start_date}&end_date=${end_date}&ordering=-created_date`
+  );
+}
+
+export function getInvoicesCustomersByRange(start_date, end_date) {
+  return http.get(
+    `${apiUrl}/invoicesCustomers/?start_date=${start_date}&end_date=${end_date}`
   );
 }
 
@@ -115,4 +128,8 @@ export function deleteInvoiceHeader(id) {
 
 export function deleteInvoiceDetail(id) {
   return http.delete(invoiceDetailUrl(id));
+}
+
+export function cancelInvoiceHeader(invoice) {
+  return http.post(`${apiEndpointCancelInvoice}/${invoice}`);
 }

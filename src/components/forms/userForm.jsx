@@ -98,20 +98,37 @@ class UserForm extends Form {
 
     await saveUser(this.state.data);
 
-    this.props.history.push("/users");
+    if (this.state.data.userRole === "Admin" || this.state.data.userRole === "Owner")
+      this.props.history.push("/users");
+    
+      this.props.history.push('/');
   };
 
   render() {
+    const userRole = getCurrentUser().role;
+    const emailDisabled =
+      userRole === "Admin" || userRole === "Owner" ? "" : "disabled";
+
     return (
       <div className="container-fluid">
         <h3 className="bg-dark text-light pl-2 pr-2">{this.state.action}</h3>
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
-            {this.renderInput("email", "Email")}
+            {this.renderInput("email", "Email", "text", emailDisabled)}
             {this.renderInput("password", "Contraseña", "password")}
             {this.renderInput("name", "Nombre")}
-            {this.renderSelect("userRole", "Rol", this.state.roles)}
-            {this.renderSelect("company_id", "Compañía", this.state.companies)}
+
+            {(userRole === "Owner") && (
+              <div>
+                {this.renderSelect("userRole", "Rol", this.state.roles)}
+                {this.renderSelect(
+                  "company_id",
+                  "Compañía",
+                  this.state.companies
+                )}
+              </div>
+            )}
+
             {this.renderButton("Guardar")}
           </form>
         </div>

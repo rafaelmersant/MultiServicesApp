@@ -85,7 +85,7 @@ class ProductsTable extends Component {
     // },
     {
       path: "quantity",
-      label: "Cantidad / Sumar Cantidad",
+      label: "Cantidad / Actualizar Cantidad",
       content: (item) => (
         <div className="d-flex justify-content-start min-quantity-column">
           <div>
@@ -96,6 +96,7 @@ class ProductsTable extends Component {
               className="form-control form-control-sm"
               value={item.quantity ?? 0}
               onChange={this.handleChange}
+              style={{ maxWidth: "110px"}}
             />
           </div>
 
@@ -104,21 +105,22 @@ class ProductsTable extends Component {
               id={item.id}
               type="text"
               className={`form-control form-control-sm ${
-                item.updated === false ? "bg-white" : "bg-warning"
+                item.updated === false ? "bg-success text-white" : "bg-warning"
               }`}
               value={this.state.values[item.id]}
               onChange={this.handleChange}
+              style={{ maxWidth: "110px"}}
             />
           </div>
 
           <div>
-            <a
+            <span
               id={item.id}
               href="#"
               className="fa fa-save text-danger ml-2"
-              style={{ fontSize: "29px", textDecoration: "none" }}
+              style={{ fontSize: "29px", textDecoration: "none", cursor: "pointer" }}
               onClick={() => this.updateInventoryProduct(item)}
-            />
+            ></span>
           </div>
         </div>
       ),
