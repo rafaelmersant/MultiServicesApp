@@ -64,7 +64,7 @@ class InvoiceForm extends Form {
       itbis: 0,
       discount: 0,
       cost: 0,
-      typeDoc: "B02",
+      typeDoc: "0",
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
       creationDate: new Date().toISOString(),
