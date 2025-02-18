@@ -481,7 +481,7 @@ class InvoiceForm extends Form {
     };
     handler(window.event);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       this.updateLine(this.state.currentProduct);
       const details = [...this.state.details];
       const line = { ...this.state.line };
@@ -520,9 +520,15 @@ class InvoiceForm extends Form {
         clearSearchProduct: true,
       });
 
-      this.updateTotals();
+      await this.updateTotals();
       this.resetLineValues();
-    }, 150);
+
+      console.log('this.state.data.id:', this.state.data.id)
+      console.log('this.state.data.sequence:', this.state.data.sequence)
+      if (this.state.data.id > 0) {
+        await this.saveInvoice();
+      }
+    }, 400);
   };
 
   handleDeleteDetail = (detail, soft = false) => {
@@ -544,8 +550,14 @@ class InvoiceForm extends Form {
 
       this.setState({ details, detailsToDelete });
 
-      setTimeout(() => {
-        this.updateTotals();
+      setTimeout(async () => {
+        await this.updateTotals();
+
+        console.log('this.state.data.id:', this.state.data.id)
+        console.log('this.state.data.sequence:', this.state.data.sequence)
+        if (this.state.data.id > 0) {
+          await this.saveInvoice();
+        }
       });
     }
   };
@@ -744,9 +756,8 @@ class InvoiceForm extends Form {
     }
   }
 
-  doSubmit = async () => {
-    try {
-      await this.updateTotals();
+  async saveInvoice() {
+    await this.updateTotals();
 
       if (
         this.state.data.paymentMethod === "POINTS" &&
@@ -830,6 +841,11 @@ class InvoiceForm extends Form {
       }
 
       this.setState({ disabledSave: false, saving: false });
+  }
+
+  doSubmit = async () => {
+    try {
+      await this.saveInvoice();
 
       sessionStorage["newInvoice"] = "y";
       window.location = `/invoice/${this.state.data.sequence}`;
