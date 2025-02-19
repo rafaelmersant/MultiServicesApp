@@ -257,14 +257,15 @@ class InvoiceForm extends Form {
         const total = Math.round(parseFloat(item.total) * 100) / 100;
         data.amount_points += total - discount;
       }
-    };
+    }
 
     data.itbis = Math.round(data.itbis * 100) / 100;
     data.discount = Math.round(data.discount * 100) / 100;
     data.subtotal = Math.round(data.subtotal * 100) / 100;
     data.cost = Math.round(data.cost * 100) / 100;
     data.amount_points = Math.round(data.amount_points * 100) / 100;
-    data.amount_points = this.state.data.customer_id === 1 ? 0 : data.amount_points;
+    data.amount_points =
+      this.state.data.customer_id === 1 ? 0 : data.amount_points;
 
     this.setState({ data });
 
@@ -338,7 +339,7 @@ class InvoiceForm extends Form {
       const { data: availablePoints } = await getAvailablePoints(
         invoiceHeader[0].customer_id
       );
-
+      
       this.setState({
         data: invoiceHeaderMapped,
         details: mapToViewInvoiceDetail(invoiceDetail),
@@ -387,7 +388,7 @@ class InvoiceForm extends Form {
   };
 
   handleSelectProduct = async (product) => {
-      const handler = (e) => {
+    const handler = (e) => {
       e.preventDefault();
     };
     handler(window.event);
@@ -432,7 +433,9 @@ class InvoiceForm extends Form {
   };
 
   handleSelectCustomer = async (customer) => {
-    this.setState({searchCustomerText: `${customer.firstName} ${customer.lastName}`})
+    this.setState({
+      searchCustomerText: `${customer.firstName} ${customer.lastName}`,
+    });
 
     const handler = (e) => {
       e.preventDefault();
@@ -510,6 +513,7 @@ class InvoiceForm extends Form {
       line.cost = Math.round(line.cost * line.quantity * 100) / 100;
       line.discount = Math.round(line.discount * line.quantity * 100) / 100;
       line.total = Math.round(line.total * 100) / 100;
+      line.invoice_id = this.state.data.id;
 
       if (this.state.line.product_id) details.push(line);
 
@@ -523,16 +527,14 @@ class InvoiceForm extends Form {
       await this.updateTotals();
       this.resetLineValues();
 
-      console.log('this.state.data.id:', this.state.data.id)
-      console.log('this.state.data.sequence:', this.state.data.sequence)
-      if (this.state.data.id > 0) {
-        await this.saveInvoice();
+      if (this.state.data.id) {
+        this.saveOneItem(line);
       }
     }, 400);
   };
 
-  handleDeleteDetail = (detail, soft = false) => {
-    let answer = true;
+  handleDeleteDetail = async (detail, soft = false) => {
+    let answer = false;
 
     if (!soft) {
       answer = window.confirm(
@@ -540,30 +542,31 @@ class InvoiceForm extends Form {
       );
     }
 
-    if (answer) {
-      const detailsToDelete = [...this.state.detailsToDelete];
-      if (!soft) detailsToDelete.push(detail);
-
+    if (answer || soft) {
       const details = this.state.details.filter(
         (d) => d.product_id !== detail.product_id
       );
 
-      this.setState({ details, detailsToDelete });
+      this.setState({ details });
+    }
+
+    if (answer) {
+      //const detailsToDelete = [...this.state.detailsToDelete];
+      //if (!soft) detailsToDelete.push(detail);
 
       setTimeout(async () => {
         await this.updateTotals();
 
-        console.log('this.state.data.id:', this.state.data.id)
-        console.log('this.state.data.sequence:', this.state.data.sequence)
-        if (this.state.data.id > 0) {
-          await this.saveInvoice();
+        if (this.state.data.id) {
+          console.log("ITEM TO DELETE:", detail);
+          await this.deleteOneItem(detail);
         }
-      });
+      }, 200);
     }
   };
 
   handleEditDetail = async (detail) => {
-    this.setState({searchProductText: detail.product});
+    this.setState({ searchProductText: detail.product });
 
     const handler = (e) => {
       e.preventDefault();
@@ -688,7 +691,7 @@ class InvoiceForm extends Form {
 
     if (entry.length) {
       const currentNCF = entry[0].current - 1;
-        
+
       const _entry = { ...entry[0] };
       _entry.current = currentNCF;
       _entry.company_id = getCurrentUser().companyId;
@@ -759,88 +762,148 @@ class InvoiceForm extends Form {
   async saveInvoice() {
     await this.updateTotals();
 
-      if (
-        this.state.data.paymentMethod === "POINTS" &&
-        this.state.data.discount > this.state.availablePoints
-      ) {
-        toast.error(
-          "El descuento no puede exceder los puntos superavit disponibles."
-        );
-        return false;
-      }
+    if (
+      this.state.data.paymentMethod === "POINTS" &&
+      this.state.data.discount > this.state.availablePoints
+    ) {
+      toast.error(
+        "El descuento no puede exceder los puntos superavit disponibles."
+      );
+      return false;
+    }
 
-      if (this.state.disabledSave) return false;
-      this.setState({ disabledSave: true, saving: true });
+    if (this.state.disabledSave) return false;
+    this.setState({ disabledSave: true, saving: true });
 
-      if (!this.state.data.id) {
-        await this.refreshNextInvoiceSequence();
+    if (!this.state.data.id) {
+      await this.refreshNextInvoiceSequence();
 
-        if (this.state.data.typeDoc !== "0") await this.getNCF();
-      }
+      if (this.state.data.typeDoc !== "0") await this.getNCF();
+    }
 
-      const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
+    const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
 
-      for (const item of this.state.details) {
-        const detail = {
-          id: item.id,
-          invoice_id: invoiceHeader.id,
-          product_id: item.product_id,
-          quantity: item.quantity,
-          price: item.price,
-          itbis: item.itbis,
-          cost: item.cost,
-          discount: item.discount,
-          creationDate: new Date().toISOString(),
-        };
+    for (const item of this.state.details) {
+      const detail = {
+        id: item.id,
+        invoice_id: invoiceHeader.id,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.price,
+        itbis: item.itbis,
+        cost: item.cost,
+        discount: item.discount,
+        creationDate: new Date().toISOString(),
+      };
 
+      try {
         await saveInvoiceDetail(detail);
+        
         if (!this.state.data.id)
           await saveInvoiceSequence(this.state.invoiceSequence);
 
-        try {
-          if (this.state.detailsOriginal.length) {
-            const _item = this.state.detailsOriginal.find(
-              (__item) => __item.product_id === item.product_id
-            );
+        if (this.state.detailsOriginal.length) {
+          const _item = this.state.detailsOriginal.find(
+            (__item) => __item.product_id === item.product_id
+          );
 
-            if (this.state.data.id) {
-              if (_item && _item.quantity !== item.quantity) {
-                const newQuantity = _item.quantity - item.quantity;
-                detail.quantity = newQuantity;
-                await this.updateInventory(detail, true);
-              } else {
-                if (!_item)
-                  await this.updateInventory(detail, false);
-              }
+          if (this.state.data.id) {
+            if (_item && _item.quantity !== item.quantity) {
+              const newQuantity = _item.quantity - item.quantity;
+              detail.quantity = newQuantity;
+              await this.updateInventory(detail, true);
+            } else {
+              if (!_item) await this.updateInventory(detail, false);
             }
           }
-
-          if (!this.state.data.id) await this.updateInventory(detail);
-        } catch (ex) {
-          try {
-            Sentry.captureException(ex);
-          } catch (_ex) {
-            console.log(ex);
-          }
-          console.log("Exception for updateInventory --> " + ex);
         }
-      }
 
-      try {
-        for (const item of this.state.detailsToDelete) {
-          await deleteInvoiceDetail(item.id);
-          await this.updateInventory(item, true);
-        }
+        if (!this.state.data.id) await this.updateInventory(detail);
       } catch (ex) {
         try {
           Sentry.captureException(ex);
         } catch (_ex) {
           console.log(ex);
         }
-        console.log("Exception for deleteInvoiceDetail --> " + ex);
+        console.log("Exception for updateInventory --> " + ex);
       }
+    }
 
-      this.setState({ disabledSave: false, saving: false });
+    try {
+      for (const item of this.state.detailsToDelete) {
+        await deleteInvoiceDetail(item.id);
+        await this.updateInventory(item, true);
+      }
+    } catch (ex) {
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log(ex);
+      }
+      console.log("Exception for deleteInvoiceDetail --> " + ex);
+    }
+
+    this.setState({ disabledSave: false, saving: false });
+  }
+
+  async saveOneItem(item) {
+    const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
+
+    const detail = {
+      id: item.id,
+      invoice_id: invoiceHeader.id,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      price: item.price,
+      itbis: item.itbis,
+      cost: item.cost,
+      discount: item.discount,
+      creationDate: new Date().toISOString(),
+    };
+
+    const { data: result } = await saveInvoiceDetail(detail);
+    const result_product_id = result.product
+      ? result.product.id
+      : result.product_id;
+
+    const newDetails = this.state.details.map((item) => {
+      if (item.product_id === result_product_id) {
+        return { ...item, id: result.id };
+      }
+      return item;
+    });
+
+    this.setState({ details: newDetails });
+
+    try {
+      if (this.state.detailsOriginal.length) {
+        const _item = this.state.detailsOriginal.find(
+          (__item) => __item.product_id === item.product_id
+        );
+
+        if (_item && _item.quantity !== item.quantity) {
+          const newQuantity = _item.quantity - item.quantity;
+          detail.quantity = newQuantity;
+          await this.updateInventory(detail, true);
+        } else {
+          if (!_item) await this.updateInventory(detail, false);
+        }
+      }
+    } catch (ex) {
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log(ex);
+      }
+      console.log("Exception for updateInventory --> " + ex);
+    }
+  }
+
+  async deleteOneItem(item) {
+    const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
+    console.log("HEADER SAVED:", this.state.data);
+    await deleteInvoiceDetail(item.id);
+    await this.updateInventory(item, true);
   }
 
   doSubmit = async () => {
@@ -856,17 +919,22 @@ class InvoiceForm extends Form {
         console.log(ex);
       }
 
-      if (ex.response && ex.response.status >= 400 && ex.response.status < 500) {
+      if (
+        ex.response &&
+        ex.response.status >= 400 &&
+        ex.response.status < 500
+      ) {
         if (ex.message === "invoice sequence duplicated") {
           const newSequence = { ...this.state.invoiceSequence };
           await saveInvoiceSequence(newSequence);
           await this.revertNCF();
 
-          toast.error("Hubo un error en la información enviada. Favor intente guardar nuevamente");
-          
+          toast.error(
+            "Hubo un error en la información enviada. Favor intente guardar nuevamente"
+          );
+
           this.setState({ disabledSave: false, saving: false });
-        }
-        else {
+        } else {
           toast.error("Hubo un error en la información enviada.");
         }
       }
@@ -1138,9 +1206,10 @@ class InvoiceForm extends Form {
 
               <div>
                 {this.isInvoiceEditable() && this.renderButton("Guardar")}
-                {this.state.saving && <span className="spinner-border text-warning ml-2 align-middle"></span>}
+                {this.state.saving && (
+                  <span className="spinner-border text-warning ml-2 align-middle"></span>
+                )}
               </div>
-                            
             </form>
           </div>
 
