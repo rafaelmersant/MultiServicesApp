@@ -162,9 +162,10 @@ class PriceCalculation extends Component {
             type="checkbox"
             className="form-check-input"
             id="chkITBIS"
-            title="Click para activar/desactivar ITBIS"
+            // title="Click para activar/desactivar ITBIS"
             checked={this.state.itbis}
             onChange={this.handleChangeITBIS}
+            disabled="disabled"
           />
         </div>
 

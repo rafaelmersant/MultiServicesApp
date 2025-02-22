@@ -259,9 +259,9 @@ class InvoiceForm extends Form {
       }
     }
 
-    data.itbis = Math.round(data.itbis * 100) / 100;
     data.discount = Math.round(data.discount * 100) / 100;
     data.subtotal = Math.round(data.subtotal * 100) / 100;
+    data.itbis = Math.round((data.subtotal - data.discount) * 0.18 * 100) / 100;
     data.cost = Math.round(data.cost * 100) / 100;
     data.amount_points = Math.round(data.amount_points * 100) / 100;
     data.amount_points =

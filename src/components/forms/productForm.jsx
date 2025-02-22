@@ -189,12 +189,12 @@ class ProductForm extends Form {
     const data = { ...this.state.data };
     data.cost = input.value;
 
-    if (this.state.itbis) {
-      if (input.value.length > 0)
-        data.itbis = Math.round(parseFloat(input.value * 0.18) * 100) / 100;
-    } else {
-      data.itbis = 0;
-    }
+    // if (this.state.itbis) {
+    //   if (input.value.length > 0)
+    //     data.itbis = Math.round(parseFloat(input.value * 0.18) * 100) / 100;
+    // } else {
+    //   data.itbis = 0;
+    // }
 
     this.setState({ data });
   };
@@ -349,9 +349,10 @@ class ProductForm extends Form {
                   type="checkbox"
                   className="form-check-input"
                   id="chkITBIS"
-                  title="Click para activar/desactivar ITBIS"
+                  // title="Click para activar/desactivar ITBIS"
                   checked={this.state.itbis}
                   onChange={this.handleChangeITBIS}
+                  disabled="disabled"
                 />
               </div>
               <div className={_customCol}>
