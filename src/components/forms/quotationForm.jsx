@@ -10,7 +10,7 @@ import Input from "../common/input";
 import SearchProduct from "../common/searchProduct";
 import SearchCustomer from "../common/searchCustomer";
 import Loading from "../common/loading";
-import { formatNumber } from "../../utils/custom";
+import { formatNumber, formatNumberThreeDecimals } from "../../utils/custom";
 import CustomerModal from "../modals/customerModal";
 import ProductModal from "../modals/productModal";
 import DatePicker from "react-datepicker";
@@ -142,7 +142,7 @@ class QuotationForm extends Form {
 
     const quantity = Math.round(parseFloat(line.quantity) * 100) / 100;
     const price = Math.round(parseFloat(product.price) * 100) / 100;
-    const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
+    const itbis = Math.round(parseFloat(product.itbis) * 1000) / 1000;
     const total = Math.round(price * quantity * 100) / 100;
 
     line.quantity = quantity;
@@ -150,28 +150,29 @@ class QuotationForm extends Form {
     line.product = product.description;
     line.price = price;
     line.cost = Math.round(product.cost * 100) / 100;
-    line.itbis = Math.round(itbis * 100) / 100;
+    line.itbis = Math.round(itbis * 1000) / 1000;
     line.discount = Math.round(discount * 100) / 100;
     line.total = total;
 
     this.setState({ line });
   };
 
-  updateTotals = () => {
+  updateTotals = async () => {
     const data = { ...this.state.data };
     data.itbis = 0;
     data.discount = 0;
     data.subtotal = 0;
 
     this.state.details.forEach((item) => {
-      data.itbis += Math.round(parseFloat(item.itbis) * 100) / 100;
+      data.itbis += Math.round(parseFloat(item.itbis) * 1000) / 1000;
       data.discount += Math.round(parseFloat(item.discount) * 100) / 100;
       data.subtotal += Math.round(parseFloat(item.total) * 100) / 100;
     });
 
-    data.itbis = Math.round(data.itbis * 100) / 100;
     data.discount = Math.round(data.discount * 100) / 100;
     data.subtotal = Math.round(data.subtotal * 100) / 100;
+    data.itbis =
+      Math.round((data.subtotal - data.discount) * 0.18 * 1000) / 1000;
 
     this.setState({ data });
   };
@@ -179,8 +180,8 @@ class QuotationForm extends Form {
   async populateQuotation() {
     try {
       const header_id = this.props.match.params.id;
-      if (header_id === "new")  {
-        this.setState({ loading: false})
+      if (header_id === "new") {
+        this.setState({ loading: false });
         return;
       }
 
@@ -211,7 +212,7 @@ class QuotationForm extends Form {
         serializedQuotationHeader: quotationHeader,
         serializedQuotationDetail: quotationDetail,
         createdUserName: createdUserData[0].name,
-        loading: false
+        loading: false,
       });
 
       this.forceUpdate();
@@ -321,20 +322,20 @@ class QuotationForm extends Form {
     };
     handler(window.event);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       this.updateLine(this.state.currentProduct);
       const details = [...this.state.details];
       const line = { ...this.state.line };
 
       //Check if quantity is higher than available one
-    //   if (line.quantity > this.state.currentProduct.quantity) {
-    //     toast.error(
-    //       `La cantidad no puede exceder lo disponible: ${this.state.currentProduct.quantity}`
-    //     );
-    //     return false;
-    //   }
+      //   if (line.quantity > this.state.currentProduct.quantity) {
+      //     toast.error(
+      //       `La cantidad no puede exceder lo disponible: ${this.state.currentProduct.quantity}`
+      //     );
+      //     return false;
+      //   }
 
-      line.itbis = Math.round(line.itbis * line.quantity * 100) / 100;
+      line.itbis = Math.round(line.itbis * line.quantity * 1000) / 1000;
       line.discount = Math.round(line.discount * line.quantity * 100) / 100;
       line.total = Math.round(line.total * 100) / 100;
 
@@ -347,9 +348,13 @@ class QuotationForm extends Form {
         clearSearchProduct: true,
       });
 
-      this.updateTotals();
+      await this.updateTotals();
       this.resetLineValues();
-    }, 150);
+
+      if (this.state.data.id) {
+        this.saveOneItem(line);
+      }
+    }, 400);
   };
 
   handleDeleteDetail = (detail, soft = false) => {
@@ -361,19 +366,21 @@ class QuotationForm extends Form {
       );
     }
 
-    if (answer) {
-      const detailsToDelete = [...this.state.detailsToDelete];
-      if (!soft) detailsToDelete.push(detail);
-
+    if (answer || soft) {
       const details = this.state.details.filter(
         (d) => d.product_id !== detail.product_id
       );
+      this.setState({ details });
+    }
 
-      this.setState({ details, detailsToDelete });
+    if (answer) {
+      setTimeout(async () => {
+        await this.updateTotals();
 
-      setTimeout(() => {
-        this.updateTotals();
-      });
+        if (this.state.data.id) {
+          await this.deleteOneItem(detail);
+        }
+      }, 200);
     }
   };
 
@@ -440,7 +447,6 @@ class QuotationForm extends Form {
     try {
       await this.populateProducts();
       await this.populateQuotation(false);
-
     } catch (ex) {
       try {
         Sentry.captureException(ex);
@@ -478,13 +484,54 @@ class QuotationForm extends Form {
     }
   }
 
+  async saveOneItem(item) {
+    const { data: quotationHeader } = await saveQuotationHeader(
+      this.state.data
+    );
+
+    const detail = {
+      id: item.id,
+      header_id: quotationHeader.id,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      price: item.price,
+      itbis: item.itbis,
+      discount: item.discount,
+      creationDate: new Date().toISOString(),
+    };
+
+    const { data: result } = await saveQuotationDetail(detail);
+
+    const result_product_id = result.product
+      ? result.product.id
+      : result.product_id;
+
+    const newDetails = this.state.details.map((item) => {
+      if (item.product_id === result_product_id) {
+        return { ...item, id: result.id };
+      }
+      return item;
+    });
+
+    this.setState({ details: newDetails });
+  }
+
+   async deleteOneItem(item) {
+    const { data: quotationHeader } = await saveQuotationHeader(
+      this.state.data
+    );
+      await deleteQuotationDetail(item.id);
+    }
+
   doSubmit = async () => {
     try {
       if (this.state.disabledSave) return false;
 
       this.setState({ disabledSave: true });
 
-      const { data: quotationHeader } = await saveQuotationHeader(this.state.data);
+      const { data: quotationHeader } = await saveQuotationHeader(
+        this.state.data
+      );
 
       for (const item of this.state.details) {
         const detail = {
@@ -542,7 +589,7 @@ class QuotationForm extends Form {
   };
 
   handleCleanProduct = async () => {
-    this.setState({currentProduct: {}, searchProductText: ""});
+    this.setState({ currentProduct: {}, searchProductText: "" });
   };
 
   render() {
@@ -555,8 +602,8 @@ class QuotationForm extends Form {
           <h4 className="bg-dark text-light pl-2 pr-2 list-header">
             {this.state.action}
             {this.state.data.id > 0 &&
-              !this.state.action.includes("Nueva")
-              && this.state.data.id}
+              !this.state.action.includes("Nueva") &&
+              this.state.data.id}
           </h4>
           <div
             className="col-12 pb-3 bg-light"
@@ -621,7 +668,7 @@ class QuotationForm extends Form {
                     label="Producto"
                   />
                 </div>
-                {Object.keys(this.state.currentProduct).length > 0  && (
+                {Object.keys(this.state.currentProduct).length > 0 && (
                   <div
                     style={{
                       marginTop: "36px",
@@ -665,7 +712,7 @@ class QuotationForm extends Form {
                   <Input
                     type="text"
                     name="itbis"
-                    value={formatNumber(this.state.line.itbis)}
+                    value={formatNumberThreeDecimals(this.state.line.itbis)}
                     label="ITBIS"
                     onChange={this.handleChange}
                     disabled="disabled"
@@ -697,18 +744,20 @@ class QuotationForm extends Form {
               </div>
 
               {this.state.loading && (
-              <div className="d-flex justify-content-center">
-                <Loading />
-              </div>
+                <div className="d-flex justify-content-center">
+                  <Loading />
+                </div>
               )}
-              
-              {!this.state.loading && (<QuotationDetailTable
-                quotationHeader={this.state.data}
-                details={this.state.details}
-                user={user}
-                onDelete={this.handleDeleteDetail}
-                onEdit={this.handleEditDetail}
-              />)}
+
+              {!this.state.loading && (
+                <QuotationDetailTable
+                  quotationHeader={this.state.data}
+                  details={this.state.details}
+                  user={user}
+                  onDelete={this.handleDeleteDetail}
+                  onEdit={this.handleEditDetail}
+                />
+              )}
 
               {this.isQuotationEditable() && this.renderButton("Guardar")}
             </form>
@@ -748,20 +797,21 @@ class QuotationForm extends Form {
           </div>
 
           <div className="d-flex justify-content-end w-100 pr-3 mb-3">
-            {this.state.data.id > 0 && (role === "Admin" || role === "Owner" || role === "Caja") && (
-              <ReactToPrint
-                trigger={() => (
-                  <span
-                    ref={(button) => (this.printButton = button)}
-                    className="fa fa-print text-success cursor-pointer"
-                    style={{ fontSize: "35px" }}
-                  ></span>
-                )}
-                content={() => this.componentRef}
-                onAfterPrint={() => this.quotationPrinted()}
-                //onBeforePrint={() => this.quotationPrinted()}
-              />
-            )}
+            {this.state.data.id > 0 &&
+              (role === "Admin" || role === "Owner" || role === "Caja") && (
+                <ReactToPrint
+                  trigger={() => (
+                    <span
+                      ref={(button) => (this.printButton = button)}
+                      className="fa fa-print text-success cursor-pointer"
+                      style={{ fontSize: "35px" }}
+                    ></span>
+                  )}
+                  content={() => this.componentRef}
+                  onAfterPrint={() => this.quotationPrinted()}
+                  //onBeforePrint={() => this.quotationPrinted()}
+                />
+              )}
           </div>
 
           <div hidden="hidden">
@@ -775,7 +825,6 @@ class QuotationForm extends Form {
             />
           </div>
         </div>
-
       </React.Fragment>
     );
   }

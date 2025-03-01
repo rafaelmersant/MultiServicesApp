@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import TableBody from "../common/tableBody";
-import { formatNumber } from "../../utils/custom";
+import { formatNumber, formatNumberThreeDecimals } from "../../utils/custom";
 
 class QuotationDetailTable extends Component {
   columns = [

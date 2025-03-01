@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Table from "../common/table";
 import auth, { getCurrentUser } from "../../services/authService";
-import { formatNumber } from "../../utils/custom";
+import { formatNumber, formatNumberThreeDecimals } from "../../utils/custom";
 import { toast } from "react-toastify";
 import {
   replaceProductStock,
@@ -143,7 +143,7 @@ class ProductsTable extends Component {
       path: "itbis",
       label: "ITBIS",
       content: (item) => (
-        <div className="text-right">{formatNumber(item.itbis)}</div>
+        <div className="text-right">{formatNumberThreeDecimals(item.itbis)}</div>
       ),
     },
     { path: "category.description", label: "Categoria" },

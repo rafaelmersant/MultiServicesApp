@@ -9,7 +9,7 @@ import Select from "../common/select";
 import SearchProduct from "../common/searchProduct";
 import SearchCustomer from "../common/searchCustomer";
 import Loading from "../common/loading";
-import { formatNumber } from "../../utils/custom";
+import { formatNumber, formatNumberThreeDecimals } from "../../utils/custom";
 import CustomerModal from "../modals/customerModal";
 import ProductModal from "../modals/productModal";
 import DatePicker from "react-datepicker";
@@ -192,7 +192,7 @@ class InvoiceForm extends Form {
 
     const quantity = Math.round(parseFloat(line.quantity) * 100) / 100;
     const price = Math.round(parseFloat(product.price) * 100) / 100;
-    const itbis = Math.round(parseFloat(product.itbis) * 100) / 100;
+    const itbis = Math.round(parseFloat(product.itbis) * 1000) / 1000;
     const cost = Math.round(parseFloat(product.cost) * 100) / 100;
     const total = Math.round(price * quantity * 100) / 100;
 
@@ -201,7 +201,7 @@ class InvoiceForm extends Form {
     line.product = product.description;
     line.price = price;
     line.cost = Math.round(cost * 100) / 100;
-    line.itbis = Math.round(itbis * 100) / 100;
+    line.itbis = Math.round(itbis * 1000) / 1000;
     line.discount = Math.round(discount * 100) / 100;
     line.total = total;
 
@@ -217,7 +217,7 @@ class InvoiceForm extends Form {
     data.amount_points = 0;
 
     for (const item of this.state.details) {
-      data.itbis += Math.round(parseFloat(item.itbis) * 100) / 100;
+      data.itbis += Math.round(parseFloat(item.itbis) * 1000) / 1000;
       data.discount += Math.round(parseFloat(item.discount) * 100) / 100;
       data.subtotal += Math.round(parseFloat(item.total) * 100) / 100;
       data.cost += Math.round(parseFloat(item.cost) * 100) / 100;
@@ -261,7 +261,7 @@ class InvoiceForm extends Form {
 
     data.discount = Math.round(data.discount * 100) / 100;
     data.subtotal = Math.round(data.subtotal * 100) / 100;
-    data.itbis = Math.round((data.subtotal - data.discount) * 0.18 * 100) / 100;
+    data.itbis = Math.round((data.subtotal - data.discount) * 0.18 * 1000) / 1000;
     data.cost = Math.round(data.cost * 100) / 100;
     data.amount_points = Math.round(data.amount_points * 100) / 100;
     data.amount_points =
@@ -509,7 +509,7 @@ class InvoiceForm extends Form {
         return false;
       }
 
-      line.itbis = Math.round(line.itbis * line.quantity * 100) / 100;
+      line.itbis = Math.round(line.itbis * line.quantity * 1000) / 1000;
       line.cost = Math.round(line.cost * line.quantity * 100) / 100;
       line.discount = Math.round(line.discount * line.quantity * 100) / 100;
       line.total = Math.round(line.total * 100) / 100;
@@ -1157,7 +1157,7 @@ class InvoiceForm extends Form {
                   <Input
                     type="text"
                     name="itbis"
-                    value={formatNumber(this.state.line.itbis)}
+                    value={formatNumberThreeDecimals(this.state.line.itbis)}
                     label="ITBIS"
                     onChange={this.handleChange}
                     disabled="disabled"
