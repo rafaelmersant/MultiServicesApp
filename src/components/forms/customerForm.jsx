@@ -182,7 +182,7 @@ class CustomerForm extends Form {
               user.role === "Admin" &&
               this.renderSelect("company_id", "Compañía", this.state.companies)}
 
-            {this.renderButton("Guardar")}
+            {!this.state.saving && this.renderButton("Guardar")}
             {this.state.saving && <span className="spinner-border text-warning ml-2 align-middle"></span>}
           </form>
         </div>
