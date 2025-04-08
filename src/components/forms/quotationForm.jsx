@@ -377,7 +377,7 @@ class QuotationForm extends Form {
       setTimeout(async () => {
         await this.updateTotals();
 
-        if (this.state.data.id) {
+        if (this.state.data.id && !soft) {
           await this.deleteOneItem(detail);
         }
       }, 200);
