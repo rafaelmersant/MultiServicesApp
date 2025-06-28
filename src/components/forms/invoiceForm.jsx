@@ -261,7 +261,8 @@ class InvoiceForm extends Form {
 
     data.discount = Math.round(data.discount * 100) / 100;
     data.subtotal = Math.round(data.subtotal * 100) / 100;
-    data.itbis = Math.round((data.subtotal - data.discount) * 0.18 * 1000) / 1000;
+    data.itbis =
+      Math.round((data.subtotal - data.discount) * 0.18 * 1000) / 1000;
     data.cost = Math.round(data.cost * 100) / 100;
     data.amount_points = Math.round(data.amount_points * 100) / 100;
     data.amount_points =
@@ -273,23 +274,27 @@ class InvoiceForm extends Form {
   };
 
   async updateInventory(entry, edited = false) {
-    let typeTracking = entry.quantity > 0 && edited ? "E" : "S";
-    const quantity = Math.abs(entry.quantity);
+    try {
+      let typeTracking = entry.quantity > 0 && edited ? "E" : "S";
+      const quantity = Math.abs(entry.quantity);
 
-    const inventory = {
-      header_id: 1,
-      id: 0,
-      product_id: entry.product_id,
-      typeTracking: typeTracking,
-      concept: "INVO",
-      quantity: quantity,
-      company_id: getCurrentUser().companyId,
-      createdUser: getCurrentUser().email,
-      creationDate: new Date().toISOString(),
-    };
+      const inventory = {
+        header_id: 1,
+        id: 0,
+        product_id: entry.product_id,
+        typeTracking: typeTracking,
+        concept: "INVO",
+        quantity: quantity,
+        company_id: getCurrentUser().companyId,
+        createdUser: getCurrentUser().email,
+        creationDate: new Date().toISOString(),
+      };
 
-    await saveProductTracking(inventory);
-    await updateProductStock(inventory);
+      await saveProductTracking(inventory);
+      await updateProductStock(inventory);
+    } catch (ex) {
+      console.log("Custom ERROR:", ex);
+    }
   }
 
   async refreshNextInvoiceSequence() {
@@ -339,7 +344,7 @@ class InvoiceForm extends Form {
       const { data: availablePoints } = await getAvailablePoints(
         invoiceHeader[0].customer_id
       );
-      
+
       this.setState({
         data: invoiceHeaderMapped,
         details: mapToViewInvoiceDetail(invoiceDetail),
@@ -509,11 +514,15 @@ class InvoiceForm extends Form {
         return false;
       }
 
-      line.itbis = Math.round(line.itbis * line.quantity * 1000) / 1000;
-      line.cost = Math.round(line.cost * line.quantity * 100) / 100;
-      line.discount = Math.round(line.discount * line.quantity * 100) / 100;
-      line.total = Math.round(line.total * 100) / 100;
-      line.invoice_id = this.state.data.id;
+      try {
+        line.itbis = Math.round(line.itbis * line.quantity * 1000) / 1000;
+        line.cost = Math.round(line.cost * line.quantity * 100) / 100;
+        line.discount = Math.round(line.discount * line.quantity * 100) / 100;
+        line.total = Math.round(line.total * 100) / 100;
+        line.invoice_id = this.state.data.id;
+      } catch (ex) {
+        console.log("Custom ERROR:", ex);
+      }
 
       if (this.state.line.product_id) details.push(line);
 
@@ -760,7 +769,11 @@ class InvoiceForm extends Form {
   }
 
   async saveInvoice() {
-    await this.updateTotals();
+    try {
+      await this.updateTotals();
+    } catch (ex) {
+      console.log("Custom ERROR:", ex);
+    }
 
     if (
       this.state.data.paymentMethod === "POINTS" &&
@@ -798,7 +811,7 @@ class InvoiceForm extends Form {
 
       try {
         await saveInvoiceDetail(detail);
-        
+
         if (!this.state.data.id)
           await saveInvoiceSequence(this.state.invoiceSequence);
 
@@ -1205,7 +1218,9 @@ class InvoiceForm extends Form {
               )}
 
               <div>
-                {this.isInvoiceEditable() && this.renderButton("Guardar")}
+                {!this.state.saving &&
+                  this.isInvoiceEditable() &&
+                  this.renderButton("Guardar")}
                 {this.state.saving && (
                   <span className="spinner-border text-warning ml-2 align-middle"></span>
                 )}

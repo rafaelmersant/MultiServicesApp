@@ -55,6 +55,7 @@ class QuotationForm extends Form {
       creationDate: new Date().toISOString(),
       serverDate: new Date().toISOString(),
     },
+    saving: false,
     loading: true,
     disabledSave: false,
     quotationDate: new Date(),
@@ -527,7 +528,7 @@ class QuotationForm extends Form {
     try {
       if (this.state.disabledSave) return false;
 
-      this.setState({ disabledSave: true });
+      this.setState({ disabledSave: true, saving: true });
 
       const { data: quotationHeader } = await saveQuotationHeader(
         this.state.data
@@ -561,7 +562,7 @@ class QuotationForm extends Form {
         console.log("Exception for deleteQuotationDetail --> " + ex);
       }
 
-      this.setState({ disabledSave: false });
+      this.setState({ disabledSave: false, saving: false });
 
       sessionStorage["newQuotation"] = "y";
       window.location = `/quotation/${quotationHeader.id}`;
@@ -759,7 +760,7 @@ class QuotationForm extends Form {
                 />
               )}
 
-              {this.isQuotationEditable() && this.renderButton("Guardar")}
+              {!this.saving && this.isQuotationEditable() && this.renderButton("Guardar")}
             </form>
           </div>
 
