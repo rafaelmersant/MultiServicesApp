@@ -293,7 +293,11 @@ class InvoiceForm extends Form {
       await saveProductTracking(inventory);
       await updateProductStock(inventory);
     } catch (ex) {
-      console.log("Custom ERROR:", ex);
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log("Custom ERROR:", ex);
+      }
     }
   }
 
@@ -318,8 +322,9 @@ class InvoiceForm extends Form {
   async populateInvoice() {
     //if (getCurrentUser().role === "Caja") window.location = '/conduces/';
 
+    const sequence = this.props.match.params.id;
+
     try {
-      const sequence = this.props.match.params.id;
       if (sequence === "new") {
         this.setState({ loading: false });
         return;
@@ -376,7 +381,7 @@ class InvoiceForm extends Form {
       sessionStorage["newInvoice"] = null;
 
       try {
-        Sentry.captureException(ex);
+        Sentry.captureMessage(`Exception: ${ex} | Extra:->sequence: ${sequence}`);
       } catch (_ex) {
         console.log(ex);
       }
@@ -521,7 +526,11 @@ class InvoiceForm extends Form {
         line.total = Math.round(line.total * 100) / 100;
         line.invoice_id = this.state.data.id;
       } catch (ex) {
-        console.log("Custom ERROR:", ex);
+        try {
+          Sentry.captureException(ex);
+        } catch (_ex) {
+          console.log("Custom ERROR:", ex);
+        }
       }
 
       if (this.state.line.product_id) details.push(line);
@@ -772,7 +781,11 @@ class InvoiceForm extends Form {
     try {
       await this.updateTotals();
     } catch (ex) {
-      console.log("Custom ERROR:", ex);
+      try {
+        Sentry.captureException(ex);
+      } catch (_ex) {
+        console.log("Custom ERROR:", ex);
+      }
     }
 
     if (
@@ -797,19 +810,19 @@ class InvoiceForm extends Form {
     const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
 
     for (const item of this.state.details) {
-      const detail = {
-        id: item.id,
-        invoice_id: invoiceHeader.id,
-        product_id: item.product_id,
-        quantity: item.quantity,
-        price: item.price,
-        itbis: item.itbis,
-        cost: item.cost,
-        discount: item.discount,
-        creationDate: new Date().toISOString(),
-      };
-
       try {
+        const detail = {
+          id: item.id,
+          invoice_id: invoiceHeader.id,
+          product_id: item.product_id,
+          quantity: item.quantity,
+          price: item.price,
+          itbis: item.itbis,
+          cost: item.cost,
+          discount: item.discount,
+          creationDate: new Date().toISOString(),
+        };
+
         await saveInvoiceDetail(detail);
 
         if (!this.state.data.id)
@@ -834,7 +847,7 @@ class InvoiceForm extends Form {
         if (!this.state.data.id) await this.updateInventory(detail);
       } catch (ex) {
         try {
-          Sentry.captureException(ex);
+          Sentry.captureMessage(`Exception: ${ex} | item: ${item}`);
         } catch (_ex) {
           console.log(ex);
         }
@@ -927,7 +940,7 @@ class InvoiceForm extends Form {
       window.location = `/invoice/${this.state.data.sequence}`;
     } catch (ex) {
       try {
-        Sentry.captureException(ex);
+        Sentry.captureMessage(`Exception: ${ex} | sequence: ${this.state.data.sequence}`);
       } catch (_ex) {
         console.log(ex);
       }
@@ -937,6 +950,7 @@ class InvoiceForm extends Form {
         ex.response.status >= 400 &&
         ex.response.status < 500
       ) {
+        
         if (ex.message === "invoice sequence duplicated") {
           const newSequence = { ...this.state.invoiceSequence };
           await saveInvoiceSequence(newSequence);
@@ -960,6 +974,8 @@ class InvoiceForm extends Form {
         toast.error(
           "Parece que hubo un error en el servidor. Favor contacte al administrador."
         );
+
+        Sentry.captureMessage(`Exception: ${ex} | ERRORS: ${this.state.errors}`);
         console.log("errors", this.state.errors);
       }
     }
