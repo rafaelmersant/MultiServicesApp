@@ -43,6 +43,7 @@ class InventoryFullForm extends Form {
       company_id: getCurrentUser().companyId,
       createdUser: getCurrentUser().email,
     },
+    addingProcess: false,
     currentITBIS: 0,
     inventory: {
       header_id: 1, //Default header
@@ -228,6 +229,10 @@ class InventoryFullForm extends Form {
 
   attachNewProduct = async () => {
     try {
+       this.setState({
+        addingProcess: true
+      });
+
       const inventory = { ...this.state.inventory };
       inventory.header_id = this.state.header.id;
 
@@ -248,6 +253,7 @@ class InventoryFullForm extends Form {
         inventory: cleanInventory,
         searchProductText: "",
         clearSearchProduct: true,
+        addingProcess: false
       });
 
       this.setState({ resetValues: true });
@@ -583,16 +589,26 @@ class InventoryFullForm extends Form {
                   resetValues={this.state.resetValues}
                 />
 
-                <button
-                  className="btn btn-success pl-5 pr-5 mt-3"
-                  onClick={this.attachNewProduct}
-                  disabled={
-                    !this.state.inventory.product_id ||
-                    !this.state.inventory.quantity.length
-                  }
-                >
-                  Agregar
-                </button>
+                {!this.state.addingProcess && (
+                  <button
+                    className="btn btn-success pl-5 pr-5 mt-3"
+                    onClick={this.attachNewProduct}
+                    disabled={
+                      !this.state.inventory.product_id ||
+                      !this.state.inventory.quantity.length
+                    }
+                  >
+                    Agregar
+                  </button>
+                )}
+                {this.state.addingProcess && (
+                  <button
+                    className="btn btn-success pl-5 pr-5 mt-3"
+                    disabled={true}
+                  >
+                    Agregando...
+                  </button>
+                )}
 
                 <div className="mt-2">
                   <ProductsInvTable
