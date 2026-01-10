@@ -937,11 +937,12 @@ class InvoiceForm extends Form {
       await this.saveInvoice();
 
       sessionStorage["newInvoice"] = "y";
-      window.location = `/invoice/${this.state.data.sequence}`;
+      window.location = `/invoice/new`;
+      //window.location = `/invoice/${this.state.data.sequence}`;
 
-      setTimeout(() => {
-        window.location = `/invoice/new`;
-      }, 500);
+      // setTimeout(() => {
+      //   window.location = `/invoice/new`;
+      // }, 500);
     } catch (ex) {
       try {
         Sentry.captureMessage(`Exception: ${ex} | sequence: ${this.state.data.sequence}`);
