@@ -938,6 +938,10 @@ class InvoiceForm extends Form {
 
       sessionStorage["newInvoice"] = "y";
       window.location = `/invoice/${this.state.data.sequence}`;
+
+      setTimeout(() => {
+        window.location = `/invoice/new`;
+      }, 500);
     } catch (ex) {
       try {
         Sentry.captureMessage(`Exception: ${ex} | sequence: ${this.state.data.sequence}`);
