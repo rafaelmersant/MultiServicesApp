@@ -38,7 +38,7 @@ class InvoicesCustomers extends Component {
 
     let { data: customers } = await getInvoicesCustomersByRange(
       start_date,
-      end_date
+      end_date,
     );
 
     customers = this.mapToModel(customers);
@@ -77,15 +77,17 @@ class InvoicesCustomers extends Component {
   mapToModel = (data) => {
     let result = [];
 
-    data.forEach((item) => {
-      result.push({
-        subtotal: item.subtotal,
-        itbis: item.itbis,
-        cost: item.cost,
-        discount: item.discount,
-        customer_name: item.customer_name,
+    if (data) {
+      data.forEach((item) => {
+        result.push({
+          subtotal: item.subtotal,
+          itbis: item.itbis,
+          cost: item.cost,
+          discount: item.discount,
+          customer_name: item.customer_name,
+        });
       });
-    });
+    }
 
     return result;
   };
@@ -93,17 +95,17 @@ class InvoicesCustomers extends Component {
   getPagedData = () => {
     const { sortColumn, customers: allCustomers } = this.state;
     const totalAmount = _.sumBy(allCustomers, (item) =>
-      parseFloat(item.subtotal)
+      parseFloat(item.subtotal),
     );
     const totalITBIS = _.sumBy(allCustomers, (item) => parseFloat(item.itbis));
     const totalDiscount = _.sumBy(allCustomers, (item) =>
-      parseFloat(item.discount)
+      parseFloat(item.discount),
     );
     const totalCost = _.sumBy(allCustomers, (item) => parseFloat(item.cost));
     const sorted = _.orderBy(
       allCustomers,
       [sortColumn.path],
-      [sortColumn.order]
+      [sortColumn.order],
     );
     const customers = paginate(sorted, 1, 9999999);
 
@@ -125,7 +127,9 @@ class InvoicesCustomers extends Component {
       <div className="container-fluid">
         <div className="row">
           <div className="col">
-            <h2 className="text-info bg-light mb-3">Reporte de Ventas por Clientes</h2>
+            <h2 className="text-info bg-light mb-3">
+              Reporte de Ventas por Clientes
+            </h2>
 
             <div className="d-flex flex-row">
               <div className="col-2">
@@ -172,7 +176,7 @@ class InvoicesCustomers extends Component {
               </div>
             )}
 
-            {customers.length === 0 && (
+            {customers && customers.length === 0 && (
               <h5>No existen registros para este rango de fecha</h5>
             )}
 

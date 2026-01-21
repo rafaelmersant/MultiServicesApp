@@ -81,12 +81,13 @@ div[disabled] {
 }
 
 .button-local {
-  background-color: #ffc107 !important;
-  border-color: #ffc107 !important;
+  background-color: #003e59 !important;
+  border-color: #003e59 !important;
+  color: white !important;
 }
 
 .color-local {
-  color: #ffff !important;
+  color: #003e59 !important;
 }
 
 .cursor-pointer {
@@ -115,5 +116,5 @@ div[disabled] {
 }
 
 .active {
-  background-color: orange !important;
+  background-color: rgb(173, 209, 244) !important;
 }

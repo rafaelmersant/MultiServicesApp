@@ -23,11 +23,11 @@ class PrintQuotation extends Component {
       <div className="mt-1" style={{ width: "338px" }}>
         {quotationHeader.length && (
           <div>
-            <div className="text-center">
+            <div className="text-center mb-2">
               <img
                 width="210px"
-                src={process.env.PUBLIC_URL + "/images/SUPERAVIT_print.png"}
-                alt="SUPERAVIT"
+                src={process.env.PUBLIC_URL + "/images/CASAMINAYA_print.png"}
+                alt="CASA MINAYA"
               />
               {/* <div
                 className="font-receipt font-receipt-small-slogan"

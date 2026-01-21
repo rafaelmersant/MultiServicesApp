@@ -27,8 +27,8 @@ class PurchaseOrdersTable extends Component {
         <span
           title="Marcar como completada"
           onClick={() => this.props.onMarkAsComplete(item)}
-          className="fa fa-check"
-          style={{ color: "orange", fontSize: "26px", cursor: "pointer" }}
+          className="fa fa-check color-local"
+          style={{ fontSize: "26px", cursor: "pointer" }}
         ></span>
       </div>
     ),

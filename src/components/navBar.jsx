@@ -40,11 +40,11 @@ const NavBar = ({ user }) => {
 
           {user && (user.role === "Admin" || user.role === "Owner") && (
             <React.Fragment>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <NavLink className="nav-link" to="/conduces">
                   | Conduces
                 </NavLink>
-              </li>
+              </li> */}
 
               <li className="nav-item dropdown">
                 <NavLink

@@ -2,10 +2,15 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 const NavBarTop = ({ user }) => {
+   const handleToggleMenu = (e) => {
+    const menu = document.getElementById('sidebar-wrapper');
+    menu.style.display = menu.style.display === 'none' ? '' : 'none';
+  }
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark border-bottom text-light">
-      <button className="btn btn-dark text-dark" id="menu-toggle">
-        ...
+    <nav className="navbar navbar-expand-lg navbar-dark border-bottom text-dark">
+      <button className="btn fa fa-list" id="menu-toggle" onClick={handleToggleMenu}>
+        
       </button>
 
       <button
@@ -38,12 +43,12 @@ const NavBarTop = ({ user }) => {
             <React.Fragment>
               <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li className="nav-item">
-                  <NavLink className="nav-link mr-sm-2 active text-light" to="/profile">
+                  <NavLink className="nav-link mr-sm-2 active text-dark" to="/profile">
                     {user.name}
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink className="nav-link my-2 my-sm-0" to="/logout">
+                  <NavLink className="nav-link my-2 my-sm-0 text-dark" to="/logout">
                     Cerrar sesión
                   </NavLink>
                 </li>
@@ -54,7 +59,7 @@ const NavBarTop = ({ user }) => {
           {user && user.role === "Owner" && (
             <li className="nav-item dropdown">
               <span
-                className="nav-link dropdown-toggle cursor-pointer"
+                className="nav-link dropdown-toggle cursor-pointer text-dark"
                 href="#"
                 id="navbarDropdown"
                 role="button"
