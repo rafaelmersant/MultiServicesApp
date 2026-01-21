@@ -24,7 +24,7 @@ class Invoices extends Component {
     currentPage: 1,
     pageSize: 10,
     totalInvoices: 0,
-    sortColumn: { path: "creationDate", order: "desc" },
+    sortColumn: { path: "sequence", order: "desc" },
     searchParams: {
       paymentMethod: "ALL",
       customerId: 0,
