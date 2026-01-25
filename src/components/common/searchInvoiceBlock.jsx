@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { toast } from "react-toastify";
+import DatePicker from "react-datepicker";
 import { getCurrentUser } from "../../services/authService";
 import SearchCustomer from "./searchCustomer";
 import Select from "./select";
@@ -10,6 +11,8 @@ class SearchInvoiceBlock extends Component {
     data: {
       invoice: "",
       paymentMethod: "ALL",
+      start_date: new Date(),
+      end_date: new Date(),
     },
     paymentMethods: [
       { id: "ALL", name: "Todos" },
@@ -17,6 +20,8 @@ class SearchInvoiceBlock extends Component {
       { id: "CARD", name: "Tarjeta de Crédito" },
       { id: "CREDIT", name: "Crédito" },
     ],
+    start_date: new Date().toISOString().substring(0, 10),
+    end_date: new Date().toISOString().substring(0, 10),
     hideSearchCustomer: false,
     searchCustomerText: "",
   };
@@ -82,6 +87,22 @@ class SearchInvoiceBlock extends Component {
     this.setState({ searchCustomerText: "" });
   };
 
+  handleChangeStartDate = (date) => {
+    const data = { ...this.state.data };
+    data.start_date = new Date(date.toISOString());
+    this.setState({ data, start_date: date.toISOString().substring(0, 10) });
+
+    this.props.onStartDateChange(date.toISOString().substring(0, 10));
+  };
+
+  handleChangeEndDate = (date) => {
+    const data = { ...this.state.data };
+    data.end_date = new Date(date.toISOString());
+    this.setState({ data, end_date: date.toISOString().substring(0, 10) });
+  
+    this.props.onEndDateChange(date.toISOString().substring(0, 10));
+  };
+
   render() {
     const { paymentMethodOff, source } = { ...this.props };
     const companyId = getCurrentUser().companyId;
@@ -135,7 +156,7 @@ class SearchInvoiceBlock extends Component {
           )}
 
           {!paymentMethodOff && (
-            <div>
+            <div className="col">
               <Select
                 name="paymentMethod"
                 value={this.state.data.paymentMethod}
@@ -146,6 +167,40 @@ class SearchInvoiceBlock extends Component {
               />
             </div>
           )}
+
+          <div>
+            <label className="mr-1">Fecha Inicial</label>
+            <div className="mr-3">
+              <DatePicker
+                className="form-control form-control-sm"
+                selected={this.state.data.start_date}
+                onChange={(date) => this.handleChangeStartDate(date)}
+                dateFormat="dd/MM/yyyy"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="mr-1">Fecha Final</label>
+            <div className="mr-3">
+              <DatePicker
+                className="form-control form-control-sm"
+                selected={this.state.data.end_date}
+                onChange={(date) => this.handleChangeEndDate(date)}
+                dateFormat="dd/MM/yyyy"
+              />
+            </div>
+          </div>
+
+          {/* <div className="form-group mt-1">
+            <button
+              className="btn btn-info ml-2 my-4"
+              style={{ maxHeight: 36 }}
+              onClick={this.handleSearchButton}
+            >
+              Filtrar
+            </button>
+          </div> */}
         </div>
       </div>
     );

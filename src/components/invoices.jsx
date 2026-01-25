@@ -29,6 +29,8 @@ class Invoices extends Component {
       paymentMethod: "ALL",
       customerId: 0,
       invoiceNo: 0,
+      start_date: new Date().toISOString().substring(0, 10),
+      end_date: new Date().toISOString().substring(0, 10) 
     },
   };
 
@@ -46,7 +48,7 @@ class Invoices extends Component {
 
   async populateInvoices(_sortColumn, _currentPage) {
     const companyId = getCurrentUser().companyId;
-    const { invoiceNo, customerId, paymentMethod } = {
+    const { invoiceNo, customerId, paymentMethod, start_date, end_date } = {
       ...this.state.searchParams,
     };
     const { currentPage, sortColumn } = { ...this.state };
@@ -59,6 +61,8 @@ class Invoices extends Component {
       invoiceNo,
       customerId,
       paymentMethod,
+      start_date,
+      end_date,
       _currentPage,
       _sortColumn
     );
@@ -183,6 +187,32 @@ class Invoices extends Component {
     this.populateInvoices();
   };
 
+  handleStartDateChange = async (value) => {
+    const handler = (e) => {
+      e.preventDefault();
+    };
+    handler(window.event);
+
+    const { searchParams } = { ...this.state };
+    searchParams.start_date = value;
+
+    this.setState({ searchParams, loading: true });
+    this.populateInvoices();
+  };
+
+  handleEndDateChange = async (value) => {
+    const handler = (e) => {
+      e.preventDefault();
+    };
+    handler(window.event);
+
+    const { searchParams } = { ...this.state };
+    searchParams.end_date = value;
+
+    this.setState({ searchParams, loading: true });
+    this.populateInvoices();
+  };
+
   render() {
     const {
       invoices,
@@ -211,6 +241,8 @@ class Invoices extends Component {
               onInvoiceChange={this.handleInvoiceChange}
               onCustomerChange={this.handleCustomerChange}
               onPaymentMethodChange={this.handlePaymentMethodChange}
+              onStartDateChange={this.handleStartDateChange}
+              onEndDateChange={this.handleEndDateChange}
             />
 
             {this.state.loading && (

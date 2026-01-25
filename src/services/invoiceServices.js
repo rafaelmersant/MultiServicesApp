@@ -30,6 +30,8 @@ export function getInvoicesHeader(
   invoiceNo,
   customerId,
   paymentMethod,
+  start_date,
+  end_date,
   currentPage,
   sortColumn
 ) {
@@ -38,7 +40,7 @@ export function getInvoicesHeader(
     sortColumn && sortColumn.path ? sortColumn.path : "creationDate";
   const page = currentPage ? currentPage : 1;
 
-  let urlQuery = `${apiEndpointHeader}/?company=${companyId}&ordering=${order}${column}&page=${page}`;
+  let urlQuery = `${apiEndpointHeader}/?company=${companyId}&start_date=${start_date}&end_date=${end_date}&ordering=${order}${column}&page=${page}`;
 
   if (invoiceNo) urlQuery += `&sequence=${invoiceNo}`;
   if (customerId) urlQuery += `&customer=${customerId}`;

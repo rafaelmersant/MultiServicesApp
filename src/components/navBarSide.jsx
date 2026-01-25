@@ -43,7 +43,7 @@ const NavBarSide = ({ user }) => {
             </React.Fragment>
           )}
 
-        {user &&
+        {/* {user &&
           (user.role === "Admin" ||
             user.role === "Owner" ||
             user.role === "Caja") && (
@@ -51,7 +51,7 @@ const NavBarSide = ({ user }) => {
               <span className="fa fa-truck mr-2 color-local" />
               Conduces
             </NavLink>
-          )}
+          )} */}
 
         {user && (user.role === "Admin" || user.role === "Owner") && (
           <React.Fragment>

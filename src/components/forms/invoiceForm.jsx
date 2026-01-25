@@ -1243,7 +1243,7 @@ class InvoiceForm extends Form {
                   this.isInvoiceEditable() &&
                   this.renderButton("Guardar")}
                 {this.state.saving && (
-                  <span className="spinner-border text-warning ml-2 align-middle"></span>
+                  <span className="spinner-border text-info ml-2 align-middle"></span>
                 )}
               </div>
             </form>
