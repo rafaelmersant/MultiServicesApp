@@ -272,7 +272,7 @@ class Invoices extends Component {
 
             {!this.state.loading && invoices.length > 0 && (
               <div className="row">
-                <div>
+                {/* <div>
                   <Pagination
                     activePage={currentPage}
                     itemsCountPerPage={pageSize}
@@ -282,7 +282,7 @@ class Invoices extends Component {
                     itemClass="page-item"
                     linkClass="page-link"
                   />
-                </div>
+                </div> */}
                 <p className="text-muted ml-3 mt-2">
                   <em>
                     Mostrando {total} facturas de {totalInvoices}
