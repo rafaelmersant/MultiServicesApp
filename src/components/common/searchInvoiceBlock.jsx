@@ -156,19 +156,6 @@ class SearchInvoiceBlock extends Component {
             </div>
           )}
 
-          {!paymentMethodOff && (
-            <div className="col">
-              <Select
-                name="paymentMethod"
-                value={this.state.data.paymentMethod}
-                label="Metodo de Pago"
-                options={this.state.paymentMethods}
-                onChange={this.handleChange}
-                error={null}
-              />
-            </div>
-          )}
-
           <div>
             <label className="mr-1">Fecha Inicial</label>
             <div className="mr-3">
@@ -192,6 +179,20 @@ class SearchInvoiceBlock extends Component {
               />
             </div>
           </div>
+
+           {!paymentMethodOff && (
+            <div className="col">
+              <Select
+                name="paymentMethod"
+                value={this.state.data.paymentMethod}
+                label="Metodo de Pago"
+                options={this.state.paymentMethods}
+                onChange={this.handleChange}
+                error={null}
+              />
+            </div>
+          )}
+          
         </div>
       </div>
     );
