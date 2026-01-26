@@ -18,6 +18,7 @@ class SearchInvoiceBlock extends Component {
       { id: "ALL", name: "Todos" },
       { id: "CASH", name: "Efectivo" },
       { id: "CARD", name: "Tarjeta de Crédito" },
+      { id: "TRANS", name: "Transferencia" },
       { id: "CREDIT", name: "Crédito" },
     ],
     start_date: new Date().toISOString().substring(0, 10),
@@ -191,16 +192,6 @@ class SearchInvoiceBlock extends Component {
               />
             </div>
           </div>
-
-          {/* <div className="form-group mt-1">
-            <button
-              className="btn btn-info ml-2 my-4"
-              style={{ maxHeight: 36 }}
-              onClick={this.handleSearchButton}
-            >
-              Filtrar
-            </button>
-          </div> */}
         </div>
       </div>
     );

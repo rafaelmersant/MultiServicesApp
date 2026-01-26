@@ -96,6 +96,8 @@ class InvoiceForm extends Form {
     },
     paymentMethods: [
       // { id: "", name: "Ninguno" },
+      { id: "CASH", name: "Efectivo" },
+      { id: "CARD", name: "Tarjeta de Crédito" },
       { id: "TRANS", name: "Transferencia" },
       { id: "CREDIT", name: "Crédito" },
       { id: "POINTS", name: "Puntos Superavit" },
