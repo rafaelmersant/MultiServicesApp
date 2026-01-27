@@ -55,7 +55,7 @@ class InvoiceForm extends Form {
       sequence: 0,
       ncf: "",
       customer_id: "",
-      paymentMethod: "",
+      paymentMethod: "CASH",
       invoiceType: "CASH",
       invoiceStatus: "",
       paid: false,
@@ -129,6 +129,8 @@ class InvoiceForm extends Form {
     searchProductText: "",
     serializedInvoiceHeader: {},
     serializedInvoiceDetail: [],
+    paidWith: "",
+    paidReturn: ""
   };
 
   //Schema (Joi)
@@ -649,6 +651,15 @@ class InvoiceForm extends Form {
     this.handleSelectProduct(e);
   };
 
+   handleChangePaidWith = ({ currentTarget: input }) => {
+    const totalAmount = parseFloat(this.state.data.subtotal)
+    const paidWith = parseFloat(input.value);
+    const paidReturn = formatNumber(paidWith - totalAmount);
+
+    if (totalAmount)
+      this.setState({ paidWith, paidReturn });
+  };
+
   async setNCF(typeDoc) {
     const data = { ...this.state.data };
     data.typeDoc = typeDoc;
@@ -1100,14 +1111,14 @@ class InvoiceForm extends Form {
                     "invoiceType",
                     "Tipo de Factura",
                     this.state.invoiceTypes,
-                    true
+                    true,
                   )}
                 </div>
                 <div className="col-3">
                   {this.renderSelect(
                     "paymentMethod",
                     "Metodo de Pago",
-                    this.state.paymentMethods
+                    this.state.paymentMethods,
                   )}
                 </div>
                 <div className="col-5">
@@ -1116,7 +1127,7 @@ class InvoiceForm extends Form {
                     "Referencia",
                     "text",
                     "",
-                    "Opcional"
+                    "Opcional",
                   )}
                 </div>
                 {this.state.data.id > 0 && (
@@ -1239,6 +1250,38 @@ class InvoiceForm extends Form {
                   onEdit={this.handleEditDetail}
                 />
               )}
+
+              <secion className="d-flex justify-content-end">
+                <table>
+                  <tr>
+                    <td>Pago con:</td>
+                    <td>
+                      <input
+                        type="text"
+                        name="paidWith"
+                        className="form form-control text-right font-weight-bold"
+                        value={this.state.paidWith}
+                        style={{ fontSize: "1.4rem", maxWidth: "130px" }}
+                        onChange={this.handleChangePaidWith}
+                        autocomplete="off"
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Devuelta:</td>
+                    <td>
+                       <input
+                        type="text"
+                        name="paidWith"
+                        className="form form-control text-right font-weight-bold"
+                        value={this.state.paidReturn}
+                        style={{ fontSize: "1.4rem", maxWidth: "130px" }}
+                        disabled={true}
+                      />
+                    </td>
+                  </tr>
+                </table>
+              </secion>
 
               <div>
                 {!this.state.saving &&
