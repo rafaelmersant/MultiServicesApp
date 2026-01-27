@@ -8,7 +8,7 @@ import Loading from "../common/loading";
 import { paginate } from "../../utils/paginate";
 import CuadreTable from "../tables/cuadreTable";
 import { getInvoicesHeaderByRange } from "../../services/invoiceServices";
-// import ExportInvoices607 from "./reports/exportInvoices607";
+import ExportCuadreToExcel from "./exportCuadre";
 
 registerLocale("es", es);
 
@@ -122,9 +122,9 @@ class Cuadre extends Component {
         creationDate: new Date(item.creationDate).toLocaleDateString(),
         subtotal: item.subtotal,
         costWithITBIS: item.cost + ITBISCost,
-        // amountWithoutITBIS: item.subtotal - item.itbis,
         discount: item.discount,
-        itbis: item.itbis
+        itbis: item.itbis,
+        utility: item.utility
       });
     });
 
@@ -142,11 +142,6 @@ class Cuadre extends Component {
         <div className="row">
           <div className="col">
             <h2 className="text-info bg-light mb-3">Reporte - Cuadre</h2>
-
-            {/* <ExportInvoices607
-              data={this.entriesExportFormat(entries)}
-              sheetName="Cuadre"
-            /> */}
 
             <div className="d-flex flex-row">
               <div className="col-2">
@@ -198,17 +193,23 @@ class Cuadre extends Component {
             )}
 
             {!this.state.loading && invoices.length > 0 && (
-              <div className="col-7 maxHeightCuadre">
-                <CuadreTable
-                  invoices={invoices}
-                  totalAmount={totalAmount}
-                  totalUtility={totalUtility}
-                  totalITBIS={totalITBIS}
-                  totalCostWithITBIS={totalCostWithITBIS}
-                  totalDiscount={totalDiscount}
-                  user={user}
-                  sortColumn={sortColumn}
-                />
+              <div>
+                <div className="col-7 maxHeightCuadre">
+                  <CuadreTable
+                    invoices={invoices}
+                    totalAmount={totalAmount}
+                    totalUtility={totalUtility}
+                    totalITBIS={totalITBIS}
+                    totalCostWithITBIS={totalCostWithITBIS}
+                    totalDiscount={totalDiscount}
+                    user={user}
+                    sortColumn={sortColumn}
+                  />
+                </div>
+
+                <secion className="ml-3">
+                  <ExportCuadreToExcel data={this.invoicesExportFormat(invoices)} sheetName="Cuadre" />
+                </secion>
               </div>
             )}
           </div>
