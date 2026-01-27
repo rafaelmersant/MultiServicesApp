@@ -652,9 +652,13 @@ class InvoiceForm extends Form {
   };
 
    handleChangePaidWith = ({ currentTarget: input }) => {
-    const totalAmount = parseFloat(this.state.data.subtotal)
+    const totalDiscount = parseFloat(this.state.data.discount);
+    const totalAmount = parseFloat(this.state.data.subtotal) - totalDiscount;
     const paidWith = parseFloat(input.value);
     const paidReturn = formatNumber(paidWith - totalAmount);
+
+    console.log('Discount:', totalDiscount)
+    console.log('totalAmount:', totalAmount)
 
     if (totalAmount)
       this.setState({ paidWith, paidReturn });
