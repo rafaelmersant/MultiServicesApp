@@ -29,8 +29,8 @@ class Invoices extends Component {
       paymentMethod: "ALL",
       customerId: 0,
       invoiceNo: 0,
-      start_date: new Date().toISOString().substring(0, 10),
-      end_date: new Date().toISOString().substring(0, 10) 
+      start_date: new Date().toLocaleDateString('en-CA'),
+      end_date: new Date().toLocaleDateString('en-CA') 
     },
   };
 

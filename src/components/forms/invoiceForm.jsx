@@ -167,7 +167,8 @@ class InvoiceForm extends Form {
   }
 
   async populateUsers() {
-    const { data: users } = await getUsers();
+    let { data: users } = await getUsers();
+    users = users.filter(u => u.role === "Caja");
     this.setState({ users });
   }
 
