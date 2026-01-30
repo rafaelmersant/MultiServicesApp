@@ -103,7 +103,7 @@ export function getCustomerInInvoice(companyId, customerId) {
 }
 
 export function saveInvoiceHeader(invoiceHeader) {
-  if (invoiceHeader.employee_id == null) {
+  if (invoiceHeader.employee_id == null || !invoiceHeader.employee_id) {
     invoiceHeader.employee_id = 10;
   }
 
