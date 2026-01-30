@@ -110,7 +110,7 @@ export function saveInvoiceHeader(invoiceHeader) {
   if (invoiceHeader.id) {
     const body = { ...invoiceHeader };
     delete body.id;
-console.log('INVOICE BEFORE SEND', body)
+
     return http.put(invoiceHeaderUrl(invoiceHeader.id), body);
   }
 

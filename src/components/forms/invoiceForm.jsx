@@ -141,7 +141,7 @@ class InvoiceForm extends Form {
     ncf: Joi.optional(),
     sequence: Joi.number().label("No. Factura"),
     customer_id: Joi.number().label("Cliente"),
-    employee_id: Joi.number().label("Empleado"),
+    employee_id: Joi.optional(),
     paymentMethod: Joi.optional(),
     invoiceType: Joi.optional(),
     invoiceStatus: Joi.optional(),
