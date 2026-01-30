@@ -103,11 +103,14 @@ export function getCustomerInInvoice(companyId, customerId) {
 }
 
 export function saveInvoiceHeader(invoiceHeader) {
+  if (invoiceHeader.employee_id == null) {
+    invoiceHeader.employee_id = 10;
+  }
+
   if (invoiceHeader.id) {
     const body = { ...invoiceHeader };
     delete body.id;
-    if (!invoiceHeader.employee_id) invoiceHeader.employee_id = 10;
-
+console.log('INVOICE BEFORE SEND', body)
     return http.put(invoiceHeaderUrl(invoiceHeader.id), body);
   }
 
