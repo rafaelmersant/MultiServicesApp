@@ -106,8 +106,8 @@ export function saveInvoiceHeader(invoiceHeader) {
   if (invoiceHeader.id) {
     const body = { ...invoiceHeader };
     delete body.id;
-    if (!body.employee_id) delete body.employee_id;
-    
+    if (!invoiceHeader.employee_id) invoiceHeader.employee_id = 10;
+
     return http.put(invoiceHeaderUrl(invoiceHeader.id), body);
   }
 
