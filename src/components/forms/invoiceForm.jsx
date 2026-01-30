@@ -1033,7 +1033,7 @@ class InvoiceForm extends Form {
           </h6>
 
           <div className="d-flex align-items-center">
-            <label className="mb-0 mr-2">Empleado</label>
+            <label className="mb-0 mr-2">Vendedor</label>
             <div style={{ minWidth: "250px" }}>
               {this.renderSelect("employee_id", "", this.state.users)}
             </div>
