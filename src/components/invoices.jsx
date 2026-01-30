@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { toast } from "react-toastify";
-import Pagination from "react-js-pagination";
+//import Pagination from "react-js-pagination";
 import NewButton from "./common/newButton";
 import Loading from "./common/loading";
 import SearchInvoiceBlock from "./common/searchInvoiceBlock";
@@ -218,8 +218,8 @@ class Invoices extends Component {
       invoices,
       sortColumn,
       totalInvoices,
-      pageSize,
-      currentPage,
+      //pageSize,
+      //currentPage,
     } = this.state;
     const user = getCurrentUser();
     const total = invoices ? invoices.length : 0;

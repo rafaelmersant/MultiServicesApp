@@ -98,10 +98,10 @@ class InvoicesCustomers extends Component {
       parseFloat(item.subtotal),
     );
     const totalITBIS = _.sumBy(allCustomers, (item) => parseFloat(item.itbis));
-    const totalDiscount = _.sumBy(allCustomers, (item) =>
-      parseFloat(item.discount),
-    );
-    const totalCost = _.sumBy(allCustomers, (item) => parseFloat(item.cost));
+    // const totalDiscount = _.sumBy(allCustomers, (item) =>
+    //   parseFloat(item.discount),
+    // );
+    // const totalCost = _.sumBy(allCustomers, (item) => parseFloat(item.cost));
     const sorted = _.orderBy(
       allCustomers,
       [sortColumn.path],

@@ -5,6 +5,7 @@ export function mapToViewInvoiceHeader(invoiceHeader) {
     id: invoiceHeader[0].id,
     sequence: parseFloat(invoiceHeader[0].sequence),
     customer_id: invoiceHeader[0].customer_id,
+    employee_id: invoiceHeader[0].employee_id,
     ncf: invoiceHeader[0].ncf,
     paymentMethod: invoiceHeader[0].paymentMethod,
     invoiceType: invoiceHeader[0].invoiceType ? invoiceHeader[0].invoiceType : "",

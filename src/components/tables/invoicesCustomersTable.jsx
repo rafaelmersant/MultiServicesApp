@@ -17,7 +17,7 @@ class InvoicesCustomersTable extends Component {
   ];
 
   render() {
-    const { customers, totalAmount, totalITBIS, sortColumn, onSort } = this.props;
+    const { customers, totalAmount, sortColumn, onSort } = this.props;
 
     return (
       <React.Fragment>

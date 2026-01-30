@@ -282,7 +282,7 @@ class ProductForm extends Form {
 
     const _customCol = popUp ? "col-3" : "col-2";
     const _customColFull = popUp ? "col-12" : "col-5";
-    const _customColMedium = popUp ? "col-6" : "col-3";
+    //const _customColMedium = popUp ? "col-6" : "col-3";
 
     return (
       <div className="container-fluid">

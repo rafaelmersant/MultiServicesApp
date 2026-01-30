@@ -17,7 +17,7 @@ import { registerLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 import PrintInvoice from "../reports/printInvoice";
 import { getCurrentUser } from "../../services/authService";
-import { getUserByEmail } from "../../services/userService";
+import { getUserByEmail, getUsers } from "../../services/userService";
 import { getProducts, getProduct } from "../../services/productService";
 import { getNextNCF, saveEntry } from "../../services/ncfService";
 import {
@@ -55,6 +55,7 @@ class InvoiceForm extends Form {
       sequence: 0,
       ncf: "",
       customer_id: "",
+      employee_id: "",
       paymentMethod: "CASH",
       invoiceType: "CASH",
       invoiceStatus: "",
@@ -81,6 +82,7 @@ class InvoiceForm extends Form {
     detailsOriginal: [],
     detailsToDelete: [],
     companies: [],
+    users: [],
     availablePoints: 0,
     line: {
       id: 0,
@@ -130,7 +132,7 @@ class InvoiceForm extends Form {
     serializedInvoiceHeader: {},
     serializedInvoiceDetail: [],
     paidWith: "",
-    paidReturn: ""
+    paidReturn: "",
   };
 
   //Schema (Joi)
@@ -139,6 +141,7 @@ class InvoiceForm extends Form {
     ncf: Joi.optional(),
     sequence: Joi.number().label("No. Factura"),
     customer_id: Joi.number().label("Cliente"),
+    employee_id: Joi.number().label("Empleado"),
     paymentMethod: Joi.optional(),
     invoiceType: Joi.optional(),
     invoiceStatus: Joi.optional(),
@@ -161,6 +164,11 @@ class InvoiceForm extends Form {
     const companyId = getCurrentUser().companyId;
     const { data: products } = await getProducts(companyId);
     this.setState({ products: products.results });
+  }
+
+  async populateUsers() {
+    const { data: users } = await getUsers();
+    this.setState({ users });
   }
 
   resetLineValues() {
@@ -336,22 +344,22 @@ class InvoiceForm extends Form {
 
       const { data: invoice } = await getInvoiceHeader(
         getCurrentUser().companyId,
-        sequence
+        sequence,
       );
       const invoiceHeader = invoice.results;
 
       const { data: invoiceDetail } = await getInvoiceDetail(
-        invoiceHeader[0].id
+        invoiceHeader[0].id,
       );
 
       const { data: createdUserData } = await getUserByEmail(
-        this.state.data.createdUser
+        this.state.data.createdUser,
       );
 
       const invoiceHeaderMapped = mapToViewInvoiceHeader(invoiceHeader);
 
       const { data: availablePoints } = await getAvailablePoints(
-        invoiceHeader[0].customer_id
+        invoiceHeader[0].customer_id,
       );
 
       this.setState({
@@ -385,7 +393,9 @@ class InvoiceForm extends Form {
       sessionStorage["newInvoice"] = null;
 
       try {
-        Sentry.captureMessage(`Exception: ${ex} | Extra:->sequence: ${sequence}`);
+        Sentry.captureMessage(
+          `Exception: ${ex} | Extra:->sequence: ${sequence}`,
+        );
       } catch (_ex) {
         console.log(ex);
       }
@@ -506,7 +516,7 @@ class InvoiceForm extends Form {
       //Check if quantity is higher than available one
       if (line.quantity > this.state.currentProduct.quantity) {
         toast.error(
-          `La cantidad no puede exceder lo disponible: ${this.state.currentProduct.quantity}`
+          `La cantidad no puede exceder lo disponible: ${this.state.currentProduct.quantity}`,
         );
         return false;
       }
@@ -518,7 +528,7 @@ class InvoiceForm extends Form {
         line.discount > this.state.currentProduct.discount_max
       ) {
         toast.error(
-          `No puede exceder el tope de descuento para este producto. Tope RD$${this.state.currentProduct.discount_max}`
+          `No puede exceder el tope de descuento para este producto. Tope RD$${this.state.currentProduct.discount_max}`,
         );
         return false;
       }
@@ -560,13 +570,13 @@ class InvoiceForm extends Form {
 
     if (!soft) {
       answer = window.confirm(
-        `Seguro que desea eliminar el producto: \n ${detail.product}`
+        `Seguro que desea eliminar el producto: \n ${detail.product}`,
       );
     }
 
     if (answer || soft) {
       const details = this.state.details.filter(
-        (d) => d.product_id !== detail.product_id
+        (d) => d.product_id !== detail.product_id,
       );
 
       this.setState({ details });
@@ -651,17 +661,16 @@ class InvoiceForm extends Form {
     this.handleSelectProduct(e);
   };
 
-   handleChangePaidWith = ({ currentTarget: input }) => {
+  handleChangePaidWith = ({ currentTarget: input }) => {
     const totalDiscount = parseFloat(this.state.data.discount);
     const totalAmount = parseFloat(this.state.data.subtotal) - totalDiscount;
     const paidWith = parseFloat(input.value);
     const paidReturn = formatNumber(paidWith - totalAmount);
 
-    console.log('Discount:', totalDiscount)
-    console.log('totalAmount:', totalAmount)
+    console.log("Discount:", totalDiscount);
+    console.log("totalAmount:", totalAmount);
 
-    if (totalAmount)
-      this.setState({ paidWith, paidReturn });
+    if (totalAmount) this.setState({ paidWith, paidReturn });
   };
 
   async setNCF(typeDoc) {
@@ -671,7 +680,7 @@ class InvoiceForm extends Form {
 
     const { data: entry } = await getNextNCF(
       typeDoc,
-      getCurrentUser().companyId
+      getCurrentUser().companyId,
     );
 
     const hasNCF =
@@ -691,7 +700,7 @@ class InvoiceForm extends Form {
   async getNCF() {
     const { data: entry } = await getNextNCF(
       this.state.data.typeDoc,
-      getCurrentUser().companyId
+      getCurrentUser().companyId,
     );
 
     if (entry.length) {
@@ -704,7 +713,7 @@ class InvoiceForm extends Form {
 
       const data = { ...this.state.data };
       const sec = `00000000${nextNCF}`.substring(
-        `00000000${nextNCF}`.length - 8
+        `00000000${nextNCF}`.length - 8,
       );
 
       data.ncf = `${entry[0].typeDoc}${sec}`;
@@ -721,7 +730,7 @@ class InvoiceForm extends Form {
   async revertNCF() {
     const { data: entry } = await getNextNCF(
       this.state.data.typeDoc,
-      getCurrentUser().companyId
+      getCurrentUser().companyId,
     );
 
     if (entry.length) {
@@ -751,6 +760,7 @@ class InvoiceForm extends Form {
 
     try {
       await this.populateProducts();
+      await this.populateUsers();
       await this.populateInvoice(false);
     } catch (ex) {
       try {
@@ -810,7 +820,7 @@ class InvoiceForm extends Form {
       this.state.data.discount > this.state.availablePoints
     ) {
       toast.error(
-        "El descuento no puede exceder los puntos superavit disponibles."
+        "El descuento no puede exceder los puntos superavit disponibles.",
       );
       return false;
     }
@@ -847,7 +857,7 @@ class InvoiceForm extends Form {
 
         if (this.state.detailsOriginal.length) {
           const _item = this.state.detailsOriginal.find(
-            (__item) => __item.product_id === item.product_id
+            (__item) => __item.product_id === item.product_id,
           );
 
           if (this.state.data.id) {
@@ -921,7 +931,7 @@ class InvoiceForm extends Form {
     try {
       if (this.state.detailsOriginal.length) {
         const _item = this.state.detailsOriginal.find(
-          (__item) => __item.product_id === item.product_id
+          (__item) => __item.product_id === item.product_id,
         );
 
         if (_item && _item.quantity !== item.quantity) {
@@ -943,7 +953,7 @@ class InvoiceForm extends Form {
   }
 
   async deleteOneItem(item) {
-    const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
+    await saveInvoiceHeader(this.state.data);
     console.log("HEADER SAVED:", this.state.data);
     await deleteInvoiceDetail(item.id);
     await this.updateInventory(item, true);
@@ -962,7 +972,9 @@ class InvoiceForm extends Form {
       // }, 500);
     } catch (ex) {
       try {
-        Sentry.captureMessage(`Exception: ${ex} | sequence: ${this.state.data.sequence}`);
+        Sentry.captureMessage(
+          `Exception: ${ex} | sequence: ${this.state.data.sequence}`,
+        );
       } catch (_ex) {
         console.log(ex);
       }
@@ -972,14 +984,13 @@ class InvoiceForm extends Form {
         ex.response.status >= 400 &&
         ex.response.status < 500
       ) {
-        
         if (ex.message === "invoice sequence duplicated") {
           const newSequence = { ...this.state.invoiceSequence };
           await saveInvoiceSequence(newSequence);
           await this.revertNCF();
 
           toast.error(
-            "Hubo un error en la información enviada. Favor intente guardar nuevamente"
+            "Hubo un error en la información enviada. Favor intente guardar nuevamente",
           );
 
           this.setState({ disabledSave: false, saving: false });
@@ -994,10 +1005,12 @@ class InvoiceForm extends Form {
         this.setState({ errors });
 
         toast.error(
-          "Parece que hubo un error en el servidor. Favor contacte al administrador."
+          "Parece que hubo un error en el servidor. Favor contacte al administrador.",
         );
 
-        Sentry.captureMessage(`Exception: ${ex} | ERRORS: ${this.state.errors}`);
+        Sentry.captureMessage(
+          `Exception: ${ex} | ERRORS: ${this.state.errors}`,
+        );
         console.log("errors", this.state.errors);
       }
     }
@@ -1013,10 +1026,17 @@ class InvoiceForm extends Form {
 
     return (
       <React.Fragment>
-        <div className="mb-2 ml-3">
-          <h6 className="text-danger">
+        <div className="mb-2 ml-3 mr-3 d-flex justify-content-between align-items-center">
+          <h6 className="text-danger mb-0">
             Puntos Superavit disponibles: {this.state.availablePoints}
           </h6>
+
+          <div className="d-flex align-items-center">
+            <label className="mb-0 mr-2">Empleado</label>
+            <div style={{ minWidth: "250px" }}>
+              {this.renderSelect("employee_id", "", this.state.users)}
+            </div>
+          </div>
         </div>
 
         <div className="container-fluid">
@@ -1274,7 +1294,7 @@ class InvoiceForm extends Form {
                   <tr>
                     <td>Devuelta:</td>
                     <td>
-                       <input
+                      <input
                         type="text"
                         name="paidWith"
                         className="form form-control text-right font-weight-bold"

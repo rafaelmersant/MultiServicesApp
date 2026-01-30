@@ -2,10 +2,10 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 const NavBarSide = ({ user }) => {
-  const classesForCaja =
-    user && user.role === "Caja"
-      ? "list-group-item list-group-item-action text-dark border-none"
-      : "list-group-item list-group-item-action text-dark border-none";
+  // const classesForCaja =
+  //   user && user.role === "Caja"
+  //     ? "list-group-item list-group-item-action text-dark border-none"
+  //     : "list-group-item list-group-item-action text-dark border-none";
 
   return (
     <div className="border-right" id="sidebar-wrapper">

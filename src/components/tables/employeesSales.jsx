@@ -17,7 +17,7 @@ class EmployeesSalesTable extends Component {
   ];
 
   render() {
-    const { employees, totalAmount, totalITBIS, sortColumn, onSort } = this.props;
+    const { employees, totalAmount, sortColumn, onSort } = this.props;
 
     return (
       <React.Fragment>
