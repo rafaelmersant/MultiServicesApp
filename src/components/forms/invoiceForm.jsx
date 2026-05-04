@@ -816,21 +816,12 @@ class InvoiceForm extends Form {
       }
     }
 
-    if (
-      this.state.data.paymentMethod === "POINTS" &&
-      this.state.data.discount > this.state.availablePoints
-    ) {
-      toast.error(
-        "El descuento no puede exceder los puntos superavit disponibles.",
-      );
-      return false;
-    }
-
     if (this.state.disabledSave) return false;
     this.setState({ disabledSave: true, saving: true });
 
     if (!this.state.data.id) {
       await this.refreshNextInvoiceSequence();
+      this.state.data.paid = true;
 
       if (this.state.data.typeDoc !== "0") await this.getNCF();
     }
@@ -962,6 +953,23 @@ class InvoiceForm extends Form {
 
   doSubmit = async () => {
     try {
+      if (!this.state.data.employee_id) {
+      toast.error(
+        "Debe especificar el vendedor que registra la factura.",
+      );
+      return false;
+    }
+
+    if (
+      this.state.data.paymentMethod === "POINTS" &&
+      this.state.data.discount > this.state.availablePoints
+    ) {
+      toast.error(
+        "El descuento no puede exceder los puntos superavit disponibles.",
+      );
+      return false;
+    }
+    
       await this.saveInvoice();
 
       sessionStorage["newInvoice"] = "y";
@@ -1337,7 +1345,7 @@ class InvoiceForm extends Form {
           <CustomerModal setNewCustomer={this.handleSetNewCustomer} />
           <ProductModal setNewProduct={this.handleSetNewProduct} />
 
-          {!this.isInvoiceEditable() &&
+          {/* {!this.isInvoiceEditable() &&
             (role === "Admin" || role === "Owner") &&
             this.state.data.invoiceStatus !== "ANULADA" &&
             this.state.data.paymentMethod !== "POINTS" && (
@@ -1347,7 +1355,7 @@ class InvoiceForm extends Form {
               >
                 Re-Abrir factura
               </button>
-            )}
+            )} */}
 
           <div className="container-fluid mt-3">
             {(role === "Admin" || role === "Owner" || role === "Caja") && (
