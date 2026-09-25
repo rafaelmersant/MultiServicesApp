@@ -58,7 +58,7 @@ class PriceCalculation extends Component {
       data.costPlusITBIS = Math.round(costNet * 1.18 * 1000) / 1000;
       // data.itbisSales = Math.round(data.priceSales * 0.18 * 100) / 100;
       // data.priceSalesFinal = parseFloat(data.priceSales) + parseFloat(data.itbisSales);
-      data.itbisSales = Math.round(data.priceSalesFinal * 0.18 * 1000) / 1000;
+      data.itbisSales = Math.round((data.priceSalesFinal * 18 / 118) * 1000) / 1000;
       data.priceSales = Math.round((parseFloat(data.priceSalesFinal) - parseFloat(data.itbisSales)) * 100) / 100;
     } else {
       data.itbis = 0;

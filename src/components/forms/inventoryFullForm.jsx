@@ -99,6 +99,8 @@ class InventoryFullForm extends Form {
   };
 
   handleSelectProduct = async (product) => {
+    console.log('PRODUCT SELECTED:', product);
+
     const handler = (e) => {
       e.preventDefault();
     };
@@ -218,9 +220,11 @@ class InventoryFullForm extends Form {
 
   updateProduct = async (inventory) => {
     const product = { ...this.state.product };
+    const _itbis = this.state.currentITBIS ? this.state.currentITBIS :  Math.round((product.price * 18 / 118) * 1000) / 1000;
+
     product.price = inventory.price;
     product.cost = inventory.cost;
-    product.itbis = this.state.currentITBIS;
+    product.itbis = _itbis;
     product.category_id = product.category.id;
     product.company_id = product.company.id;
 
@@ -387,6 +391,8 @@ class InventoryFullForm extends Form {
   };
 
   handleChangeCalculation = (e) => {
+    console.log('TEST ITBIS SALES OBJECT:::', e);
+
     const inventory = { ...this.state.inventory };
     inventory.cost = e.costNet; //e.costPlusITBIS;
     inventory.price = e.priceSalesFinal;

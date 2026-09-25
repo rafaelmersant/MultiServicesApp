@@ -143,7 +143,7 @@ class QuotationForm extends Form {
 
     const quantity = Math.round(parseFloat(line.quantity) * 100) / 100;
     const price = Math.round(parseFloat(product.price) * 100) / 100;
-    const itbis = Math.round(parseFloat((product.itbis * 18 / 118)) * 1000) / 1000;
+    const itbis = Math.round(parseFloat(product.itbis) * 1000) / 1000;
     const total = Math.round(price * quantity * 100) / 100;
 
     line.quantity = quantity;
@@ -173,7 +173,7 @@ class QuotationForm extends Form {
     data.discount = Math.round(data.discount * 100) / 100;
     data.subtotal = Math.round(data.subtotal * 100) / 100;
     data.itbis =
-      Math.round((data.subtotal - data.discount) * 0.18 * 1000) / 1000;
+      Math.round(((data.subtotal - data.discount) * 18 / 118) * 1000) / 1000;
 
     this.setState({ data });
   };
