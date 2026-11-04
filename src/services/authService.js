@@ -9,10 +9,9 @@ const token = {
   name: "ms_name",
   role: "ms_role",
   companyId: "ms_companyId",
-  companyName: "ms_companyName"
+  companyName: "ms_companyName",
+  apiToken: "ms_apiToken"
 };
-
-//http.setJwt(getJwt());
 
 export async function login(credentials) {
   const { data: jwt } = await http.post(`${apiEndpoint}/login/`, credentials);
@@ -22,6 +21,10 @@ export async function login(credentials) {
   localStorage.setItem(token.name, jwt.name);
   localStorage.setItem(token.role, jwt.role);
   localStorage.setItem(token.companyId, jwt.companyId);
+  if (jwt.apiToken) {
+    localStorage.setItem(token.apiToken, jwt.apiToken);
+    http.setJwt(jwt.apiToken);
+  }
 }
 
 export function logout() {
@@ -31,11 +34,15 @@ export function logout() {
   localStorage.removeItem(token.role);
   localStorage.removeItem(token.companyId);
   localStorage.removeItem(token.companyName);
+  localStorage.removeItem(token.apiToken);
+  http.setJwt(null);
 }
 
 export function getCurrentUser() {
   try {
     if (!localStorage.getItem(token.email)) return null;
+    const apiToken = localStorage.getItem(token.apiToken);
+    if (apiToken) http.setJwt(apiToken);
 
     return {
       id: parseInt(localStorage.getItem(token.userId)),
@@ -45,20 +52,10 @@ export function getCurrentUser() {
       companyId: localStorage.getItem(token.companyId),
       companyName: localStorage.getItem(token.companyName)
     };
-
-    //jwtDecode(jwt);
   } catch (ex) {
     return null;
   }
 }
-
-// export function getJwt() {
-//   return localStorage.getItem(tokenKey);
-// }
-
-// export function loginWithJwt(jwt) {
-//   localStorage.setItem(tokenKey, jwt);
-// }
 
 export default {
   login,

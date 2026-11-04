@@ -102,6 +102,14 @@ const NavBarSide = ({ user }) => {
             </NavLink>
             <NavLink
               className="list-group-item list-group-item-action text-dark border-none py-2"
+              to="/ecf"
+            >
+              <span className="fa fa-file-text mr-2 color-local" />
+              Facturación e-CF
+            </NavLink>
+
+            <NavLink
+              className="list-group-item list-group-item-action text-dark border-none py-2"
               to="/ncf"
             >
               <span className="fa fa-credit-card mr-2 color-local" />
@@ -206,3 +214,4 @@ const NavBarSide = ({ user }) => {
 };
 
 export default NavBarSide;
+

@@ -1,3 +1,3 @@
 export const environment = {
-    apiUrl: require('./config.json').apiUrl
+    apiUrl: process.env.REACT_APP_API_URL || require('./config.json').apiUrl
 }

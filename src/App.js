@@ -34,6 +34,7 @@ import Users from "./components/users";
 import UserForm from "./components/forms/userForm";
 import NCF from "./components/ncf";
 import NCFForm from "./components/forms/ncfForm";
+import ElectronicInvoices from "./components/electronicInvoices";
 
 // Entities
 import Providers from "./components/providers";
@@ -190,6 +191,7 @@ class App extends Component {
                   />
                   <ProtectedRoute path="/ncf/:id" component={NCFForm} />
                   <ProtectedRoute path="/ncf" component={NCF} />
+                  <ProtectedRoute path="/ecf" component={ElectronicInvoices} />
                   <ProtectedRoute path="/companies" component={Companies} />
                   <ProtectedRoute path="/company/:id" component={CompanyForm} />
                   <ProtectedRoute path="/users" component={Users} />
@@ -217,3 +219,4 @@ class App extends Component {
 }
 
 export default App;
+
