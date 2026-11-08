@@ -75,6 +75,12 @@ class InvoiceForm extends Form {
       creationDate: new Date().toISOString(),
       serverDate: new Date().toISOString(),
     },
+    fiscalCustomerId: null,
+    fiscalIdType: "R",
+    fiscalIdNumber: "",
+    fiscalIdValid: false,
+    fiscalIdBusy: false,
+    fiscalIdMessage: "",
     electronicRecord: null,
     electronicPrintData: null,
     electronicNotice: "",
@@ -479,6 +485,41 @@ class InvoiceForm extends Form {
     }, 200);
   };
 
+  loadCustomerFiscalId = async customerId => {
+    this.setState({ fiscalCustomerId: customerId, fiscalIdBusy: true, fiscalIdValid: false, fiscalIdNumber: "", fiscalIdMessage: "Comprobando identificación del cliente…" });
+    if (!customerId) { this.setState({ fiscalIdBusy: false, fiscalIdMessage: "Selecciona el cliente real de esta factura." }); return; }
+    try {
+      getCurrentUser();
+      const { data } = await http.get(`${environment.apiUrl}/ecf/electronic-invoices/customer-fiscal-id/`, { params: { customer: customerId } });
+      if (String(this.state.data.customer_id) !== String(customerId)) return;
+      this.setState({ fiscalCustomerId: customerId, fiscalIdType: data.identificationType === "C" ? "C" : "R", fiscalIdNumber: data.identification || "", fiscalIdValid: data.valid, fiscalIdMessage: data.message, fiscalIdBusy: false });
+    } catch (error) {
+      if (String(this.state.data.customer_id) === String(customerId)) this.setState({ fiscalIdBusy: false, fiscalIdMessage: "No fue posible validar el cliente. Verifica tu sesión y vuelve a seleccionarlo." });
+    }
+  };
+
+  saveCustomerFiscalId = async () => {
+    const customerId = this.state.data.customer_id;
+    if (!customerId || String(this.state.fiscalCustomerId) !== String(customerId) || this.state.fiscalIdBusy) {
+      toast.error("Selecciona el cliente y espera la validación de su identificación.");
+      return false;
+    }
+    this.setState({ fiscalIdBusy: true, fiscalIdValid: false });
+    try {
+      getCurrentUser();
+      const { data } = await http.post(`${environment.apiUrl}/ecf/electronic-invoices/customer-fiscal-id/`, { customer: customerId, identificationType: this.state.fiscalIdType, identification: this.state.fiscalIdNumber });
+      if (String(this.state.data.customer_id) !== String(customerId)) return false;
+      await new Promise(resolve => this.setState({ fiscalIdType: data.identificationType, fiscalIdNumber: data.identification, fiscalIdValid: data.valid, fiscalIdMessage: "Identificación validada y guardada en el cliente.", fiscalIdBusy: false }, resolve));
+      return data.valid;
+    } catch (error) {
+      const data = error.response && error.response.data;
+      const message = (data && (data.message || data.detail)) || "No se pudo guardar la identificación. Revisa los datos o inicia sesión nuevamente.";
+      if (String(this.state.data.customer_id) === String(customerId)) this.setState({ fiscalIdBusy: false, fiscalIdValid: false, fiscalIdMessage: message });
+      toast.error(message);
+      return false;
+    }
+  };
+
   handleSelectCustomer = async (customer) => {
     this.setState({
       searchCustomerText: `${customer.firstName} ${customer.lastName}`,
@@ -496,14 +537,11 @@ class InvoiceForm extends Form {
 
     const data = { ...this.state.data };
     data.customer_id = customer.id;
-
-    const { data: availablePoints } = await getAvailablePoints(customer.id);
-
-    this.setState({
-      data,
-      hideSearchCustomer: true,
-      availablePoints: availablePoints.total_points,
+    this.setState({ data, hideSearchCustomer: true, fiscalCustomerId: customer.id, fiscalIdValid: false, fiscalIdNumber: "", fiscalIdMessage: "" }, () => {
+      if (data.typeDoc === "E31") this.loadCustomerFiscalId(customer.id);
     });
+    const { data: availablePoints } = await getAvailablePoints(customer.id);
+    if (String(this.state.data.customer_id) === String(customer.id)) this.setState({ availablePoints: availablePoints.total_points });
   };
 
   handleClearCustomerSelection = () => {
@@ -700,6 +738,7 @@ class InvoiceForm extends Form {
     const data = { ...this.state.data };
     data.typeDoc = typeDoc;
     this.setState({ data });
+    if (typeDoc === "E31") this.loadCustomerFiscalId(data.customer_id);
     if (["E31", "E32", "0"].includes(typeDoc)) return true;
 
     const { data: entry } = await getNextNCF(
@@ -1018,6 +1057,7 @@ class InvoiceForm extends Form {
         toast.error("Indica la fecha límite de pago de esta venta a crédito.");
         return;
       }
+      if (this.state.data.typeDoc === "E31" && !(await this.saveCustomerFiscalId())) return;
       const saved = await this.saveInvoice();
       if (!saved) return;
       if (electronic) {
@@ -1140,6 +1180,16 @@ class InvoiceForm extends Form {
     return (
       <React.Fragment>
         {this.state.electronicNotice && <div className="alert alert-info mx-3">{this.state.electronicNotice} <a href="/ecf">Abrir Facturación e-CF</a></div>}
+        {this.state.data.typeDoc === "E31" && !this.state.data.id && <div className="mx-3 mb-3 border rounded p-3">
+          <strong>Identificación fiscal del cliente para E31</strong>
+          <div className="form-row align-items-end mt-2">
+            <div className="form-group col-md-3"><label>Tipo</label><select className="form-control" disabled={this.state.fiscalIdBusy} value={this.state.fiscalIdType} onChange={e => this.setState({ fiscalIdType: e.target.value, fiscalIdValid: false, fiscalIdMessage: "Guarda la identificación para validarla." })}><option value="R">R · RNC</option><option value="C">C · Cédula</option></select></div>
+            <div className="form-group col-md-5"><label>RNC / Cédula</label><input className="form-control" inputMode="numeric" maxLength="20" disabled={this.state.fiscalIdBusy} value={this.state.fiscalIdNumber} placeholder="Digita la identificación real del cliente" onChange={e => this.setState({ fiscalIdNumber: e.target.value, fiscalIdValid: false, fiscalIdMessage: "Guarda la identificación para validarla." })} /></div>
+            <div className="form-group col-md-4"><button type="button" disabled={this.state.fiscalIdBusy || !this.state.data.customer_id} className="btn btn-outline-primary" onClick={this.saveCustomerFiscalId}>{this.state.fiscalIdBusy ? "Validando…" : "Guardar identificación del cliente"}</button></div>
+          </div>
+          <div className={this.state.fiscalIdValid ? "text-success" : "text-danger"}>{this.state.fiscalIdMessage || "Selecciona el cliente real de la factura."}</div>
+          <small>Se valida formato y dígito verificador. La inscripción activa en DGII no se confirma con esta comprobación.</small>
+        </div>}
         {["E31", "E32"].includes(this.state.data.typeDoc) && !this.state.data.id && <div className="mx-3 mb-2"><label>Líneas sin ITBIS (si aplica)</label><select className="form-control" value={this.state.electronicZeroTax} onChange={e => this.setState({ electronicZeroTax: e.target.value })}><option value="">Sin tratamiento adicional</option><option value="4">Exentas</option><option value="3">Gravadas a tasa 0%</option></select>{this.state.data.paymentMethod === "CREDIT" && <label>Fecha límite de pago<input type="date" className="form-control" value={this.state.electronicDueDate} onChange={e => this.setState({ electronicDueDate: e.target.value })} /></label>}</div>}
         <div className="mb-2 ml-3 mr-3 d-flex justify-content-between align-items-center">
           <h6 className="text-danger mb-0">
