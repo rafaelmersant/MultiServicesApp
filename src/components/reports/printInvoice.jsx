@@ -1,8 +1,12 @@
 import React, { Component } from "react";
+import PrintElectronicInvoice from "./printElectronicInvoice";
 import { formatNumber } from "../../utils/custom";
 
 class PrintInvoice extends Component {
   render() {
+    const fiscal = this.props.invoiceHeader;
+    if (this.props.electronicData && fiscal && fiscal.length && fiscal[0].ncf === this.props.electronicData.encf) return <PrintElectronicInvoice data={this.props.electronicData} />;
+    if (fiscal && fiscal.length && (fiscal[0].ncf || "").startsWith("E")) return <div>La representación e-CF aún no está disponible para imprimir.</div>;
     const {
       invoiceHeader,
       invoiceDetail,

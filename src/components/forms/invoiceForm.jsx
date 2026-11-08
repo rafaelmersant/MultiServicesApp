@@ -76,6 +76,7 @@ class InvoiceForm extends Form {
       serverDate: new Date().toISOString(),
     },
     electronicRecord: null,
+    electronicPrintData: null,
     electronicNotice: "",
     electronicZeroTax: "",
     electronicDueDate: "",
@@ -1097,6 +1098,24 @@ class InvoiceForm extends Form {
     this.setState({ currentProduct: {}, searchProductText: "" });
   };
 
+  prepareElectronicThermalPrint = async () => {
+    if (!(this.state.data.ncf || "").startsWith("E")) return;
+    try {
+      getCurrentUser();
+      const { data } = await http.get(`${environment.apiUrl}/ecf/electronic-invoices/sale-thermal-data/`, { params: { invoice: this.state.data.id } });
+      await new Promise((resolve, reject) => {
+        const image = new window.Image();
+        image.onload = resolve;
+        image.onerror = () => reject(new Error("No se pudo cargar el QR fiscal."));
+        image.src = data.qr_image;
+      });
+      await new Promise(resolve => this.setState({ electronicPrintData: data }, resolve));
+    } catch (error) {
+      toast.error("No se pudo preparar la impresión e-CF con su QR. No se imprimió un ticket tradicional.");
+      throw error;
+    }
+  };
+
   downloadElectronicRepresentation = async () => {
     try {
       getCurrentUser();
@@ -1462,7 +1481,9 @@ class InvoiceForm extends Form {
           <div className="d-flex justify-content-end w-100 pr-3 mb-3">
             {this.state.data.id > 0 &&
               (role === "Admin" || role === "Owner" || role === "Caja") && !(this.state.electronicRecord && !["accepted", "accepted_conditional"].includes(this.state.electronicRecord.status)) && !(this.state.electronicNotice && !(this.state.data.ncf || "").startsWith("E")) && (
-                (this.state.data.ncf || "").startsWith("E") ? <button type="button" ref={button => (this.printButton = button)} className="btn btn-success" onClick={this.downloadElectronicRepresentation}>PDF e-CF</button> : <ReactToPrint
+                <React.Fragment>
+                {(this.state.data.ncf || "").startsWith("E") && <button type="button" className="btn btn-outline-success mr-3" onClick={this.downloadElectronicRepresentation}>PDF e-CF</button>}
+                <ReactToPrint
                   trigger={() => (
                     <span
                       ref={(button) => (this.printButton = button)}
@@ -1471,14 +1492,19 @@ class InvoiceForm extends Form {
                     ></span>
                   )}
                   content={() => this.componentRef}
+                  onBeforeGetContent={this.prepareElectronicThermalPrint}
+                  onPrintError={() => toast.error("No se pudo iniciar la impresión. Verifica la impresora y vuelve a intentarlo.")}
+                  pageStyle={(this.state.data.ncf || "").startsWith("E") ? "@page { size: auto; margin: 3mm; } @media print { html, body { width: 80mm !important; margin: 0 !important; padding: 0 !important; } .ecf-thermal-receipt { width: 72mm !important; } }" : undefined}
                   onAfterPrint={() => this.invoicePrinted()}
                   //onBeforePrint={() => this.invoicePrinted()}
                 />
+                </React.Fragment>
               )}
           </div>
 
           <div hidden="hidden">
             <PrintInvoice
+              electronicData={this.state.electronicPrintData}
               ref={(el) => (this.componentRef = el)}
               invoiceHeader={this.state.serializedInvoiceHeader}
               invoiceDetail={this.state.serializedInvoiceDetail}
