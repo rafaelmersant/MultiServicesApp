@@ -75,6 +75,10 @@ class InvoiceForm extends Form {
       creationDate: new Date().toISOString(),
       serverDate: new Date().toISOString(),
     },
+    electronicRecord: null,
+    electronicNotice: "",
+    electronicZeroTax: "",
+    electronicDueDate: "",
     saving: false,
     loading: true,
     disabledSave: false,
@@ -114,6 +118,8 @@ class InvoiceForm extends Form {
       { id: "0", name: "No usar" },
       { id: "B01", name: "B01" },
       { id: "B02", name: "B02" },
+      { id: "E31", name: "E31 · Crédito fiscal electrónico" },
+      { id: "E32", name: "E32 · Consumo electrónico" },
     ],
     errors: {},
     currentProduct: {},
@@ -381,11 +387,24 @@ class InvoiceForm extends Form {
         availablePoints: availablePoints.total_points,
       });
 
+      let checkoutNotice = null;
+      try { checkoutNotice = JSON.parse(sessionStorage.getItem("ecfCheckoutNotice") || "null"); } catch (error) { /* no prior notice */ }
+      if (checkoutNotice && String(checkoutNotice.sequence) === String(invoiceHeader[0].sequence)) {
+        this.setState({ electronicNotice: checkoutNotice.message });
+        sessionStorage.removeItem("ecfCheckoutNotice");
+      }
+      if (localStorage.getItem("ms_apiToken")) {
+        try {
+          getCurrentUser();
+          const { data: status } = await http.get(`${environment.apiUrl}/ecf/electronic-invoices/sale-status/`, { params: { invoice: invoiceHeader[0].id } });
+          if (status.record) this.setState({ electronicRecord: status.record, electronicNotice: (checkoutNotice && checkoutNotice.message) || `e-CF ${status.record.encf || "sin número reservado"}: ${status.record.dgii_status || status.record.status}. ${status.record.last_error || ""}` });
+        } catch (error) { /* The saved sale remains available even if fiscal status is temporarily unavailable. */ }
+      }
       this.forceUpdate();
 
       if (sessionStorage["printInvoice"] === "y") {
         sessionStorage["printInvoice"] = "";
-        this.printButton.click();
+        if (this.printButton) this.printButton.click();
       }
 
       if (sessionStorage["newInvoice"] === "y") {
@@ -680,6 +699,7 @@ class InvoiceForm extends Form {
     const data = { ...this.state.data };
     data.typeDoc = typeDoc;
     this.setState({ data });
+    if (["E31", "E32", "0"].includes(typeDoc)) return true;
 
     const { data: entry } = await getNextNCF(
       typeDoc,
@@ -701,6 +721,7 @@ class InvoiceForm extends Form {
   }
 
   async getNCF() {
+    if (["E31", "E32"].includes(this.state.data.typeDoc)) return;
     const { data: entry } = await getNextNCF(
       this.state.data.typeDoc,
       getCurrentUser().companyId,
@@ -731,6 +752,7 @@ class InvoiceForm extends Form {
   }
 
   async revertNCF() {
+    if (["E31", "E32"].includes(this.state.data.typeDoc)) return;
     const { data: entry } = await getNextNCF(
       this.state.data.typeDoc,
       getCurrentUser().companyId,
@@ -748,6 +770,7 @@ class InvoiceForm extends Form {
   }
 
   isInvoiceEditable = () => {
+    if (this.state.electronicRecord) return false;
     const isPaid = this.state.data.paid;
     const isNew = this.state.data.id === 0;
 
@@ -808,6 +831,9 @@ class InvoiceForm extends Form {
   }
 
   async saveInvoice() {
+    const isNewInvoice = !this.state.data.id;
+    const isElectronic = ["E31", "E32"].includes(this.state.data.typeDoc);
+    let electronicReady = true;
     try {
       await this.updateTotals();
     } catch (ex) {
@@ -821,14 +847,17 @@ class InvoiceForm extends Form {
     if (this.state.disabledSave) return false;
     this.setState({ disabledSave: true, saving: true });
 
-    if (!this.state.data.id) {
+    if (isNewInvoice) {
       await this.refreshNextInvoiceSequence();
-      this.state.data.paid = true;
+      this.state.data.paid = !(isElectronic && this.state.data.paymentMethod === "CREDIT");
 
       if (this.state.data.typeDoc !== "0") await this.getNCF();
     }
 
     const { data: invoiceHeader } = await saveInvoiceHeader(this.state.data);
+    if (isElectronic) {
+      this.setState({ data: { ...this.state.data, id: invoiceHeader.id, sequence: invoiceHeader.sequence } });
+    }
 
     for (const item of this.state.details) {
       try {
@@ -846,7 +875,7 @@ class InvoiceForm extends Form {
 
         await saveInvoiceDetail(detail);
 
-        if (!this.state.data.id)
+        if (isNewInvoice)
           await saveInvoiceSequence(this.state.invoiceSequence);
 
         if (this.state.detailsOriginal.length) {
@@ -854,7 +883,7 @@ class InvoiceForm extends Form {
             (__item) => __item.product_id === item.product_id,
           );
 
-          if (this.state.data.id) {
+          if (!isNewInvoice) {
             if (_item && _item.quantity !== item.quantity) {
               const newQuantity = _item.quantity - item.quantity;
               detail.quantity = newQuantity;
@@ -865,8 +894,9 @@ class InvoiceForm extends Form {
           }
         }
 
-        if (!this.state.data.id) await this.updateInventory(detail);
+        if (isNewInvoice) await this.updateInventory(detail);
       } catch (ex) {
+        electronicReady = false;
         try {
           Sentry.captureMessage(`Exception: ${ex} | item: ${item}`);
         } catch (_ex) {
@@ -882,6 +912,7 @@ class InvoiceForm extends Form {
         await this.updateInventory(item, true);
       }
     } catch (ex) {
+      electronicReady = false;
       try {
         Sentry.captureException(ex);
       } catch (_ex) {
@@ -890,7 +921,8 @@ class InvoiceForm extends Form {
       console.log("Exception for deleteInvoiceDetail --> " + ex);
     }
 
-    this.setState({ disabledSave: false, saving: false });
+    this.setState({ disabledSave: isElectronic, saving: false });
+    return { invoiceHeader, electronicReady };
   }
 
   async saveOneItem(item) {
@@ -972,7 +1004,41 @@ class InvoiceForm extends Form {
       return false;
     }
     
-      await this.saveInvoice();
+      const electronic = ["E31", "E32"].includes(this.state.data.typeDoc);
+      if (this.state.electronicRecord) {
+        toast.info("Esta venta ya tiene un registro e-CF. Continúa desde Facturación e-CF sin volver a guardar la venta.");
+        return;
+      }
+      if (electronic && !localStorage.getItem("ms_apiToken")) {
+        toast.error("Cierra sesión y vuelve a entrar para emitir e-CF.");
+        return;
+      }
+      if (electronic && this.state.data.paymentMethod === "CREDIT" && !this.state.electronicDueDate) {
+        toast.error("Indica la fecha límite de pago de esta venta a crédito.");
+        return;
+      }
+      const saved = await this.saveInvoice();
+      if (!saved) return;
+      if (electronic) {
+        const { invoiceHeader, electronicReady } = saved;
+        let message = "Venta guardada. Si el comprobante no aparece, prepara su borrador desde Facturación e-CF. No crees otra venta.";
+        this.setState({ saving: true, electronicNotice: "Venta guardada. Procesando e-CF…" });
+        try {
+          getCurrentUser();
+          const payload = {};
+          if (this.state.electronicZeroTax) payload.zero_tax_treatment = this.state.electronicZeroTax;
+          if (this.state.electronicDueDate) payload.FechaLimitePago = this.state.electronicDueDate.split("-").reverse().join("-");
+          const { data: result } = await http.post(`${environment.apiUrl}/ecf/electronic-invoices/checkout-sale/`, {
+            invoice: invoiceHeader.id, document_type: this.state.data.typeDoc.substring(1), payload, process: electronicReady
+          }, { timeout: 120000 });
+          message = result.pending ? `e-CF pendiente: ${result.message}. Continúa desde Facturación e-CF.` : `e-CF ${result.record.encf}: ${result.record.dgii_status || result.record.status}. PDF disponible.`;
+        } catch (error) {
+          message = "Venta guardada; no se confirmó el proceso e-CF. Revisa Facturación e-CF antes de reintentar. No vuelvas a crear esta venta.";
+        }
+        sessionStorage.setItem("ecfCheckoutNotice", JSON.stringify({ sequence: invoiceHeader.sequence, message }));
+        window.location = `/invoice/${invoiceHeader.sequence}`;
+        return;
+      }
 
       sessionStorage["newInvoice"] = "y";
       window.location = `/invoice/new`;
@@ -1054,6 +1120,8 @@ class InvoiceForm extends Form {
 
     return (
       <React.Fragment>
+        {this.state.electronicNotice && <div className="alert alert-info mx-3">{this.state.electronicNotice} <a href="/ecf">Abrir Facturación e-CF</a></div>}
+        {["E31", "E32"].includes(this.state.data.typeDoc) && !this.state.data.id && <div className="mx-3 mb-2"><label>Líneas sin ITBIS (si aplica)</label><select className="form-control" value={this.state.electronicZeroTax} onChange={e => this.setState({ electronicZeroTax: e.target.value })}><option value="">Sin tratamiento adicional</option><option value="4">Exentas</option><option value="3">Gravadas a tasa 0%</option></select>{this.state.data.paymentMethod === "CREDIT" && <label>Fecha límite de pago<input type="date" className="form-control" value={this.state.electronicDueDate} onChange={e => this.setState({ electronicDueDate: e.target.value })} /></label>}</div>}
         <div className="mb-2 ml-3 mr-3 d-flex justify-content-between align-items-center">
           <h6 className="text-danger mb-0">
             Puntos Superavit disponibles: {this.state.availablePoints}
@@ -1393,7 +1461,7 @@ class InvoiceForm extends Form {
 
           <div className="d-flex justify-content-end w-100 pr-3 mb-3">
             {this.state.data.id > 0 &&
-              (role === "Admin" || role === "Owner" || role === "Caja") && (
+              (role === "Admin" || role === "Owner" || role === "Caja") && !(this.state.electronicRecord && !["accepted", "accepted_conditional"].includes(this.state.electronicRecord.status)) && !(this.state.electronicNotice && !(this.state.data.ncf || "").startsWith("E")) && (
                 (this.state.data.ncf || "").startsWith("E") ? <button type="button" ref={button => (this.printButton = button)} className="btn btn-success" onClick={this.downloadElectronicRepresentation}>PDF e-CF</button> : <ReactToPrint
                   trigger={() => (
                     <span
