@@ -1494,7 +1494,7 @@ class InvoiceForm extends Form {
                   content={() => this.componentRef}
                   onBeforeGetContent={this.prepareElectronicThermalPrint}
                   onPrintError={() => toast.error("No se pudo iniciar la impresión. Verifica la impresora y vuelve a intentarlo.")}
-                  pageStyle={(this.state.data.ncf || "").startsWith("E") ? "@page { size: auto; margin: 3mm; } @media print { html, body { width: 80mm !important; margin: 0 !important; padding: 0 !important; } .ecf-thermal-receipt { width: 72mm !important; } }" : undefined}
+                  pageStyle={(this.state.data.ncf || "").startsWith("E") ? "@page { size: auto; margin: 2mm; } @media print { html, body { width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; } .ecf-thermal-receipt { width: 100% !important; max-width: none !important; box-sizing: border-box; } }" : undefined}
                   onAfterPrint={() => this.invoicePrinted()}
                   //onBeforePrint={() => this.invoicePrinted()}
                 />

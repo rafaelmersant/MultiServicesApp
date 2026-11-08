@@ -6,7 +6,7 @@ export default function PrintElectronicInvoice({ data }) {
   if (!data) return null;
   const row = { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", columnGap: "2mm", alignItems: "start" };
   const rule = { borderTop: "1px dashed #000", margin: "3mm 0" };
-  return <div className="ecf-thermal-receipt" style={{ width: "72mm", maxWidth: "100%", color: "#000", background: "#fff", fontFamily: "'Courier New', monospace", fontSize: "10pt", lineHeight: 1.3, overflowWrap: "anywhere" }}>
+  return <div className="ecf-thermal-receipt" style={{ width: "100%", maxWidth: "none", boxSizing: "border-box", color: "#000", background: "#fff", fontFamily: "'Courier New', monospace", fontSize: "10pt", lineHeight: 1.3, overflowWrap: "anywhere" }}>
     <div style={{ textAlign: "center" }}>
       <img src={process.env.PUBLIC_URL + "/images/CASAMINAYA_print.png"} alt="Logo de la empresa" style={{ width: "40mm", maxWidth: "100%" }} />
       <div><strong>{data.issuer.name}</strong></div>
