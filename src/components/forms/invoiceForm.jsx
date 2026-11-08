@@ -3,6 +3,8 @@ import { NavLink } from "react-router-dom";
 import Joi from "joi-browser";
 import { toast } from "react-toastify";
 import ReactToPrint from "react-to-print";
+import http from "../../services/httpService";
+import { environment } from "../../settings";
 import Form from "../common/form";
 import Input from "../common/input";
 import Select from "../common/select";
@@ -1029,6 +1031,23 @@ class InvoiceForm extends Form {
     this.setState({ currentProduct: {}, searchProductText: "" });
   };
 
+  downloadElectronicRepresentation = async () => {
+    try {
+      getCurrentUser();
+      const response = await http.get(`${environment.apiUrl}/ecf/electronic-invoices/sale-representation/`, {
+        params: { invoice: this.state.data.id }, responseType: "blob"
+      });
+      const url = window.URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `RI-${this.state.data.ncf}.pdf`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error("No se pudo obtener la representación e-CF. Verifica tu sesión y el estado del comprobante en Facturación e-CF.");
+    }
+  };
+
   render() {
     const { user } = this.props;
     const role = getCurrentUser().role;
@@ -1375,7 +1394,7 @@ class InvoiceForm extends Form {
           <div className="d-flex justify-content-end w-100 pr-3 mb-3">
             {this.state.data.id > 0 &&
               (role === "Admin" || role === "Owner" || role === "Caja") && (
-                <ReactToPrint
+                (this.state.data.ncf || "").startsWith("E") ? <button type="button" ref={button => (this.printButton = button)} className="btn btn-success" onClick={this.downloadElectronicRepresentation}>PDF e-CF</button> : <ReactToPrint
                   trigger={() => (
                     <span
                       ref={(button) => (this.printButton = button)}
