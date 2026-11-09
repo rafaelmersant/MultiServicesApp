@@ -1456,7 +1456,7 @@ class InvoiceForm extends Form {
                 <div className="col-sm-5 col-md-3"><input id="electronic-payment-due" type="date" className="form-control form-control-sm" value={this.state.electronicDueDate} onChange={e => this.setState({ electronicDueDate: e.target.value })} /></div>
               </div>}
 
-              <secion className="d-flex justify-content-end">
+              {!this.state.data.id && <section className="d-flex justify-content-end">
                 <table>
                   <tr>
                     <td>Pago con:</td>
@@ -1486,7 +1486,7 @@ class InvoiceForm extends Form {
                     </td>
                   </tr>
                 </table>
-              </secion>
+              </section>}
 
               <div>
                 {!this.state.saving &&

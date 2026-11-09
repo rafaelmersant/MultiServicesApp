@@ -54,3 +54,8 @@
 .invoice-compact-seller label[for="employee_id"] {
   display: none;
 }
+
+.invoice-detail-table tfoot th {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
