@@ -13,13 +13,14 @@ function InvoiceSearch({ kind, companyId, value = "", label, onSelect, onClear, 
   const [message, setMessage] = useState("");
   const latest = useRef(0);
   const typed = useRef(value || "");
-  const selected = useRef(null);
+  const selected = useRef(value || null);
   const mounted = useRef(true);
   const product = kind === "product";
 
   useEffect(() => {
     latest.current += 1;
     typed.current = value || "";
+    selected.current = value || null;
     setText(value || "");
     setItems([]);
     setMessage("");
@@ -64,8 +65,8 @@ function InvoiceSearch({ kind, companyId, value = "", label, onSelect, onClear, 
   return <div className={product ? "invoice-search invoice-search-products" : "invoice-search"} style={{ position: "relative", zIndex: focused ? 1001 : 1 }} onFocusCapture={() => setFocused(true)} onBlurCapture={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }} onChangeCapture={event => { typed.current = event.target.value; selected.current = null; }} onKeyDownCapture={event => { if (event.key === "Enter") event.preventDefault(); }}>
     <label>{label}</label>
     <ReactSearchAutocomplete key={revision} autoFocus={revision > 0} items={items} onSearch={search} inputDebounce={300} onSelect={select} onClear={clear} onFocus={onFocus}
-      inputSearchString={text} formatResult={formatResult} fuseOptions={{ keys: product ? ["name", "barcode"] : ["name", "phoneNumber"], threshold: 0.6, ignoreLocation: true, shouldSort: false }}
-      resultStringKeyName="name" placeholder={product ? "Buscar producto…" : "Buscar cliente…"} showIcon={false} showNoResultsText={message}
+      inputSearchString={!product && selected.current === text ? "" : text} formatResult={formatResult} fuseOptions={{ keys: product ? ["name", "barcode"] : ["name", "phoneNumber"], threshold: 0.6, ignoreLocation: true, shouldSort: false }}
+      resultStringKeyName="name" placeholder={product ? "Buscar producto…" : (selected.current || "Buscar cliente…")} showIcon={false} showNoResultsText={message}
       styling={{ height: "30px", borderRadius: "4px", backgroundColor: "white", boxShadow: "none", hoverBackgroundColor: "#f6f6f6", color: "#495057", fontFamily: "inherit", fontSize: "14px", clearIconMargin: "-2px 3px 0 0", zIndex: 999 }} />
   </div>;
 }
