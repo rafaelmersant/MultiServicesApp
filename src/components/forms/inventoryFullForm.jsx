@@ -121,6 +121,7 @@ class InventoryFullForm extends Form {
     this.setState({
       inventory,
       product,
+      currentITBIS: Number(product.itbis) || 0,
       searchProductText: product.description,
       hideSearch: true,
       resetValues: true,
@@ -220,7 +221,9 @@ class InventoryFullForm extends Form {
 
   updateProduct = async (inventory) => {
     const product = { ...this.state.product };
-    const _itbis = this.state.currentITBIS ? this.state.currentITBIS :  Math.round((product.price * 18 / 118) * 1000) / 1000;
+    // Calculate from the NEW selling price, never the previous product price.
+    const taxable = Number(this.state.currentITBIS) > 0;
+    const _itbis = taxable ? Math.round((Number(inventory.price) * 18 / 118) * 1000) / 1000 : 0;
 
     product.price = inventory.price;
     product.cost = inventory.cost;

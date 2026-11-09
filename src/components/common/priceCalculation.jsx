@@ -80,30 +80,18 @@ class PriceCalculation extends Component {
       data.percentage = percent;
     }
     
-    this.setState({ data });
+    this.setState({ data }, () => this.props.onChange(data));
   };
 
   handleChangeInput = ({ currentTarget: input }) => {
     const data = { ...this.state.data };
     data[input.name] = input.value;
 
-    this.setState({ data });
-
-    setTimeout(() => {
-      this.calculatePrice();
-
-      this.props.onChange(this.state.data);
-    }, 300);
+    this.setState({ data }, this.calculatePrice);
   };
 
-  handleChangeITBIS = (e) => {
-    this.setState({ itbis: !this.state.itbis });
-
-    setTimeout(() => {
-      this.calculatePrice();
-
-      this.props.onChange(this.state.data);
-    }, 300);
+  handleChangeITBIS = () => {
+    this.setState(previous => ({ itbis: !previous.itbis }), this.calculatePrice);
   };
 
   render() {

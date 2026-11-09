@@ -268,6 +268,8 @@ class ProductForm extends Form {
 
     const { data } = { ...this.state };
     data.description = data.description.toUpperCase();
+    data.itbis = this.state.itbis
+      ? Math.round((Number(data.price) * 18 / 118) * 1000) / 1000 : 0;
     const { data: product } = await saveProduct(data);
 
     if (this.state.quantity > 0)

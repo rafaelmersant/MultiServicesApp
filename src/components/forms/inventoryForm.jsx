@@ -113,6 +113,8 @@ class InventoryForm extends Form {
   updateProduct = async () => {
     const product = { ...this.state.product };
     product.price = this.state.data.price;
+    product.itbis = Number(product.itbis) > 0
+      ? Math.round((Number(product.price) * 18 / 118) * 1000) / 1000 : 0;
     product.cost = this.state.data.cost;
     product.category_id = product.category.id;
     product.company_id = product.company.id;
