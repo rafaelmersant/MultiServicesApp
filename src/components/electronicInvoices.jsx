@@ -11,12 +11,20 @@ const simulationTargets = [["31", "Crédito fiscal", 4], ["32 ≥ 250 mil", "Con
 const certificationSendOrder = ["31", "32", "41", "43", "44", "45", "46", "47", "33", "34"];
 const certificationExpectedCounts = { "31": 4, "32": 2, "41": 2, "43": 2, "44": 2, "45": 2, "46": 2, "47": 2, "33": 1, "34": 2 };
 
+export function invoicePage(records, environment, requestedPage) {
+  const ordered = records.filter(item => item.environment === environment).sort((a, b) =>
+    (Date.parse(b.creation_date) || 0) - (Date.parse(a.creation_date) || 0) || Number(b.id) - Number(a.id));
+  const pages = Math.max(1, Math.ceil(ordered.length / 30));
+  const page = Math.max(1, Math.min(requestedPage, pages));
+  return { records: ordered.slice((page - 1) * 30, page * 30), total: ordered.length, pages, page };
+}
+
 class ElectronicInvoices extends Component {
   state = {
     invoices: [], sequences: [], sales: [], loading: true, busy: false, error: "", notice: "",
-    selectedSale: "", documentType: "32", environment: "cert",
+    salesStartDate: "2026-11-09", selectedSale: "", documentType: "32", environment: "cert",
     sequenceType: "32", sequenceEnvironment: "cert", rangeStart: "", rangeEnd: "", dueDate: "",
-    fiscalOverrides: "{}", authorizationReference: "", zeroTaxTreatment: "", configuredEnvironment: "", viewEnvironment: "prod"
+    recordsPage: 1, fiscalOverrides: "{}", authorizationReference: "", zeroTaxTreatment: "", configuredEnvironment: "", viewEnvironment: "prod"
   };
 
   async componentDidMount() {
@@ -33,7 +41,7 @@ class ElectronicInvoices extends Component {
   refresh = async () => {
     try {
       const [invoices, sequences, sales] = await Promise.all([
-        http.get(`${invoiceUrl}/`), http.get(`${sequenceUrl}/`), http.get(`${invoiceUrl}/eligible-sales/`, { params: { environment: this.state.environment } })
+        http.get(`${invoiceUrl}/`), http.get(`${sequenceUrl}/`), http.get(`${invoiceUrl}/eligible-sales/`, { params: { environment: this.state.environment, start_date: this.state.salesStartDate || undefined } })
       ]);
       this.setState({ invoices: invoices.data, sequences: sequences.data, sales: sales.data, loading: false });
     } catch (error) {
@@ -204,7 +212,8 @@ class ElectronicInvoices extends Component {
   render() {
     const { sequences, sales, loading, busy, error, notice } = this.state;
     const canConfigure = ["Admin", "Owner"].includes((getCurrentUser() || {}).role);
-    const invoices = this.state.invoices.filter(item => item.environment === this.state.viewEnvironment);
+    const listing = invoicePage(this.state.invoices, this.state.viewEnvironment, this.state.recordsPage);
+    const invoices = listing.records;
     const sequenceAvailable = invoice => sequences.some(s => s.document_type === invoice.document_type && s.environment === invoice.environment && s.active && (s.current === null || Number(s.current) < Number(s.authorized_end)) && s.authorized_start && s.authorized_end && (!s.due_date || s.due_date >= this.localDate()));
     const maxRange = this.state.sequenceEnvironment === "prod" ? "9999999999" : "10000000";
     const selectedSequence = sequences.find(s => s.document_type === this.state.sequenceType && s.environment === this.state.sequenceEnvironment && s.active && (s.current === null || Number(s.current) < Number(s.authorized_end)) && (!s.due_date || s.due_date >= this.localDate()));
@@ -250,10 +259,15 @@ class ElectronicInvoices extends Component {
             </React.Fragment>}
             <h5 className="mt-4">Preparar comprobante desde venta registrada</h5>
             <p>Para E31/E32, guarda la venta con NCF «No usar» y selecciónala aquí. Las ventas con NCF tradicional quedan excluidas de producción. No entregues el borrador como comprobante fiscal.</p>
+            <div className="form-group" style={{ maxWidth: "240px" }}>
+              <label>Facturas desde</label>
+              <input type="date" className="form-control" value={this.state.salesStartDate} disabled={busy}
+                onChange={e => this.setState({ salesStartDate: e.target.value, selectedSale: "" }, this.refresh)} />
+            </div>
             <div className="form-row align-items-end mb-3">
               <div className="form-group col-md-6"><label>Factura fuente (hasta 200 recientes sin e-CF)</label><select className="form-control" value={this.state.selectedSale} onChange={e => this.setState({ selectedSale: e.target.value })}><option value="">Selecciona…</option>{sales.map(s => <option key={s.id} value={s.id}>#{s.sequence} · {new Date(s.date).toLocaleDateString()} · {s.customer} · DOP {s.total} · ID {s.customer_id || "sin ID"}</option>)}</select></div>
               <div className="form-group col-md-2"><label>Tipo e-CF</label><select className="form-control" value={this.state.documentType} onChange={e => this.setState({ documentType: e.target.value })}>{[["31", "Crédito fiscal"], ["32", "Consumo"], ["33", "Nota de débito"], ["34", "Nota de crédito"], ["41", "Compras"], ["43", "Gastos menores"], ["44", "Regímenes especiales"], ["45", "Gubernamental"], ["46", "Exportación"], ["47", "Pagos al exterior"]].map(([type, label]) => <option key={type} value={type}>{type} · {label}</option>)}</select></div>
-              <div className="form-group col-md-2"><label>Ambiente</label><select className="form-control" value={this.state.environment} onChange={e => this.setState({ environment: e.target.value, selectedSale: "", viewEnvironment: e.target.value }, this.refresh)}><option value="prod">Producción</option><option value="cert">Certificación</option><option value="precert">Precertificación</option></select></div>
+              <div className="form-group col-md-2"><label>Ambiente</label><select className="form-control" value={this.state.environment} onChange={e => this.setState({ environment: e.target.value, selectedSale: "", viewEnvironment: e.target.value, recordsPage: 1 }, this.refresh)}><option value="prod">Producción</option><option value="cert">Certificación</option><option value="precert">Precertificación</option></select></div>
               <div className="form-group col-md-2"><button disabled={busy || !canConfigure} className="btn btn-primary" onClick={this.createDraft}>Crear borrador</button></div>
             </div>
             <div className="form-group"><label>Tratamiento de líneas sin ITBIS (si aplica)</label><select className="form-control" value={this.state.zeroTaxTreatment} onChange={e => this.setState({ zeroTaxTreatment: e.target.value })}><option value="">Selecciona si la venta incluye líneas sin ITBIS…</option><option value="3">Gravadas a tasa 0%</option><option value="4">Exentas</option></select><small>Si mezcla exentas y tasa 0%, especifica el indicador de cada línea en los ajustes fiscales.</small></div>
@@ -261,9 +275,9 @@ class ElectronicInvoices extends Component {
             <p className="small text-muted">Tipos 31 y 32 pueden derivarse de una venta real de la lista. Para otros tipos, el objeto JSON debe contener todos los datos correctos de la operación real y sus referencias; el XML debe pasar su XSD. No se inventan transacciones ni identificaciones. Facturas incompletas se detienen antes de firma.</p>
 
             <h5 className="mt-4">Registros e-CF y flujo</h5>
-            <select className="form-control mb-3" value={this.state.viewEnvironment} onChange={e => this.setState({ viewEnvironment: e.target.value })}><option value="prod">Producción</option><option value="cert">Certificación</option><option value="precert">Precertificación</option></select>
-            {invoices.length ? <div className="table-responsive"><table className="table table-sm table-striped"><thead><tr><th>e-NCF</th><th>Tipo / ambiente</th><th>Factura</th><th>Estado</th><th>Track ID</th><th>Acciones</th></tr></thead><tbody>{invoices.map(invoice => (
-              <tr key={invoice.id}><td>{invoice.encf || "Pendiente"}</td><td>{invoice.document_type} / {invoice.environment}</td><td>{invoice.invoice_sequence || "—"}</td><td>{invoice.dgii_status || invoice.rfce_status_text || invoice.status}</td><td>{invoice.track_id || "—"}</td><td className="text-nowrap">
+            <select className="form-control mb-3" value={this.state.viewEnvironment} onChange={e => this.setState({ viewEnvironment: e.target.value, recordsPage: 1 })}><option value="prod">Producción</option><option value="cert">Certificación</option><option value="precert">Precertificación</option></select>
+            {invoices.length ? <div className="table-responsive"><table className="table table-sm table-striped"><thead><tr><th>Fecha y hora</th><th>e-NCF</th><th>Tipo / ambiente</th><th>Factura</th><th>Estado</th><th>Track ID</th><th>Acciones</th></tr></thead><tbody>{invoices.map(invoice => (
+              <tr key={invoice.id}><td className="text-nowrap">{invoice.creation_date ? new Date(invoice.creation_date).toLocaleString("es-DO", { timeZone: "America/Santo_Domingo" }) : "—"}</td><td>{invoice.encf || "Pendiente"}</td><td>{invoice.document_type} / {invoice.environment}</td><td>{invoice.invoice_sequence || "—"}</td><td>{invoice.dgii_status || invoice.rfce_status_text || invoice.status}</td><td>{invoice.track_id || "—"}</td><td className="text-nowrap">
                 {!invoice.encf && <button disabled={busy} className="btn btn-sm btn-outline-secondary mr-1" onClick={() => this.updateDraft(invoice)}>Aplicar ajustes fiscales</button>}
                 {!invoice.encf && !sequenceAvailable(invoice) && <span className="badge badge-secondary mr-2">Pendiente de rango autorizado</span>}
                 {!invoice.encf && <button title="Requiere un rango autorizado vigente" disabled={busy || !sequenceAvailable(invoice)} className="btn btn-sm btn-outline-secondary mr-1" onClick={() => this.reserve(invoice)}>Reservar</button>}
@@ -279,6 +293,16 @@ class ElectronicInvoices extends Component {
                 {["accepted", "accepted_conditional"].includes(invoice.status) && invoice.environment === "cert" && invoice.representation_identity_current === false ? <span className="badge badge-warning" title="El XML firmado no coincide con los datos legales actuales; se requiere un nuevo e-CF.">RI bloqueada: identidad firmada distinta</span> : ["accepted", "accepted_conditional"].includes(invoice.status) && (invoice.has_representation_pdf ? <button className="btn btn-sm btn-success" onClick={() => this.downloadRepresentation(invoice)}>PDF RI</button> : <button disabled={busy} className="btn btn-sm btn-outline-success" onClick={() => this.buildRepresentation(invoice)}>Generar RI</button>)}
               </td></tr>
             ))}</tbody></table></div> : <p>No hay registros e-CF todavía.</p>}
+            {listing.total > 0 && <div className="d-flex align-items-center justify-content-between mb-3">
+              <small>{(listing.page - 1) * 30 + 1}–{Math.min(listing.page * 30, listing.total)} de {listing.total} registros</small>
+              <div>
+                <button type="button" className="btn btn-sm btn-outline-secondary mr-2" disabled={listing.page === 1}
+                  onClick={() => this.setState({ recordsPage: listing.page - 1 })}>Anterior</button>
+                <span>Página {listing.page} de {listing.pages}</span>
+                <button type="button" className="btn btn-sm btn-outline-secondary ml-2" disabled={listing.page === listing.pages}
+                  onClick={() => this.setState({ recordsPage: listing.page + 1 })}>Siguiente</button>
+              </div>
+            </div>}
           </React.Fragment>
         )}
       </div>
