@@ -1180,7 +1180,7 @@ class InvoiceForm extends Form {
 
     return (
       <React.Fragment>
-        {this.state.electronicNotice && <div className="alert alert-info mx-3">{this.state.electronicNotice} <a href="/ecf">Abrir Facturación e-CF</a></div>}
+        {this.state.electronicNotice && <div className="alert alert-info mx-3 invoice-ecf-notice">{this.state.electronicNotice} <a href="/ecf">Abrir Facturación e-CF</a></div>}
         {this.state.data.typeDoc === "E31" && !this.state.data.id && <div className="mx-3 mb-3 border rounded p-3">
           <strong>Identificación fiscal del cliente para E31</strong>
           <div className="form-row align-items-end mt-2">
@@ -1191,7 +1191,7 @@ class InvoiceForm extends Form {
           <div className={this.state.fiscalIdValid ? "text-success" : "text-danger"}>{this.state.fiscalIdMessage || "Selecciona el cliente real de la factura."}</div>
           <small>Se valida formato y dígito verificador. La inscripción activa en DGII no se confirma con esta comprobación.</small>
         </div>}
-        <div className="mb-2 ml-3 mr-3 d-flex justify-content-between align-items-center">
+        <div className={`mb-2 ml-3 mr-3 d-flex justify-content-between align-items-center${this.state.electronicNotice ? " invoice-compact-seller" : ""}`}>
           <h6 className="text-danger mb-0">
             Puntos Superavit disponibles: {this.state.availablePoints}
           </h6>

@@ -39,3 +39,18 @@
     transform: rotate(360deg);
   }
 }
+
+/* Compact fiscal status on the invoice screen only. */
+.invoice-ecf-notice {
+  margin-top: -18px;
+  margin-bottom: 4px;
+  padding: 4px 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.invoice-compact-seller .form-group {
+  margin-bottom: 0;
+}
+.invoice-compact-seller label[for="employee_id"] {
+  display: none;
+}
