@@ -18,7 +18,7 @@ export default function PrintElectronicInvoice({ data }) {
       {data.issuer.email && <div>{data.issuer.email}</div>}
     </div>
     <div style={rule} />
-    <div><strong>{data.title}</strong></div>
+    <div style={{ textAlign: "center", textWrap: "balance" }}><strong>{data.title}</strong></div>
     <div><strong>e-NCF:</strong> {data.encf}</div>
     {data.expiry && <div><strong>Fecha Vencimiento:</strong> {data.expiry}</div>}
     <div style={rule} />
@@ -35,7 +35,7 @@ export default function PrintElectronicInvoice({ data }) {
       {item.surcharge && Number(item.surcharge) !== 0 && <div>Rec.: {money(item.surcharge)}</div>}
     </div>)}
     <div style={rule} />
-    <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>{data.totals.map(total => <div key={total.label} style={{ display: "flex", justifyContent: "space-between", gap: "2mm" }}><strong>{total.label}</strong><span>{money(total.value)}</span></div>)}</div>
+    <div style={{ breakInside: "avoid", pageBreakInside: "avoid" }}>{data.totals.map(total => <div key={total.label} style={{ display: "flex", justifyContent: "space-between", gap: "2mm" }}><strong>{total.label === "Subtotal Gravado:" ? "Subtotal:" : total.label}</strong><span>{money(total.value)}</span></div>)}</div>
     <div style={rule} />
     <div style={{ textAlign: "center", breakInside: "avoid", pageBreakInside: "avoid", paddingBottom: "4mm" }}>
       <img src={data.qr_image} alt="QR de consulta DGII" style={{ width: "32mm", height: "32mm", padding: "3mm", boxSizing: "content-box", imageRendering: "pixelated" }} />
