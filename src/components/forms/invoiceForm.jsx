@@ -1176,6 +1176,8 @@ class InvoiceForm extends Form {
   render() {
     const { user } = this.props;
     const role = getCurrentUser().role;
+    const isNewElectronic = ["E31", "E32"].includes(this.state.data.typeDoc) && !this.state.data.id;
+    const untaxedLines = this.state.details.filter(item => Number(item.quantity) > 0 && Number(item.itbis) === 0).length;
 
     return (
       <React.Fragment>
@@ -1190,7 +1192,6 @@ class InvoiceForm extends Form {
           <div className={this.state.fiscalIdValid ? "text-success" : "text-danger"}>{this.state.fiscalIdMessage || "Selecciona el cliente real de la factura."}</div>
           <small>Se valida formato y dígito verificador. La inscripción activa en DGII no se confirma con esta comprobación.</small>
         </div>}
-        {["E31", "E32"].includes(this.state.data.typeDoc) && !this.state.data.id && <div className="mx-3 mb-2"><label>Líneas sin ITBIS (si aplica)</label><select className="form-control" value={this.state.electronicZeroTax} onChange={e => this.setState({ electronicZeroTax: e.target.value })}><option value="">Sin tratamiento adicional</option><option value="4">Exentas</option><option value="3">Gravadas a tasa 0%</option></select>{this.state.data.paymentMethod === "CREDIT" && <label>Fecha límite de pago<input type="date" className="form-control" value={this.state.electronicDueDate} onChange={e => this.setState({ electronicDueDate: e.target.value })} /></label>}</div>}
         <div className="mb-2 ml-3 mr-3 d-flex justify-content-between align-items-center">
           <h6 className="text-danger mb-0">
             Puntos Superavit disponibles: {this.state.availablePoints}
@@ -1439,6 +1440,20 @@ class InvoiceForm extends Form {
                   onEdit={this.handleEditDetail}
                 />
               )}
+
+              {isNewElectronic && untaxedLines > 0 && <div className="border rounded px-3 py-2 my-3" style={{ backgroundColor: "#f4f8fb", borderLeft: "3px solid #5b94b5" }}>
+                <div className="row align-items-center">
+                  <div className="col-md-7 mb-2 mb-md-0">
+                    <label htmlFor="electronic-zero-tax" className="mb-0 font-weight-bold"><span className="fa fa-info-circle mr-2 text-info" aria-hidden="true" />Productos sin ITBIS</label>
+                    <small className="d-block text-muted">{untaxedLines} {untaxedLines === 1 ? "línea necesita" : "líneas necesitan"} indicar su tratamiento fiscal.</small>
+                  </div>
+                  <div className="col-md-5"><select id="electronic-zero-tax" className="form-control form-control-sm" value={this.state.electronicZeroTax} onChange={e => this.setState({ electronicZeroTax: e.target.value })}><option value="">Selecciona el tratamiento…</option><option value="4">Productos exentos</option><option value="3">Gravados a tasa 0%</option></select></div>
+                </div>
+              </div>}
+              {isNewElectronic && this.state.data.paymentMethod === "CREDIT" && <div className="form-group row align-items-center my-3">
+                <label htmlFor="electronic-payment-due" className="col-sm-4 col-md-3 col-form-label col-form-label-sm">Fecha límite de pago</label>
+                <div className="col-sm-5 col-md-3"><input id="electronic-payment-due" type="date" className="form-control form-control-sm" value={this.state.electronicDueDate} onChange={e => this.setState({ electronicDueDate: e.target.value })} /></div>
+              </div>}
 
               <secion className="d-flex justify-content-end">
                 <table>
