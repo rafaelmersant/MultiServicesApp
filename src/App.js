@@ -68,6 +68,7 @@ class App extends Component {
   };
 
   componentDidMount() {
+    this.stopSessionWatcher = auth.watchSessionExpiry();
     try {
       const user = auth.getCurrentUser();
 
@@ -79,6 +80,7 @@ class App extends Component {
   }
 
   componentWillUnmount() {
+    if (this.stopSessionWatcher) this.stopSessionWatcher();
     this.setState = (state, callback) => {
       return;
     };

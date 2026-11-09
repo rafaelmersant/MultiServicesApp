@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import Joi from "joi-browser";
 import Form from "../common/form";
 import auth from "../../services/authService";
+import { consumeSessionReturnTo } from "../../services/sessionService";
 import { toast } from "react-toastify";
 import { getCompany } from "../../services/companyService";
 
@@ -28,7 +29,8 @@ class LoginForm extends Form {
       localStorage.setItem("ms_companyName", company[0].name);
 
       const { state } = this.props.location;
-      window.location = state ? state.from.pathname : "/invoice/new";
+      const previousPage = consumeSessionReturnTo();
+      window.location = state && state.from ? state.from.pathname : previousPage || "/invoice/new";
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         toast.error("Email/Contraseña incorrecto.");
@@ -47,6 +49,7 @@ class LoginForm extends Form {
     return (
       <div className="container col-lg-5 col-md-12 col-sm-12 shadow p-3 mb-5 bg-white rounded">
         <h2 className="bg-secondary text-light pl-2 pr-2">Login</h2>
+        {new URLSearchParams(this.props.location.search).get("expired") === "1" && <div className="alert alert-info">Tu sesión venció. Inicia sesión nuevamente para continuar.</div>}
         <div className="col-12 pb-3 bg-light">
           <form onSubmit={this.handleSubmit}>
             {this.renderInput("email", "Email")}

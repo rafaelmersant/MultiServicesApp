@@ -1,5 +1,6 @@
 //import jwtDecode from "jwt-decode";
 import http from "./httpService";
+import { clearStoredSession, isSessionActive, sessionExpiresAt, watchSessionExpiry } from "./sessionService";
 import { environment } from "../settings";
 
 const apiEndpoint = `${environment.apiUrl}/auth`;
@@ -15,6 +16,8 @@ const token = {
 
 export async function login(credentials) {
   const { data: jwt } = await http.post(`${apiEndpoint}/login/`, credentials);
+  if (!jwt.apiToken || sessionExpiresAt(jwt.apiToken) <= Date.now()) throw new Error("El servidor no entregó una sesión vigente. Actualiza el backend e inicia sesión nuevamente.");
+  clearStoredSession();
 
   localStorage.setItem(token.userId, jwt.id);
   localStorage.setItem(token.email, jwt.email);
@@ -28,21 +31,20 @@ export async function login(credentials) {
 }
 
 export function logout() {
-  localStorage.removeItem(token.userId);
-  localStorage.removeItem(token.email);
-  localStorage.removeItem(token.name);
-  localStorage.removeItem(token.role);
-  localStorage.removeItem(token.companyId);
-  localStorage.removeItem(token.companyName);
-  localStorage.removeItem(token.apiToken);
+  clearStoredSession();
+  sessionStorage.removeItem("ms_sessionReturnTo");
   http.setJwt(null);
 }
 
 export function getCurrentUser() {
   try {
-    if (!localStorage.getItem(token.email)) return null;
+    if (!isSessionActive()) {
+      clearStoredSession();
+      http.setJwt(null);
+      return null;
+    }
     const apiToken = localStorage.getItem(token.apiToken);
-    if (apiToken) http.setJwt(apiToken);
+    http.setJwt(apiToken);
 
     return {
       id: parseInt(localStorage.getItem(token.userId)),
@@ -60,5 +62,6 @@ export function getCurrentUser() {
 export default {
   login,
   logout,
-  getCurrentUser
+  getCurrentUser,
+  watchSessionExpiry
 };
