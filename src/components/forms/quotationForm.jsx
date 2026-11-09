@@ -7,8 +7,7 @@ import { toast } from "react-toastify";
 import ReactToPrint from "react-to-print";
 import Form from "../common/form";
 import Input from "../common/input";
-import SearchProduct from "../common/searchProduct";
-import SearchCustomer from "../common/searchCustomer";
+import { InvoiceProductSearch as SearchProduct, InvoiceCustomerSearch as SearchCustomer } from "../common/invoiceSearch";
 import Loading from "../common/loading";
 import { formatNumber, formatNumberThreeDecimals } from "../../utils/custom";
 import CustomerModal from "../modals/customerModal";
@@ -20,7 +19,7 @@ import PrintQuotation from "../reports/printQuotation";
 import { getCurrentUser } from "../../services/authService";
 import { getUserByEmail } from "../../services/userService";
 import { getProductsStocks } from "../../services/inventoryService";
-import { getProducts, getProduct } from "../../services/productService";
+import { getProducts } from "../../services/productService";
 import {
   saveQuotationHeader,
   saveQuotationDetail,
@@ -78,6 +77,8 @@ class QuotationForm extends Form {
     },
     errors: {},
     currentProduct: {},
+    editingProductId: 0,
+    detailBusy: false,
     createdUserName: "",
     action: "Nueva Cotización",
     clearSearchProduct: false,
@@ -156,6 +157,7 @@ class QuotationForm extends Form {
     line.total = total;
 
     this.setState({ line });
+    return line;
   };
 
   updateTotals = async () => {
@@ -165,17 +167,18 @@ class QuotationForm extends Form {
     data.subtotal = 0;
 
     this.state.details.forEach((item) => {
-      data.itbis += Math.round(parseFloat(item.itbis) * 1000) / 1000;
+      const gross = Math.round(Number(item.total) * 100) / 100;
+      const net = gross - Number(item.discount);
+      data.itbis += gross > 0 ? Math.round(Number(item.itbis) * net / gross * 1000) / 1000 : 0;
       data.discount += Math.round(parseFloat(item.discount) * 100) / 100;
       data.subtotal += Math.round(parseFloat(item.total) * 100) / 100;
     });
 
     data.discount = Math.round(data.discount * 100) / 100;
     data.subtotal = Math.round(data.subtotal * 100) / 100;
-    data.itbis =
-      Math.round(((data.subtotal - data.discount) * 18 / 118) * 1000) / 1000;
+    data.itbis = Math.round(data.itbis * 1000) / 1000;
 
-    this.setState({ data });
+    await new Promise(resolve => this.setState({ data }, resolve));
   };
 
   async populateQuotation() {
@@ -248,7 +251,7 @@ class QuotationForm extends Form {
 
   handleSelectProduct = async (product) => {
     const handler = (e) => {
-      e.preventDefault();
+      if (e && e.preventDefault) e.preventDefault();
     };
     handler(window.event);
 
@@ -268,6 +271,8 @@ class QuotationForm extends Form {
       return false;
     }
 
+    this.resetLineValues();
+    this.setState({ editingProductId: 0 });
     const available = await this.availableInStock(product.id);
     if (available > 0) {
       toast.success(`Cantidad disponible: ${formatNumber(available)}`);
@@ -292,7 +297,7 @@ class QuotationForm extends Form {
 
   handleSelectCustomer = async (customer) => {
     const handler = (e) => {
-      e.preventDefault();
+      if (e && e.preventDefault) e.preventDefault();
     };
     handler(window.event);
 
@@ -317,102 +322,70 @@ class QuotationForm extends Form {
     }, 200);
   };
 
-  handleAddDetail = () => {
-    const handler = (e) => {
-      e.preventDefault();
-    };
-    handler(window.event);
-
-    setTimeout(async () => {
-      this.updateLine(this.state.currentProduct);
-      const details = [...this.state.details];
-      const line = { ...this.state.line };
-
-      //Check if quantity is higher than available one
-      //   if (line.quantity > this.state.currentProduct.quantity) {
-      //     toast.error(
-      //       `La cantidad no puede exceder lo disponible: ${this.state.currentProduct.quantity}`
-      //     );
-      //     return false;
-      //   }
-
-      line.itbis = Math.round(line.itbis * line.quantity * 1000) / 1000;
-      line.discount = Math.round(line.discount * line.quantity * 100) / 100;
-      line.total = Math.round(line.total * 100) / 100;
-
-      if (this.state.line.product_id) details.push(line);
-
-      this.setState({
-        details,
-        currentProduct: {},
-        searchProductText: "",
-        clearSearchProduct: true,
-      });
-
+  handleAddDetail = async event => {
+    if (event) event.preventDefault();
+    if (this.state.detailBusy || this.validateLine()) return;
+    const line = this.updateLine(this.state.currentProduct);
+    if (Number(line.discount) < 0 || Number(line.discount) > Number(line.price)) {
+      toast.error("El descuento por unidad debe estar entre cero y el precio.");
+      return;
+    }
+    line.itbis = Math.round(line.itbis * line.quantity * 1000) / 1000;
+    line.discount = Math.round(line.discount * line.quantity * 100) / 100;
+    const original = this.state.details;
+    const details = this.state.editingProductId
+      ? original.map(item => item.product_id === this.state.editingProductId ? line : item)
+      : [...original, line];
+    await new Promise(resolve => this.setState({ details, detailBusy: true }, resolve));
+    try {
       await this.updateTotals();
-      this.resetLineValues();
-
-      if (this.state.data.id) {
-        this.saveOneItem(line);
-      }
-    }, 400);
-  };
-
-  handleDeleteDetail = (detail, soft = false) => {
-    let answer = true;
-
-    if (!soft) {
-      answer = window.confirm(
-        `Seguro que desea eliminar el producto: \n ${detail.product}`
-      );
-    }
-
-    if (answer || soft) {
-      const details = this.state.details.filter(
-        (d) => d.product_id !== detail.product_id
-      );
-      this.setState({ details });
-    }
-
-    if (answer) {
-      setTimeout(async () => {
-        await this.updateTotals();
-
-        if (this.state.data.id && !soft) {
-          await this.deleteOneItem(detail);
-        }
-      }, 200);
+      if (this.state.data.id) await this.saveOneItem(line);
+      this.handleCleanProduct();
+    } catch (error) {
+      await new Promise(resolve => this.setState({ details: original }, resolve));
+      await this.updateTotals();
+      toast.error("No se pudo guardar el producto. Revisa la cotización antes de reintentar.");
+    } finally {
+      this.setState({ detailBusy: false });
     }
   };
 
-  handleEditDetail = async (detail) => {
-    const handler = (e) => {
-      e.preventDefault();
-    };
-    handler(window.event);
+  handleDeleteDetail = async detail => {
+    if (this.state.detailBusy || !window.confirm(`¿Eliminar ${detail.product} de la cotización?`)) return;
+    const original = this.state.details;
+    const details = original.filter(item => item.product_id !== detail.product_id);
+    await new Promise(resolve => this.setState({ details, detailBusy: true }, resolve));
+    try {
+      await this.updateTotals();
+      if (this.state.data.id) await this.deleteOneItem(detail);
+      if (this.state.editingProductId === detail.product_id) this.handleCleanProduct();
+    } catch (error) {
+      await new Promise(resolve => this.setState({ details: original }, resolve));
+      await this.updateTotals();
+      toast.error("No se pudo eliminar el producto de la cotización.");
+    } finally {
+      this.setState({ detailBusy: false });
+    }
+  };
 
-    const line = { ...detail };
-    const { data: product } = await getProduct(detail.product_id);
-
-    if (line.discount > 0) line.discount = line.discount / line.quantity;
-
+  handleEditDetail = detail => {
+    if (this.state.detailBusy) return;
+    const line = { ...detail, discount: detail.discount / detail.quantity, itbis: detail.itbis / detail.quantity };
+    // Keep the original row until Actualizar is pressed; clearing cancels the edit.
     this.setState({
-      line,
-      currentProduct: product.results[0],
-      hideSearchProduct: true,
-      searchProductText: line.product,
+      line, editingProductId: detail.product_id,
+      currentProduct: { id: detail.product_id, description: detail.product, price: detail.price,
+        cost: detail.cost || 0, itbis: detail.itbis / detail.quantity },
+      searchProductText: detail.product
     });
-
-    this.handleDeleteDetail(detail, true);
   };
 
   handleChangeQtyDisc = ({ currentTarget: input }) => {
     const line = { ...this.state.line };
     line[input.name] = input.value;
-    this.setState({ line });
-
-    if (this.state.currentProduct.length)
-      this.updateLine(this.state.currentProduct);
+    this.setState({ line }, () => {
+      if (this.state.currentProduct.id) this.updateLine(this.state.currentProduct);
+    });
   };
 
   handleBlurDiscount = () => {
@@ -463,7 +436,7 @@ class QuotationForm extends Form {
 
   validateLine() {
     if (!this.state.line.product_id) return true;
-    if (!parseFloat(this.state.line.quantity) > 0) return true;
+    if (!Number.isFinite(Number(this.state.line.quantity)) || Number(this.state.line.quantity) <= 0) return true;
 
     if (this.state.line.quantity > 0) return false;
   }
@@ -486,13 +459,9 @@ class QuotationForm extends Form {
   }
 
   async saveOneItem(item) {
-    const { data: quotationHeader } = await saveQuotationHeader(
-      this.state.data
-    );
-
     const detail = {
       id: item.id,
-      header_id: quotationHeader.id,
+      header_id: this.state.data.id,
       product_id: item.product_id,
       quantity: item.quantity,
       price: item.price,
@@ -517,16 +486,13 @@ class QuotationForm extends Form {
     this.setState({ details: newDetails });
   }
 
-   async deleteOneItem(item) {
-    const { data: quotationHeader } = await saveQuotationHeader(
-      this.state.data
-    );
-      await deleteQuotationDetail(item.id);
-    }
+  async deleteOneItem(item) {
+    await deleteQuotationDetail(item.id);
+  }
 
   doSubmit = async () => {
     try {
-      if (this.state.disabledSave) return false;
+      if (this.state.disabledSave || this.state.detailBusy) return false;
 
       this.setState({ disabledSave: true, saving: true });
 
@@ -567,6 +533,7 @@ class QuotationForm extends Form {
       sessionStorage["newQuotation"] = "y";
       window.location = `/quotation/${quotationHeader.id}`;
     } catch (ex) {
+      this.setState({ disabledSave: false, saving: false });
       try {
         Sentry.captureException(ex);
       } catch (_ex) {
@@ -589,8 +556,15 @@ class QuotationForm extends Form {
     }
   };
 
-  handleCleanProduct = async () => {
-    this.setState({ currentProduct: {}, searchProductText: "" });
+  handleCleanProduct = () => {
+    this.setState({ currentProduct: {}, editingProductId: 0, searchProductText: "" });
+    this.resetLineValues();
+  };
+
+  handleClearCustomerSelection = () => {
+    this.setState(previous => ({
+      data: { ...previous.data, customer_id: "" }, searchCustomerText: ""
+    }));
   };
 
   render() {
@@ -614,6 +588,7 @@ class QuotationForm extends Form {
               <div className="row">
                 <div className="col-8">
                   <SearchCustomer
+                    onClear={this.handleClearCustomerSelection}
                     onSelect={this.handleSelectCustomer}
                     onFocus={() => this.handleFocusCustomer(false)}
                     onBlur={() => this.handleFocusCustomer(true)}
@@ -659,6 +634,7 @@ class QuotationForm extends Form {
               <div className="row mr-0 ml-0 pr-0 pl-0">
                 <div className="col-5 mr-0 ml-0 pr-0 pl-0">
                   <SearchProduct
+                    onClear={this.handleCleanProduct}
                     onSelect={this.handleSelectProduct}
                     onFocus={() => this.handleFocusProduct(false)}
                     onBlur={() => this.handleFocusProduct(true)}
@@ -669,25 +645,7 @@ class QuotationForm extends Form {
                     label="Producto"
                   />
                 </div>
-                {Object.keys(this.state.currentProduct).length > 0 && (
-                  <div
-                    style={{
-                      marginTop: "36px",
-                    }}
-                  >
-                    <span
-                      className="fa fa-trash text-danger"
-                      style={{
-                        fontSize: "24px",
-                        position: "absolute",
-                        marginLeft: "-29px",
-                        cursor: "pointer",
-                      }}
-                      title="Limpiar filtro de producto"
-                      onClick={this.handleCleanProduct}
-                    ></span>
-                  </div>
-                )}
+
 
                 <div className="col-1 mr-0 ml-0 pr-0 pl-0">
                   <Input
@@ -737,9 +695,10 @@ class QuotationForm extends Form {
                   <button
                     className="btn btn-info btn-sm ml-1 pl-3 pr-3"
                     onClick={this.handleAddDetail}
-                    disabled={this.validateLine()}
+                    type="button"
+                    disabled={this.state.detailBusy || this.validateLine()}
                   >
-                    Agregar
+                    {this.state.editingProductId ? "Actualizar" : "Agregar"}
                   </button>
                 </div>
               </div>

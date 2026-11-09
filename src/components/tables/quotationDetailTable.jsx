@@ -7,7 +7,7 @@ class QuotationDetailTable extends Component {
     { path: "quantity", label: "Cant." },
     { path: "product", label: "Producto" },
     { path: "price", label: "Precio" },
-    { path: "itbis", label: "ITBIS Total" },
+    { path: "itbis", label: "ITBIS Total", content: item => formatNumberThreeDecimals(item.itbis) },
     { path: "discount", label: "Desc. Total" },
     { path: "total", label: "Importe" }
   ];
@@ -48,11 +48,11 @@ class QuotationDetailTable extends Component {
 
     return (
       <React.Fragment>
-        <table className="table table-striped table-bordered">
+        <table className="table table-striped table-bordered invoice-detail-table">
           <thead className="thead-dark">
             <tr>
               {this.columns.map(column => (
-                <th key={column.path || column.key} className="py-2">{column.label}</th>
+                <th key={column.path || column.key} className="py-1">{column.label}</th>
               ))}
             </tr>
           </thead>
