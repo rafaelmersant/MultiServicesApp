@@ -49,6 +49,7 @@ import Cuadre from "./components/reports/cuadre";
 
 import ProtectedRoute from "./components/common/protectedRoute";
 import auth from "./services/authService";
+import DeploymentRefresh from "./components/common/deploymentRefresh";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import "./simple-sidebar.css";
@@ -89,6 +90,7 @@ class App extends Component {
   render() {
     return (
       <React.Fragment>
+        <DeploymentRefresh />
         <ToastContainer />
         {/* <NavBar user={this.state.user} /> */}
         <div className="d-flex" id="wrapper">
