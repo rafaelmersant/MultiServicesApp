@@ -8,8 +8,7 @@ import { environment } from "../../settings";
 import Form from "../common/form";
 import Input from "../common/input";
 import Select from "../common/select";
-import SearchProduct from "../common/searchProduct";
-import SearchCustomer from "../common/searchCustomer";
+import { InvoiceCustomerSearch as SearchCustomer, InvoiceProductSearch as SearchProduct } from "../common/invoiceSearch";
 import Loading from "../common/loading";
 import { formatNumber, formatNumberThreeDecimals } from "../../utils/custom";
 import CustomerModal from "../modals/customerModal";
@@ -442,7 +441,7 @@ class InvoiceForm extends Form {
 
   handleSelectProduct = async (product) => {
     const handler = (e) => {
-      e.preventDefault();
+      if (e && e.preventDefault) e.preventDefault();
     };
     handler(window.event);
 
@@ -526,7 +525,7 @@ class InvoiceForm extends Form {
     });
 
     const handler = (e) => {
-      e.preventDefault();
+      if (e && e.preventDefault) e.preventDefault();
     };
     handler(window.event);
 
@@ -546,7 +545,7 @@ class InvoiceForm extends Form {
 
   handleClearCustomerSelection = () => {
     const handler = (e) => {
-      e.preventDefault();
+      if (e && e.preventDefault) e.preventDefault();
     };
     handler(window.event);
 
@@ -1220,6 +1219,7 @@ class InvoiceForm extends Form {
               <div className="row">
                 <div className="col-7">
                   <SearchCustomer
+                    onClear={this.handleClearCustomerSelection}
                     onSelect={this.handleSetNewCustomer}
                     onFocus={() => this.handleFocusCustomer(false)}
                     onBlur={() => this.handleFocusCustomer(true)}
@@ -1340,6 +1340,7 @@ class InvoiceForm extends Form {
               <div className="row mr-0 ml-0 pr-0 pl-0">
                 <div className="col-5 mr-0 ml-0 pr-0 pl-0">
                   <SearchProduct
+                    onClear={this.handleCleanProduct}
                     onSelect={this.handleSelectProduct}
                     onFocus={() => this.handleFocusProduct(false)}
                     onBlur={() => this.handleFocusProduct(true)}

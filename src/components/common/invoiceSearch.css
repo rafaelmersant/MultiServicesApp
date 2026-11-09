@@ -1,0 +1,71 @@
+.invoice-search li[data-test="result"] + li[data-test="result"] {
+  border-top: 1px solid #e9ecef;
+}
+
+.invoice-search-product-result,
+.invoice-search-customer-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 16px;
+  line-height: 24px;
+  cursor: pointer;
+}
+
+.invoice-search-product-name,
+.invoice-search-customer-name {
+  min-width: 0;
+  white-space: normal;
+}
+
+.invoice-search-product-name small {
+  white-space: nowrap;
+}
+
+.invoice-search-product-category,
+.invoice-search-customer-id {
+  flex-shrink: 0;
+  color: #17a2b8;
+  font-size: 12px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.invoice-search-customer-id {
+  text-align: left;
+}
+
+.invoice-search-products li[data-test="result"] {
+  padding: 10px 22px;
+}
+
+.invoice-search-products li[data-test="result"] > .ellipsis {
+  margin-left: 0;
+  min-width: 0;
+}
+
+.invoice-search-product-result {
+  align-items: center;
+  padding: 0;
+}
+
+.invoice-search-product-name {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.invoice-search-product-description {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.invoice-search-product-name small {
+  flex-shrink: 0;
+}
