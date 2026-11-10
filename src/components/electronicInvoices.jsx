@@ -256,7 +256,9 @@ class ElectronicInvoices extends Component {
             <p className="small text-muted">Estos conteos reflejan registros aceptados en esta aplicación; el estatus del portal DGII sigue siendo la referencia de certificación.</p>
 
             </React.Fragment>}
-            <h5 className="mt-4">Preparar comprobante desde venta registrada</h5>
+            <details className="border rounded p-2 mt-3">
+              <summary className="text-primary" style={{ cursor: "pointer" }}>Mostrar / ocultar preparación manual (opcional)</summary>
+              <small className="d-block text-muted mt-2 mb-2">Úsala para preparar un e-CF desde una venta sin NCF. Si ya existe un borrador, continúa su emisión en el listado inferior.</small>
             <p>Para E31/E32, guarda la venta con NCF «No usar» y selecciónala aquí. Las ventas con NCF tradicional quedan excluidas de producción. No entregues el borrador como comprobante fiscal.</p>
             <div className="form-group" style={{ maxWidth: "240px" }}>
               <label>Facturas desde</label>
@@ -272,6 +274,8 @@ class ElectronicInvoices extends Component {
             <div className="form-group"><label>Tratamiento de líneas sin ITBIS (si aplica)</label><select className="form-control" value={this.state.zeroTaxTreatment} onChange={e => this.setState({ zeroTaxTreatment: e.target.value })}><option value="">Selecciona si la venta incluye líneas sin ITBIS…</option><option value="3">Gravadas a tasa 0%</option><option value="4">Exentas</option></select><small>Si mezcla exentas y tasa 0%, especifica el indicador de cada línea en los ajustes fiscales.</small></div>
             <div className="form-group"><label>Ajustes fiscales verificados (JSON opcional)</label><textarea className="form-control" rows="2" value={this.state.fiscalOverrides} onChange={e => this.setState({ fiscalOverrides: e.target.value })} /><small className="form-text text-muted">Para líneas sin ITBIS, indica explícitamente el tratamiento real, por ejemplo: {'{ "IndicadorFacturacion[1]": "3" }'} (0%) o {'{ "IndicadorFacturacion[1]": "4" }'} (exento). No se incorporan valores automáticamente.</small></div>
             <p className="small text-muted">Tipos 31 y 32 pueden derivarse de una venta real de la lista. Para otros tipos, el objeto JSON debe contener todos los datos correctos de la operación real y sus referencias; el XML debe pasar su XSD. No se inventan transacciones ni identificaciones. Facturas incompletas se detienen antes de firma.</p>
+
+            </details>
 
             <h5 className="mt-4">Registros e-CF y flujo</h5>
             <select className="form-control mb-3" value={this.state.viewEnvironment} onChange={e => this.setState({ viewEnvironment: e.target.value, recordsPage: 1 })}><option value="prod">Producción</option><option value="cert">Certificación</option><option value="precert">Precertificación</option></select>
