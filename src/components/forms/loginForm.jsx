@@ -9,7 +9,7 @@ import { getCompany } from "../../services/companyService";
 
 class LoginForm extends Form {
   state = {
-    data: { email: "", password: "" },
+    data: { email: localStorage.getItem("ms_email") || localStorage.getItem("ms_rememberedEmail") || "", password: "" },
     errors: {},
   };
 

@@ -22,6 +22,8 @@ export function isSessionActive() {
 }
 
 export function clearStoredSession() {
+  const email = localStorage.getItem("ms_email");
+  if (email) localStorage.setItem("ms_rememberedEmail", email);
   keys.forEach(key => localStorage.removeItem(key));
 }
 

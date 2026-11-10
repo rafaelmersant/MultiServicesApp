@@ -21,6 +21,7 @@ export async function login(credentials) {
 
   localStorage.setItem(token.userId, jwt.id);
   localStorage.setItem(token.email, jwt.email);
+  localStorage.setItem("ms_rememberedEmail", jwt.email);
   localStorage.setItem(token.name, jwt.name);
   localStorage.setItem(token.role, jwt.role);
   localStorage.setItem(token.companyId, jwt.companyId);

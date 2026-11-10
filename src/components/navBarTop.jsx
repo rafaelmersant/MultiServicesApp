@@ -1,7 +1,7 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, withRouter } from "react-router-dom";
 
-const NavBarTop = ({ user }) => {
+const NavBarTop = ({ user, location }) => {
    const handleToggleMenu = (e) => {
     const menu = document.getElementById('sidebar-wrapper');
     menu.style.display = menu.style.display === 'none' ? '' : 'none';
@@ -27,7 +27,7 @@ const NavBarTop = ({ user }) => {
 
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav ml-auto mt-2 mt-lg-0">
-          {!user && (
+          {!user && !/^\/login\/?$/.test(location.pathname) && (
             <React.Fragment>
               <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                 <li className="nav-item active">
@@ -89,4 +89,4 @@ const NavBarTop = ({ user }) => {
   );
 };
 
-export default NavBarTop;
+export default withRouter(NavBarTop);
