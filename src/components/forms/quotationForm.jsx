@@ -1,4 +1,5 @@
 import React from "react";
+import { includedLineItbis } from "../../utils/includedItbis";
 import _ from "lodash";
 import * as Sentry from "@sentry/react";
 import { NavLink } from "react-router-dom";
@@ -337,7 +338,12 @@ class QuotationForm extends Form {
       return;
     }
     line.quantity = Math.round(Number(line.quantity) * 100) / 100;
-    line.itbis = Math.round(line.itbis * line.quantity * 1000) / 1000;
+    try {
+      line.itbis = includedLineItbis(line.price, line.quantity, line.itbis);
+    } catch (error) {
+      toast.error(error.message);
+      return;
+    }
     line.discount = Math.round(line.discount * line.quantity * 100) / 100;
     const original = this.state.details;
     const details = this.state.editingProductId

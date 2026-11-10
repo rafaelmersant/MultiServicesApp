@@ -1,4 +1,5 @@
 import React from "react";
+import { includedLineItbis } from "../../utils/includedItbis";
 import { NavLink } from "react-router-dom";
 import Joi from "joi-browser";
 import { toast } from "react-toastify";
@@ -246,7 +247,9 @@ class InvoiceForm extends Form {
     data.amount_points = 0;
 
     for (const item of this.state.details) {
-      data.itbis += Math.round(parseFloat(item.itbis) * 1000) / 1000;
+      const gross = Math.round(Number(item.total) * 100) / 100;
+      const net = gross - Number(item.discount);
+      data.itbis += gross > 0 ? Math.round(Number(item.itbis) * net / gross * 1000) / 1000 : 0;
       data.discount += Math.round(parseFloat(item.discount) * 100) / 100;
       data.subtotal += Math.round(parseFloat(item.total) * 100) / 100;
       data.cost += Math.round(parseFloat(item.cost) * 100) / 100;
@@ -290,8 +293,7 @@ class InvoiceForm extends Form {
 
     data.discount = Math.round(data.discount * 100) / 100;
     data.subtotal = Math.round(data.subtotal * 100) / 100;
-    data.itbis =
-      Math.round(((data.subtotal - data.discount) * 18 / 118) * 1000) / 1000;
+    data.itbis = Math.round(data.itbis * 1000) / 1000;
     data.cost = Math.round(data.cost * 100) / 100;
     data.amount_points = Math.round(data.amount_points * 100) / 100;
     data.amount_points =
@@ -601,7 +603,7 @@ class InvoiceForm extends Form {
       }
 
       try {
-        line.itbis = Math.round(line.itbis * line.quantity * 1000) / 1000;
+        line.itbis = includedLineItbis(line.price, line.quantity, line.itbis);
         line.cost = Math.round(line.cost * line.quantity * 100) / 100;
         line.discount = Math.round(line.discount * line.quantity * 100) / 100;
         line.total = Math.round(line.total * 100) / 100;
@@ -612,6 +614,8 @@ class InvoiceForm extends Form {
         } catch (_ex) {
           console.log("Custom ERROR:", ex);
         }
+        toast.error(ex.message || "No se pudo calcular el ITBIS del producto.");
+        return;
       }
 
       if (this.state.line.product_id) details.push(line);
