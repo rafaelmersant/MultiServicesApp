@@ -68,7 +68,7 @@ class QuotationForm extends Form {
       header_id: 0,
       product_id: 0,
       product: "",
-      quantity: 0,
+      quantity: "",
       price: 0,
       cost: 0,
       itbis: 0,
@@ -116,7 +116,7 @@ class QuotationForm extends Form {
     line.id = 0;
     line.product_id = 0;
     line.product = "";
-    line.quantity = 0;
+    line.quantity = "";
     line.price = 0;
     line.cost = 0;
     line.itbis = 0;
@@ -142,12 +142,13 @@ class QuotationForm extends Form {
       ? 0
       : Math.round(parseFloat(line.discount) * 100) / 100;
 
-    const quantity = Math.round(parseFloat(line.quantity) * 100) / 100;
+    const numericQuantity = Number(line.quantity);
+    const quantity = Number.isFinite(numericQuantity) ? Math.round(numericQuantity * 100) / 100 : 0;
     const price = Math.round(parseFloat(product.price) * 100) / 100;
     const itbis = Math.round(parseFloat(product.itbis) * 1000) / 1000;
     const total = Math.round(price * quantity * 100) / 100;
 
-    line.quantity = quantity;
+    // Keep empty and partial decimal input while typing; normalize only on Add.
     line.product_id = product.id;
     line.product = product.description;
     line.price = price;
@@ -330,6 +331,7 @@ class QuotationForm extends Form {
       toast.error("El descuento por unidad debe estar entre cero y el precio.");
       return;
     }
+    line.quantity = Math.round(Number(line.quantity) * 100) / 100;
     line.itbis = Math.round(line.itbis * line.quantity * 1000) / 1000;
     line.discount = Math.round(line.discount * line.quantity * 100) / 100;
     const original = this.state.details;
@@ -382,10 +384,19 @@ class QuotationForm extends Form {
 
   handleChangeQtyDisc = ({ currentTarget: input }) => {
     const line = { ...this.state.line };
-    line[input.name] = input.value;
+    const value = input.name === "quantity" ? input.value.replace(",", ".") : input.value;
+    if (input.name === "quantity" && !/^\d*(?:\.\d{0,2})?$/.test(value)) return;
+    line[input.name] = value;
     this.setState({ line }, () => {
       if (this.state.currentProduct.id) this.updateLine(this.state.currentProduct);
     });
+  };
+
+  handleLineKeyDown = event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (!event.repeat && !event.nativeEvent.isComposing) this.handleAddDetail(event);
+    }
   };
 
   handleBlurDiscount = () => {
@@ -651,6 +662,9 @@ class QuotationForm extends Form {
                   <Input
                     type="text"
                     name="quantity"
+                    inputMode="decimal"
+                    autoComplete="off"
+                    onKeyDown={this.handleLineKeyDown}
                     value={this.state.line.quantity}
                     label="Cant."
                     onChange={this.handleChangeQtyDisc}
@@ -681,6 +695,7 @@ class QuotationForm extends Form {
                   <Input
                     type="text"
                     name="discount"
+                    onKeyDown={this.handleLineKeyDown}
                     value={this.state.line.discount}
                     label="Desc/Unidad"
                     onChange={this.handleChangeQtyDisc}
