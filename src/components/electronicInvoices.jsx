@@ -111,7 +111,7 @@ class ElectronicInvoices extends Component {
   };
 
   reserve = (invoice) => {
-    const sequence = this.state.sequences.find(s => s.document_type === invoice.document_type && s.environment === invoice.environment && s.active && (s.current === null || Number(s.current) < Number(s.authorized_end)) && (!s.due_date || s.due_date >= this.localDate()));
+    const sequence = [...this.state.sequences].sort((a, b) => Number(a.authorized_start) - Number(b.authorized_start) || Number(a.id) - Number(b.id)).find(s => s.document_type === invoice.document_type && s.environment === invoice.environment && s.active && (s.current === null || Number(s.current) < Number(s.authorized_end)) && (!s.due_date || s.due_date >= this.localDate()));
     if (!sequence) return this.setState({ error: `No hay una secuencia activa ${invoice.document_type} en ${invoice.environment}.` });
     return this.run("e-NCF reservado de forma única.", () => http.post(`${invoiceUrl}/${invoice.id}/reserve-encf/`, { sequence: sequence.id }));
   };
@@ -216,7 +216,6 @@ class ElectronicInvoices extends Component {
     const invoices = listing.records;
     const sequenceAvailable = invoice => sequences.some(s => s.document_type === invoice.document_type && s.environment === invoice.environment && s.active && (s.current === null || Number(s.current) < Number(s.authorized_end)) && s.authorized_start && s.authorized_end && (!s.due_date || s.due_date >= this.localDate()));
     const maxRange = this.state.sequenceEnvironment === "prod" ? "9999999999" : "10000000";
-    const selectedSequence = sequences.find(s => s.document_type === this.state.sequenceType && s.environment === this.state.sequenceEnvironment && s.active && (s.current === null || Number(s.current) < Number(s.authorized_end)) && (!s.due_date || s.due_date >= this.localDate()));
     return (
       <div className="container-fluid py-3">
         <h3>Facturación electrónica (e-CF)</h3>
@@ -238,8 +237,8 @@ class ElectronicInvoices extends Component {
               <div className="form-group col-md-2"><label>Fin DGII</label><input required min="1" max={maxRange} type="number" className="form-control" value={this.state.rangeEnd} onChange={e => this.setState({ rangeEnd: e.target.value })} /></div>
               <div className="form-group col-md-2"><label>Vencimiento (si aplica)</label><input type="date" className="form-control" value={this.state.dueDate} onChange={e => this.setState({ dueDate: e.target.value })} /></div>
               {this.state.sequenceEnvironment === "prod" && <div className="form-group col-md-6"><label>Referencia de autorización DGII</label><input required maxLength="200" className="form-control" value={this.state.authorizationReference} onChange={e => this.setState({ authorizationReference: e.target.value })} /></div>}
-              <div className="form-group col-md-2"><button disabled={busy || !!selectedSequence || !canConfigure} className="btn btn-outline-primary">Guardar rango</button></div>
-              {this.state.sequenceEnvironment === "prod" && <div className="col-12 mb-2"><small>Completa estos datos únicamente cuando DGII entregue el rango real.</small></div>}
+              <div className="form-group col-md-2"><button disabled={busy || !canConfigure} className="btn btn-outline-primary">Guardar rango</button></div>
+              {this.state.sequenceEnvironment === "prod" && <div className="col-12 mb-2"><small>Puedes agregar próximos rangos autorizados antes de agotar el actual. Se consume primero el rango vigente disponible con menor inicio y luego el siguiente. No se permiten rangos solapados.</small></div>}
             </form>
             {sequences.length ? <div className="table-responsive"><table className="table table-sm table-striped"><thead><tr><th>Tipo</th><th>Ambiente</th><th>Rango DGII</th><th>Último reservado</th><th>Activa</th></tr></thead><tbody>{sequences.map(s => <tr key={s.id}><td>{s.document_type}</td><td>{s.environment}</td><td>{s.authorized_start || "—"} – {s.authorized_end || "—"}</td><td>{s.current || "—"}</td><td>{s.active ? "Sí" : "No"}</td></tr>)}</tbody></table></div> : <p>No hay rangos configurados.</p>}
 
