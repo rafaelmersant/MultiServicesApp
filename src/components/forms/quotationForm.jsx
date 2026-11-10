@@ -250,6 +250,11 @@ class QuotationForm extends Form {
     this.setState({ data, quotationDate: date });
   };
 
+  focusQuantity = () => {
+    const input = document.getElementById("quantity");
+    if (input && !input.disabled) { input.focus(); input.select(); }
+  };
+
   handleSelectProduct = async (product) => {
     const handler = (e) => {
       if (e && e.preventDefault) e.preventDefault();
@@ -287,7 +292,7 @@ class QuotationForm extends Form {
       hideSearchProduct: true,
       currentProduct: product,
       searchProductText: product.description,
-    });
+    }, this.focusQuantity);
   };
 
   handleFocusProduct = (value) => {

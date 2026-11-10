@@ -101,7 +101,7 @@ class InvoiceForm extends Form {
       invoice_id: 0,
       product_id: 0,
       product: "",
-      quantity: 0,
+      quantity: "",
       price: 0,
       cost: 0,
       itbis: 0,
@@ -191,7 +191,7 @@ class InvoiceForm extends Form {
     line.id = 0;
     line.product_id = 0;
     line.product = "";
-    line.quantity = 0;
+    line.quantity = "";
     line.price = 0;
     line.cost = 0;
     line.itbis = 0;
@@ -217,13 +217,14 @@ class InvoiceForm extends Form {
       ? 0
       : Math.round(parseFloat(line.discount) * 100) / 100;
 
-    const quantity = Math.round(parseFloat(line.quantity) * 100) / 100;
+    const number = Number(line.quantity);
+    const quantity = Number.isFinite(number) ? Math.round(number * 100) / 100 : 0;
     const price = Math.round(parseFloat(product.price) * 100) / 100;
     const itbis = Math.round(parseFloat(product.itbis) * 1000) / 1000;
     const cost = Math.round(parseFloat(product.cost) * 100) / 100;
     const total = Math.round(price * quantity * 100) / 100;
 
-    line.quantity = quantity;
+    // Preserve empty and partial decimal input until the line is added.
     line.product_id = product.id;
     line.product = product.description;
     line.price = price;
@@ -233,6 +234,7 @@ class InvoiceForm extends Form {
     line.total = total;
 
     this.setState({ line });
+    return line;
   };
 
   updateTotals = async () => {
@@ -439,6 +441,11 @@ class InvoiceForm extends Form {
     this.setState({ data, invoiceDate: date });
   };
 
+  focusQuantity = () => {
+    const input = document.getElementById("quantity");
+    if (input && !input.disabled) { input.focus(); input.select(); }
+  };
+
   handleSelectProduct = async (product) => {
     const handler = (e) => {
       if (e && e.preventDefault) e.preventDefault();
@@ -475,7 +482,7 @@ class InvoiceForm extends Form {
       hideSearchProduct: true,
       currentProduct: product,
       searchProductText: product.description,
-    });
+    }, this.focusQuantity);
   };
 
   handleFocusProduct = (value) => {
@@ -562,16 +569,16 @@ class InvoiceForm extends Form {
     }, 300);
   };
 
-  handleAddDetail = () => {
-    const handler = (e) => {
-      e.preventDefault();
-    };
-    handler(window.event);
-
+  handleAddDetail = event => {
+    if (event && event.preventDefault) event.preventDefault();
+    if (this.addingDetail || this.validateLine()) return;
+    this.addingDetail = true;
     setTimeout(async () => {
-      this.updateLine(this.state.currentProduct);
+      try {
+      if (this.validateLine()) return;
+      const line = this.updateLine(this.state.currentProduct);
+      line.quantity = Math.round(Number(line.quantity) * 100) / 100;
       const details = [...this.state.details];
-      const line = { ...this.state.line };
 
       //Check if quantity is higher than available one
       if (line.quantity > this.state.currentProduct.quantity) {
@@ -620,8 +627,9 @@ class InvoiceForm extends Form {
       this.resetLineValues();
 
       if (this.state.data.id) {
-        this.saveOneItem(line);
+        await this.saveOneItem(line);
       }
+      } finally { this.addingDetail = false; }
     }, 400);
   };
 
@@ -696,11 +704,19 @@ class InvoiceForm extends Form {
 
   handleChangeQtyDisc = ({ currentTarget: input }) => {
     const line = { ...this.state.line };
-    line[input.name] = input.value;
-    this.setState({ line });
+    const value = input.name === "quantity" ? input.value.replace(",", ".") : input.value;
+    if (input.name === "quantity" && !/^\d*(?:\.\d{0,2})?$/.test(value)) return;
+    line[input.name] = value;
+    this.setState({ line }, () => {
+      if (this.state.currentProduct.id) this.updateLine(this.state.currentProduct);
+    });
+  };
 
-    if (this.state.currentProduct.length)
-      this.updateLine(this.state.currentProduct);
+  handleLineKeyDown = event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (!event.repeat && !event.nativeEvent.isComposing) this.handleAddDetail(event);
+    }
   };
 
   handleBlurDiscount = () => {
@@ -847,7 +863,7 @@ class InvoiceForm extends Form {
 
   validateLine() {
     if (!this.state.line.product_id) return true;
-    if (!parseFloat(this.state.line.quantity) > 0) return true;
+    if (!Number.isFinite(Number(this.state.line.quantity)) || Number(this.state.line.quantity) <= 0) return true;
 
     if (this.state.line.quantity > 0) return false;
   }
@@ -1135,6 +1151,7 @@ class InvoiceForm extends Form {
 
   handleCleanProduct = async () => {
     this.setState({ currentProduct: {}, searchProductText: "" });
+    this.resetLineValues();
   };
 
   prepareElectronicThermalPrint = async () => {
@@ -1375,6 +1392,9 @@ class InvoiceForm extends Form {
                   <Input
                     type="text"
                     name="quantity"
+                    inputMode="decimal"
+                    autoComplete="off"
+                    onKeyDown={this.handleLineKeyDown}
                     value={this.state.line.quantity}
                     label="Cant."
                     onChange={this.handleChangeQtyDisc}
@@ -1405,6 +1425,7 @@ class InvoiceForm extends Form {
                   <Input
                     type="text"
                     name="discount"
+                    onKeyDown={this.handleLineKeyDown}
                     value={this.state.line.discount}
                     label="Desc/Unidad"
                     onChange={this.handleChangeQtyDisc}
@@ -1418,6 +1439,7 @@ class InvoiceForm extends Form {
                 >
                   <button
                     className="btn btn-info btn-sm ml-1 pl-3 pr-3"
+                    type="button"
                     onClick={this.handleAddDetail}
                     disabled={this.validateLine()}
                   >
