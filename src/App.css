@@ -59,3 +59,9 @@
   padding-top: 4px;
   padding-bottom: 4px;
 }
+
+.invoice-list-table th:nth-child(2),
+.invoice-list-table td:nth-child(2) {
+  min-width: 220px;
+  white-space: nowrap;
+}

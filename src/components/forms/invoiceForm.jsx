@@ -214,10 +214,6 @@ class InvoiceForm extends Form {
   updateLine = (product) => {
     const line = { ...this.state.line };
 
-    const discount = isNaN(parseFloat(line.discount))
-      ? 0
-      : Math.round(parseFloat(line.discount) * 100) / 100;
-
     const number = Number(line.quantity);
     const quantity = Number.isFinite(number) ? Math.round(number * 100) / 100 : 0;
     const price = Math.round(parseFloat(product.price) * 100) / 100;
@@ -231,7 +227,7 @@ class InvoiceForm extends Form {
     line.price = price;
     line.cost = Math.round(cost * 100) / 100;
     line.itbis = Math.round(itbis * 1000) / 1000;
-    line.discount = Math.round(discount * 100) / 100;
+    // Keep the typed discount (including a trailing decimal point) until Add.
     line.total = total;
 
     this.setState({ line });
@@ -580,6 +576,7 @@ class InvoiceForm extends Form {
       if (this.validateLine()) return;
       const line = this.updateLine(this.state.currentProduct);
       line.quantity = Math.round(Number(line.quantity) * 100) / 100;
+      line.discount = Math.round(Number(line.discount) * 100) / 100;
       const details = [...this.state.details];
 
       //Check if quantity is higher than available one
@@ -708,8 +705,8 @@ class InvoiceForm extends Form {
 
   handleChangeQtyDisc = ({ currentTarget: input }) => {
     const line = { ...this.state.line };
-    const value = input.name === "quantity" ? input.value.replace(",", ".") : input.value;
-    if (input.name === "quantity" && !/^\d*(?:\.\d{0,2})?$/.test(value)) return;
+    const value = input.value.replace(",", ".");
+    if (!/^\d*(?:\.\d{0,2})?$/.test(value)) return;
     line[input.name] = value;
     this.setState({ line }, () => {
       if (this.state.currentProduct.id) this.updateLine(this.state.currentProduct);
@@ -724,11 +721,10 @@ class InvoiceForm extends Form {
   };
 
   handleBlurDiscount = () => {
-    if (this.state.line.discount === "") {
-      const line = { ...this.state.line };
-      line.discount = 0;
-      this.setState({ line });
-    }
+    const value = Number(this.state.line.discount);
+    this.setState(previous => ({ line: { ...previous.line,
+      discount: Number.isFinite(value) ? Math.round(value * 100) / 100 : 0
+    } }));
   };
 
   handleSetNewCustomer = async (e) => {
@@ -867,6 +863,7 @@ class InvoiceForm extends Form {
 
   validateLine() {
     if (!this.state.line.product_id) return true;
+    if (!Number.isFinite(Number(this.state.line.discount)) || Number(this.state.line.discount) < 0) return true;
     if (!Number.isFinite(Number(this.state.line.quantity)) || Number(this.state.line.quantity) <= 0) return true;
 
     if (this.state.line.quantity > 0) return false;
@@ -1429,6 +1426,8 @@ class InvoiceForm extends Form {
                   <Input
                     type="text"
                     name="discount"
+                    inputMode="decimal"
+                    autoComplete="off"
                     onKeyDown={this.handleLineKeyDown}
                     value={this.state.line.discount}
                     label="Desc/Unidad"

@@ -119,12 +119,14 @@ class InvoicesTable extends Component {
     const { invoices, sortColumn, onSort } = this.props;
 
     return (
+      <div className="invoice-list-table table-responsive">
       <Table
         columns={this.columns}
         data={invoices}
         sortColumn={sortColumn}
         onSort={onSort}
       />
+      </div>
     );
   }
 }

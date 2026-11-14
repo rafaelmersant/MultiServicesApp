@@ -44,10 +44,14 @@
 .invoice-search-products li[data-test="result"] > .ellipsis {
   margin-left: 0;
   min-width: 0;
+  width: 100%;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .invoice-search-product-result {
-  align-items: center;
+  align-items: flex-start;
   padding: 0;
 }
 
@@ -56,14 +60,15 @@
   flex: 1;
   align-items: baseline;
   gap: 6px;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  white-space: normal;
 }
 
 .invoice-search-product-description {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .invoice-search-product-name small {
