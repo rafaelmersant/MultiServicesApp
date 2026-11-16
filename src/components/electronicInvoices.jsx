@@ -22,8 +22,8 @@ export function invoicePage(records, environment, requestedPage) {
 class ElectronicInvoices extends Component {
   state = {
     invoices: [], sequences: [], sales: [], loading: true, busy: false, error: "", notice: "",
-    salesStartDate: "2026-11-09", selectedSale: "", documentType: "32", environment: "cert",
-    sequenceType: "32", sequenceEnvironment: "cert", rangeStart: "", rangeEnd: "", dueDate: "",
+    salesStartDate: "2026-11-09", selectedSale: "", documentType: "32", environment: "prod",
+    sequenceType: "32", sequenceEnvironment: "prod", rangeStart: "", rangeEnd: "", dueDate: "",
     recordsPage: 1, fiscalOverrides: "{}", authorizationReference: "", zeroTaxTreatment: "", configuredEnvironment: "", viewEnvironment: "prod"
   };
 
@@ -32,7 +32,7 @@ class ElectronicInvoices extends Component {
     try {
       const { data } = await http.get(`${invoiceUrl}/configuration/`);
       const mode = data.environment;
-      this.setState({ configuredEnvironment: mode, environment: mode, sequenceEnvironment: mode, viewEnvironment: mode }, this.refresh);
+      this.setState({ configuredEnvironment: mode, environment: "prod", sequenceEnvironment: "prod", viewEnvironment: "prod" }, this.refresh);
     } catch (error) {
       this.setState({ error: this.errorMessage(error, "No se pudo leer la configuración e-CF."), loading: false });
     }
@@ -70,6 +70,18 @@ class ElectronicInvoices extends Component {
   createSequence = (event) => {
     event.preventDefault();
     const { sequenceType, sequenceEnvironment, rangeStart, rangeEnd, dueDate } = this.state;
+    const start = Number(rangeStart), end = Number(rangeEnd);
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 1 || end < start) {
+      return this.setState({ error: "Indica un inicio y fin válidos para el rango autorizado.", notice: "" });
+    }
+    const overlapping = this.state.sequences.find(item => item.document_type === sequenceType &&
+      item.environment === sequenceEnvironment && item.authorized_start != null && item.authorized_end != null &&
+      Number(item.authorized_start) <= end && Number(item.authorized_end) >= start);
+    if (overlapping) {
+      const from = Math.max(start, Number(overlapping.authorized_start));
+      const to = Math.min(end, Number(overlapping.authorized_end));
+      return this.setState({ error: `El rango ${start}–${end} se cruza con el ${overlapping.authorized_start}–${overlapping.authorized_end} ya registrado para E${sequenceType}. Los números ${from}–${to} ya pertenecen a ese rango, aunque no se hayan consumido. Verifica los límites de la nueva autorización DGII; no pueden reutilizarse.`, notice: "" });
+    }
     return this.run("Secuencia guardada. Verifica el rango contra la autorización DGII.", () => http.post(`${sequenceUrl}/`, {
       document_type: sequenceType, environment: sequenceEnvironment,
       authorized_start: Number(rangeStart), authorized_end: Number(rangeEnd),
@@ -232,7 +244,7 @@ class ElectronicInvoices extends Component {
             <h5>Rangos autorizados DGII</h5>
             <form className="form-row align-items-end mb-3" onSubmit={this.createSequence}>
               <div className="form-group col-md-2"><label>Tipo e-CF</label><select className="form-control" value={this.state.sequenceType} onChange={e => this.setState({ sequenceType: e.target.value })}>{requiredTypes.map(t => <option key={t}>{t}</option>)}</select></div>
-              <div className="form-group col-md-2"><label>Ambiente</label><select className="form-control" value={this.state.sequenceEnvironment} onChange={e => this.setState({ sequenceEnvironment: e.target.value })}><option value="prod">Producción</option><option value="cert">Certificación</option><option value="precert">Precertificación</option></select></div>
+              <div className="form-group col-md-2"><label>Ambiente</label><select className="form-control" value={this.state.sequenceEnvironment} onChange={e => this.setState({ sequenceEnvironment: e.target.value })}><option value="prod">Producción</option></select></div>
               <div className="form-group col-md-2"><label>Inicio DGII</label><input required min="1" max={maxRange} type="number" className="form-control" value={this.state.rangeStart} onChange={e => this.setState({ rangeStart: e.target.value })} /></div>
               <div className="form-group col-md-2"><label>Fin DGII</label><input required min="1" max={maxRange} type="number" className="form-control" value={this.state.rangeEnd} onChange={e => this.setState({ rangeEnd: e.target.value })} /></div>
               <div className="form-group col-md-2"><label>Vencimiento (si aplica)</label><input type="date" className="form-control" value={this.state.dueDate} onChange={e => this.setState({ dueDate: e.target.value })} /></div>
@@ -268,7 +280,7 @@ class ElectronicInvoices extends Component {
             <div className="form-row align-items-end mb-3">
               <div className="form-group col-md-6"><label>Factura fuente (hasta 200 recientes sin e-CF)</label><select className="form-control" value={this.state.selectedSale} onChange={e => this.setState({ selectedSale: e.target.value })}><option value="">Selecciona…</option>{sales.map(s => <option key={s.id} value={s.id}>#{s.sequence} · {new Date(s.date).toLocaleDateString()} · {s.customer} · DOP {s.total} · ID {s.customer_id || "sin ID"}</option>)}</select></div>
               <div className="form-group col-md-2"><label>Tipo e-CF</label><select className="form-control" value={this.state.documentType} onChange={e => this.setState({ documentType: e.target.value })}>{[["31", "Crédito fiscal"], ["32", "Consumo"], ["33", "Nota de débito"], ["34", "Nota de crédito"], ["41", "Compras"], ["43", "Gastos menores"], ["44", "Regímenes especiales"], ["45", "Gubernamental"], ["46", "Exportación"], ["47", "Pagos al exterior"]].map(([type, label]) => <option key={type} value={type}>{type} · {label}</option>)}</select></div>
-              <div className="form-group col-md-2"><label>Ambiente</label><select className="form-control" value={this.state.environment} onChange={e => this.setState({ environment: e.target.value, selectedSale: "", viewEnvironment: e.target.value, recordsPage: 1 }, this.refresh)}><option value="prod">Producción</option><option value="cert">Certificación</option><option value="precert">Precertificación</option></select></div>
+              <div className="form-group col-md-2"><label>Ambiente</label><select className="form-control" value={this.state.environment} onChange={e => this.setState({ environment: e.target.value, selectedSale: "", viewEnvironment: e.target.value, recordsPage: 1 }, this.refresh)}><option value="prod">Producción</option></select></div>
               <div className="form-group col-md-2"><button disabled={busy || !canConfigure} className="btn btn-primary" onClick={this.createDraft}>Crear borrador</button></div>
             </div>
             <div className="form-group"><label>Tratamiento de líneas sin ITBIS (si aplica)</label><select className="form-control" value={this.state.zeroTaxTreatment} onChange={e => this.setState({ zeroTaxTreatment: e.target.value })}><option value="">Selecciona si la venta incluye líneas sin ITBIS…</option><option value="3">Gravadas a tasa 0%</option><option value="4">Exentas</option></select><small>Si mezcla exentas y tasa 0%, especifica el indicador de cada línea en los ajustes fiscales.</small></div>
@@ -278,7 +290,7 @@ class ElectronicInvoices extends Component {
             </details>
 
             <h5 className="mt-4">Registros e-CF y flujo</h5>
-            <select className="form-control mb-3" value={this.state.viewEnvironment} onChange={e => this.setState({ viewEnvironment: e.target.value, recordsPage: 1 })}><option value="prod">Producción</option><option value="cert">Certificación</option><option value="precert">Precertificación</option></select>
+            <select className="form-control mb-3" value={this.state.viewEnvironment} onChange={e => this.setState({ viewEnvironment: e.target.value, recordsPage: 1 })}><option value="prod">Producción</option></select>
             {invoices.length ? <div className="table-responsive"><table className="table table-sm table-striped"><thead><tr><th>Fecha y hora</th><th>e-NCF</th><th>Tipo / ambiente</th><th>Factura</th><th>Estado</th><th>Track ID</th><th>Acciones</th></tr></thead><tbody>{invoices.map(invoice => (
               <tr key={invoice.id}><td className="text-nowrap">{invoice.creation_date ? new Date(invoice.creation_date).toLocaleString("es-DO", { timeZone: "America/Santo_Domingo" }) : "—"}</td><td>{invoice.encf || "Pendiente"}</td><td>{invoice.document_type} / {invoice.environment}</td><td>{invoice.invoice_sequence || "—"}</td><td>{invoice.dgii_status || invoice.rfce_status_text || invoice.status}</td><td>{invoice.track_id || "—"}</td><td className="text-nowrap">
                 {!invoice.encf && <button disabled={busy} className="btn btn-sm btn-outline-secondary mr-1" onClick={() => this.updateDraft(invoice)}>Aplicar ajustes fiscales</button>}
